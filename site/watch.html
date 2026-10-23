@@ -32,14 +32,14 @@ h1 em{font-style:normal;color:var(--blue)}
 h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .lede{font-size:clamp(17px,2.2vw,20px);max-width:66ch;margin:0}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.chip{font:700 11px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.chip{font:700 12px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
 .card{background:var(--surface);border:1.5px solid var(--ink);border-radius:14px}
 .pad{padding:20px}
 .sub{color:var(--mute);margin:4px 0 0;font-size:15px;max-width:70ch}
 /* verdict board */
 .board{overflow-x:auto}
 .board table{width:100%;border-collapse:collapse;min-width:720px}
-.board th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+.board th{font:700 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
 .board td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
 .board tr:last-child td{border-bottom:0}
 .board td b{display:block;font-size:17px;line-height:1.2}
@@ -47,7 +47,7 @@ h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .board td a:hover b{text-decoration:underline}
 .board .claim{color:var(--mute);font-size:14px;max-width:34ch}
 .big{font:800 22px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
-.v{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.v{display:inline-block;font:700 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
 .v.yes{background:var(--goodbg);color:var(--good)} .v.no{background:var(--badbg);color:var(--bad)} .v.part{background:var(--mehbg);color:var(--meh)}
 /* feature cards */
 .feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0}
@@ -61,25 +61,25 @@ h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
 .brow{display:grid;grid-template-columns:132px minmax(0,1fr) 92px;gap:10px;align-items:center}
 @media (max-width:460px){.brow{grid-template-columns:96px minmax(0,1fr) 78px}}
-.blab{font:700 11px var(--mono);letter-spacing:.02em;line-height:1.25}
+.blab{font:700 12px var(--mono);letter-spacing:.02em;line-height:1.25}
 .blab small{display:block;font-weight:500;color:var(--mute)}
 .btrack{position:relative;height:18px;background:var(--grid);border-radius:4px}
 .bfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
 .berr{position:absolute;top:50%;height:2px;background:var(--ink);opacity:.45;transform:translateY(-50%)}
 .bval{font:700 13px var(--jb);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.bval small{display:block;font:500 10.5px var(--mono);color:var(--mute)}
-.unitline{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
+.bval small{display:block;font:500 11.5px var(--mono);color:var(--mute)}
+.unitline{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
 .mc{width:100%;border-collapse:collapse;margin-top:8px;font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
 .mc th,.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair)}
 .mc th:first-child,.mc td:first-child{text-align:left}
-.mc th{font-weight:700;color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.mc th{font-weight:700;color:var(--mute);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
 .mcw{overflow-x:auto}
 details{margin-top:14px}
 summary{cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em}
 summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
 .asm2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
 @media (max-width:640px){.asm2{grid-template-columns:minmax(0,1fr)}}
-.asmh{font:700 10.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+.asmh{font:700 11.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
 pre{margin:0;background:var(--code);border:1.5px solid var(--hair);border-radius:10px;padding:10px;overflow:auto;max-height:340px;font:400 11.5px/1.5 var(--jb)}
 pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-block;width:100%;font-weight:700}
 /* startup */
@@ -87,7 +87,7 @@ pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-
 .st table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
 .st th,.st td{padding:10px 14px;border-bottom:1px solid var(--hair);text-align:right}
 .st th:first-child,.st td:first-child{text-align:left}
-.st th{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
+.st th{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
 .st td{font:500 13px var(--jb)}
 .st td:first-child{font:700 14px var(--disp)}
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
@@ -104,7 +104,7 @@ footer{font:500 12px var(--mono);color:var(--mute)}
 :root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--grid2:#262b36;--hotbg:#8f86ff1f}
 a{color:var(--blue)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips a{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
+.chips a{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
 .chips a:hover{border-color:var(--blue);color:var(--blue)}
 .chips a.go{border-color:var(--blue);color:var(--blue)}
 .watchcta{display:flex;gap:16px;align-items:center;padding:14px 18px;color:inherit;text-decoration:none;border-color:var(--blue)}
@@ -122,7 +122,7 @@ a{color:var(--blue)}
 .tile .n{font:800 clamp(30px,3.4vw,40px)/1 var(--disp);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .tile .n small{font-size:.5em;font-weight:700;color:var(--mute);margin-left:2px}
 .tile .c{font-size:14.5px;line-height:1.35;flex:1}
-.tile .vs{font:500 11px var(--mono);color:var(--mute)}
+.tile .vs{font:500 12px var(--mono);color:var(--mute)}
 /* start: the gap chart */
 .gap{padding:20px}
 .gap svg{width:100%;height:auto;display:block;color:var(--ink);min-width:560px}
@@ -136,7 +136,7 @@ a{color:var(--blue)}
 .stop:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .stop h3{margin:0;font-size:20px;line-height:1.15}
 .stop p{margin:0;font-size:14.5px;color:var(--mute);flex:1}
-.stop .adds{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink)}
+.stop .adds{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--ink)}
 .stop .adds b{color:var(--blue)}
 .realism{display:flex;gap:3px}
 .realism i{height:5px;flex:1;border-radius:2px;background:var(--hair)}
@@ -153,16 +153,16 @@ a{color:var(--blue)}
 .concept h3{margin:0;font-size:19px;line-height:1.2}
 .concept p{margin:0;font-size:15px;max-width:68ch}
 .concept .why{border-left:3px solid var(--blue);padding-left:10px}
-.concept .why b{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
+.concept .why b{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
 figure.dg{margin:6px 0 0;min-width:0}
 figure.dg .scroll{overflow-x:auto}
 figure.dg svg{width:100%;min-width:620px;height:auto;display:block;color:var(--ink)}
 figure.dg figcaption{color:var(--mute);font-size:13.5px;margin-top:6px;max-width:72ch}
 .dn{font:700 13px var(--disp);fill:currentColor}
 .db{font:500 12px var(--mono);fill:currentColor}
-.dl{font:700 10.5px var(--mono);letter-spacing:.1em;fill:var(--mute)}
+.dl{font:700 11.5px var(--mono);letter-spacing:.1em;fill:var(--mute)}
 .dlab{font:700 12px var(--mono)}
-.tk{font:500 11px var(--mono);fill:var(--mute)}
+.tk{font:500 12px var(--mono);fill:var(--mute)}
 .big{font:800 26px var(--disp);fill:currentColor}
 /* takeaways */
 .dec{width:100%;border-collapse:collapse}
@@ -170,7 +170,7 @@ figure.dg figcaption{color:var(--mute);font-size:13.5px;margin-top:6px;max-width
 .dec tr:first-child td{border-top:0}
 .dec td:first-child{font-weight:700;width:28%}
 .dec td.pick{width:22%}
-.dec .p{display:inline-block;font:700 11px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:6px;background:var(--hotbg);color:var(--blue);white-space:nowrap}
+.dec .p{display:inline-block;font:700 12px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:6px;background:var(--hotbg);color:var(--blue);white-space:nowrap}
 .dec .ev{color:var(--mute)}
 .decw{overflow-x:auto}
 .decw table{min-width:640px}
@@ -227,6 +227,15 @@ html body .st th,html body .mc th{font-size:11.5px}
 .scrolls{position:relative;background:linear-gradient(to left,color-mix(in srgb,var(--ink) 10%,transparent),transparent 28px) right/28px 100% no-repeat}
 .scrollhint{display:none;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:6px 20px 0}
 .scrolls + .scrollhint,.scrollhint.on{display:block}
+html body .wrap small{font-size:11px}
+html body .wrap b.best{font-size:11px}
+html body .primer .ph{font-size:11.5px}
+html body .meta{gap:4px 0}
+html body .meta .chip{border:0;background:none;padding:0;font-weight:500;color:var(--mute)}
+html body .meta .chip+.chip::before{content:'·';margin:0 10px;color:var(--hair)}
+.metricpick{display:none;align-items:center;gap:10px;padding:10px 20px 0;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.metricpick select{font:600 14px var(--disp);color:var(--ink);background:var(--surface);border:1.5px solid var(--hair);border-radius:8px;padding:6px 10px}
+@media (max-width:640px){.metricpick{display:flex}}
 details.more{border-top:1px solid var(--hair)}
 details.more>summary{cursor:pointer;list-style:none;font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue);padding:12px 20px}
 details.more>summary::-webkit-details-marker{display:none}
@@ -251,7 +260,7 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
 .chap button:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
 .chap button.on{color:var(--blue)}
 .chap .ts{font:500 12px var(--mono);color:var(--mute);font-variant-numeric:tabular-nums;min-width:2.6em}
-.chap a{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--mute);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.chap a{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--mute);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:2px 8px;white-space:nowrap}
 .chap a:hover{color:var(--blue);border-color:var(--blue)}
 .chap .cl{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .chap a.ev{color:var(--blue);border-color:var(--blue)}
@@ -271,9 +280,9 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
 (() => {
   const v = document.getElementById('vid'), bs = [...document.querySelectorAll('.chap button')];
   // subtitles ship as plain text; hand them to the track as a WebVTT blob
-  fetch('explainer-vtt.txt').then(r => r.ok ? r.text() : Promise.reject()).then(t => {
-    document.getElementById('subs').src = URL.createObjectURL(new Blob([t], { type: 'text/vtt' }));
-  }).catch(() => {});
+  // inlined, so captions also work when the page is opened from a local folder
+  const t = "WEBVTT\n\n1\n00:00:00.000 --> 00:00:06.830\nAt five hundred payments a second, our C# service was using eighty-five percent of its CPU.\n\n2\n00:00:07.200 --> 00:00:12.190\nNinety seconds later, it was down to fifty-two. Same code. Same traffic.\n\n3\n00:00:12.570 --> 00:00:17.770\nSo what changed? And if we had written it in Rust or Go instead, would it even matter?\n\n4\n00:00:19.170 --> 00:00:26.210\nWe tested five builds, pushed three and a half million payments through them, and deliberately broke the payment provider.\n\n5\n00:00:27.600 --> 00:00:31.670\nThe answer was not as simple as the benchmark charts suggest.\n\n6\n00:00:33.867 --> 00:00:40.357\nAll three languages end up running machine code. The difference is when that machine code gets made.\n\n7\n00:00:40.737 --> 00:00:47.437\nRust, Go, and C# compiled with Native AOT do all of it before the program starts.\n\n8\n00:00:47.797 --> 00:00:56.457\nRegular C# ships an intermediate language, and the JIT compiler finishes the job while the service is already handling traffic.\n\n9\n00:00:57.437 --> 00:01:06.947\nIt starts each method on quick, unoptimised code. The methods that run hot get profiled, then recompiled with full optimisation.\n\n10\n00:01:09.337 --> 00:01:15.417\nThat eighty-five percent is the service doing its real work, and compiling at the same time.\n\n11\n00:01:15.797 --> 00:01:21.047\nNative AOT and Go have nothing left to compile, so they never show that warm-up.\n\n12\n00:01:21.437 --> 00:01:26.707\nSo compilation explains how the service starts. But what happens once the code is\n\n13\n00:01:26.707 --> 00:01:31.977\nwarm? We started with the smallest workload there is: a loop that adds numbers.\n\n14\n00:01:32.967 --> 00:01:36.977\nHere is the machine code each compiler produced for the same loop.\n\n15\n00:01:37.367 --> 00:01:42.007\nThe .NET 10 JIT adds one number per pass. Rust's compiler proved the\n\n16\n00:01:42.007 --> 00:01:46.647\nloop safe to batch, and adds four at a time, twice per pass.\n\n17\n00:01:48.037 --> 00:01:55.517\nOn this loop, Rust was about seven times faster: a tenth of a nanosecond per number, against three quarters.\n\n18\n00:01:55.897 --> 00:02:03.537\nSeven times sounds enormous. But that is one tiny loop, and a payment request does much more than add numbers.\n\n19\n00:02:04.533 --> 00:02:11.463\n.NET 11 changes the machine code too. Two of its changes showed up clearly in our benchmarks.\n\n20\n00:02:11.863 --> 00:02:16.803\nIn our generic virtual call test, the JIT could finally see the exact\n\n21\n00:02:16.803 --> 00:02:21.743\ntype and inline the call: six and a half times faster. Microsoft's own\n\n22\n00:02:21.743 --> 00:02:25.923\nexample shows about four, so the gain depends on your code.\n\n23\n00:02:27.303 --> 00:02:32.633\nRuntime async made an await in our test chain about four times cheaper, and\n\n24\n00:02:32.633 --> 00:02:37.963\nremoved its allocation. In release candidate two, you still have to switch it on.\n\n25\n00:02:38.333 --> 00:02:45.393\nBig wins, on small pieces of code. So we started adding the things a real API has to deal with.\n\n26\n00:02:46.367 --> 00:02:53.597\nEach time we added something a real service needs, we measured how far apart the fastest and slowest builds were.\n\n27\n00:02:53.967 --> 00:02:55.887\nA loop: seven times apart.\n\n28\n00:02:56.267 --> 00:03:01.107\nAn in-memory API with HTTP and JSON: about a quarter.\n\n29\n00:03:01.497 --> 00:03:08.197\nAdd a database, a cache and a payment provider, and the median response time is within five percent.\n\n30\n00:03:09.167 --> 00:03:14.124\nBut the median is not the whole story. At the same traffic, the builds\n\n31\n00:03:14.124 --> 00:03:18.727\nstill differed in their slowest requests, and in how much CPU they burned.\n\n32\n00:03:19.700 --> 00:03:26.459\nThen we did what production eventually does to every service. One payment service, five hundred payments a\n\n33\n00:03:26.459 --> 00:03:32.820\nsecond, and a simulated payment provider that is about to have a very bad thirty seconds.\n\n34\n00:03:33.230 --> 00:03:39.100\nAt thirty seconds, the provider became ten times slower, and one call in ten simply hung.\n\n35\n00:03:39.500 --> 00:03:45.400\nLatency jumped to the provider's new speed. Every hung call was cut off at its\n\n36\n00:03:45.400 --> 00:03:51.300\none-second timeout and failed fast, instead of piling up. Memory stayed far below the limit.\n\n37\n00:03:51.700 --> 00:03:55.800\nWhen the provider recovered, the service recovered with it, within a second.\n\n38\n00:03:56.800 --> 00:04:03.090\nThen came the real test. Every captured payment had to appear exactly once in a merchant balance.\n\n39\n00:04:03.470 --> 00:04:10.380\nIt did, for all five builds, in every run. Three and a half million payments: none\n\n40\n00:04:10.380 --> 00:04:17.290\nlost, none counted twice. On reliability, the language made no difference. Timeouts and bounded resources did.\n\n41\n00:04:18.267 --> 00:04:24.557\nOne more thing about measuring. How a load test sends requests decides what latency it sees.\n\n42\n00:04:24.937 --> 00:04:31.717\nA test that waits for each answer sends nothing while the server stalls, so it records one slow request.\n\n43\n00:04:32.097 --> 00:04:36.037\nReal users keep arriving, so every one of them waits. All\n\n44\n00:04:36.037 --> 00:04:39.977\nthe latency numbers in this video were measured the second way.\n\n45\n00:04:40.967 --> 00:04:48.457\nThree results pushed back on the simple story. First, the same .NET 11 build went in opposite directions.\n\n46\n00:04:48.837 --> 00:04:56.407\nIn the plain in-memory API, it used about eleven percent more CPU per request than .NET 10.\n\n47\n00:04:56.797 --> 00:05:01.967\nIn the payment service, about a quarter less. One workload does not predict another.\n\n48\n00:05:02.937 --> 00:05:10.397\nSecond, .NET 11 turns Math dot BigMul into a single multiply instruction. The loop got shorter.\n\n49\n00:05:10.767 --> 00:05:15.332\nAnd thirty-one percent slower. The running total now goes out to memory and back\n\n50\n00:05:15.332 --> 00:05:19.897\non every pass, so each step has to wait for the one before it.\n\n51\n00:05:20.867 --> 00:05:25.869\nThird, in one of five rounds, .NET 10 Native AOT stopped answering near\n\n52\n00:05:25.869 --> 00:05:30.487\nthe end of the outage, and stayed stuck until the test ended.\n\n53\n00:05:30.867 --> 00:05:36.581\nFourteen thousand requests timed out while its CPU sat mostly idle. Three more\n\n54\n00:05:36.581 --> 00:05:41.857\nrounds, with extra diagnostics, were clean, and the cause is still open.\n\n55\n00:05:42.237 --> 00:05:47.697\nWe report it anyway. One stalled run is exactly what a single benchmark would hide.\n\n56\n00:05:48.667 --> 00:05:56.137\nSo which C# would you deploy: the default JIT, or Native AOT? Here are the trade-offs, one at a time.\n\n57\n00:05:56.537 --> 00:06:03.877\nNative AOT is ready in under half a second, like Go and Rust. The JIT build needs just over one.\n\n58\n00:06:04.267 --> 00:06:07.467\nIt idles in about forty percent less memory.\n\n59\n00:06:07.837 --> 00:06:13.127\nBut once the JIT has warmed up, it handles about six percent more payments at its peak.\n\n60\n00:06:14.097 --> 00:06:21.626\nWhat about efficiency? At a fixed five hundred payments a second, CPU time per payment shows how much\n\n61\n00:06:21.626 --> 00:06:28.737\ncompute each payment needs. Your bill also depends on memory, instance size, and how you buy capacity.\n\n62\n00:06:29.137 --> 00:06:34.752\nRust and Go do the same work for the least CPU. C# on .NET\n\n63\n00:06:34.752 --> 00:06:39.967\n11 costs about a third more. On .NET 10, about eighty percent more.\n\n64\n00:06:40.967 --> 00:06:45.537\nAnd the graph we started with? Here is the same service on .NET 10.\n\n65\n00:06:45.897 --> 00:06:51.730\nSettled, it used seventy-two percent of its CPU. .NET 11 needed fifty-three for the\n\n66\n00:06:51.730 --> 00:06:57.147\nsame traffic: about a quarter less, in our tests, on a release candidate.\n\n67\n00:06:58.133 --> 00:07:02.633\nSo, which language was fastest? That depends on what we asked it to do.\n\n68\n00:07:04.033 --> 00:07:08.213\nIn a tight loop, the generated machine code mattered enormously.\n\n69\n00:07:08.603 --> 00:07:15.383\nOnce a database was in the path, the median barely moved, but CPU cost and start-up still did.\n\n70\n00:07:15.763 --> 00:07:23.663\nAnd when the provider failed, every build depended on the same discipline: timeouts, bounded resources, and recovery.\n\n71\n00:07:25.033 --> 00:07:30.040\nA fast instruction is not necessarily a fast request. And a fast\n\n72\n00:07:30.040 --> 00:07:35.047\nrequest is not necessarily an efficient, reliable service. The right benchmark is\n\n73\n00:07:35.047 --> 00:07:40.053\nthe one that measures the problem you are actually trying to solve.\n\n74\n00:07:41.433 --> 00:07:46.273\nEvery result, every chart, and the machine code behind them are on the site.\n";
+  document.getElementById('subs').src = URL.createObjectURL(new Blob([t], { type: 'text/vtt' }));
   bs.forEach(b => b.addEventListener('click', () => { v.currentTime = +b.dataset.t + 0.05; v.play().catch(() => {}); }));
   v.addEventListener('timeupdate', () => {
     let cur = null; for (const b of bs) if (v.currentTime >= +b.dataset.t) cur = b;
@@ -286,7 +295,16 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
   const wide = el.scrollWidth > el.clientWidth + 4; el.classList.toggle('scrolls', wide);
   let h = el.nextElementSibling; if (wide && !(h && h.classList.contains('scrollhint'))) { h = document.createElement('div'); h.className = 'scrollhint'; h.textContent = 'Scroll sideways for more →'; el.after(h); }
   if (h && h.classList.contains('scrollhint')) h.classList.toggle('on', wide); });
-  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300); })();
+  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300);
+  // phones: pick one metric column at a time instead of scrolling a wide table sideways
+  const pick = () => document.querySelectorAll('.st table').forEach((t, n) => {
+    if (t.dataset.pick) return; const head = t.rows[0]; if (!head || head.cells.length < 4) return; t.dataset.pick = 1;
+    const w = document.createElement('label'); w.className = 'metricpick'; w.htmlFor = 'mp' + n; w.textContent = 'Show';
+    const sel = document.createElement('select'); sel.id = 'mp' + n; sel.innerHTML = '<option value="all">all columns</option>' + [...head.cells].slice(1).map((c, i) => `<option value="${i + 1}">${c.textContent}</option>`).join('');
+    w.append(sel); t.closest('.st').before(w);
+    sel.onchange = () => [...t.rows].forEach(r => [...r.cells].forEach((c, i) => { c.hidden = sel.value !== 'all' && i > 0 && i != sel.value; }));
+    if (matchMedia('(max-width:640px)').matches) { sel.value = '1'; sel.onchange(); } }) || mark();
+  addEventListener('load', pick); setTimeout(pick, 400); })();
 </script>
 </body>
 </html>

@@ -522,13 +522,15 @@ watch_body = f"""  <header>
   <section class="card pad" aria-labelledby="ch"><h2 id="ch">Chapters</h2><ol class="chap" style="margin-top:10px">{chap}</ol></section>
   <p class="credit">Animated with Manim Community (github.com/ManimCommunity/manim). Narration is synthesised with Kokoro-82M, an open-weight text-to-speech model. The music is an original ambient bed generated for this video. Every number is from the result files used on these pages.</p>
 """
+import json as _j
+VTT = _j.dumps((HERE / "site" / "explainer-vtt.txt").read_text()).replace("</", "<\\/")
 WATCH_JS = f"""<script>
 (() => {{
   const v = document.getElementById('vid'), bs = [...document.querySelectorAll('.chap button')];
   // subtitles ship as plain text; hand them to the track as a WebVTT blob
-  fetch('explainer-vtt.txt').then(r => r.ok ? r.text() : Promise.reject()).then(t => {{
-    document.getElementById('subs').src = URL.createObjectURL(new Blob([t], {{ type: 'text/vtt' }}));
-  }}).catch(() => {{}});
+  // inlined, so captions also work when the page is opened from a local folder
+  const t = {VTT};
+  document.getElementById('subs').src = URL.createObjectURL(new Blob([t], {{ type: 'text/vtt' }}));
   bs.forEach(b => b.addEventListener('click', () => {{ v.currentTime = +b.dataset.t + 0.05; v.play().catch(() => {{}}); }}));
   v.addEventListener('timeupdate', () => {{
     let cur = null; for (const b of bs) if (v.currentTime >= +b.dataset.t) cur = b;

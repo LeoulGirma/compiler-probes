@@ -87,6 +87,15 @@ html body .st th,html body .mc th{font-size:11.5px}
 .scrolls{position:relative;background:linear-gradient(to left,color-mix(in srgb,var(--ink) 10%,transparent),transparent 28px) right/28px 100% no-repeat}
 .scrollhint{display:none;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:6px 20px 0}
 .scrolls + .scrollhint,.scrollhint.on{display:block}
+html body .wrap small{font-size:11px}
+html body .wrap b.best{font-size:11px}
+html body .primer .ph{font-size:11.5px}
+html body .meta{gap:4px 0}
+html body .meta .chip{border:0;background:none;padding:0;font-weight:500;color:var(--mute)}
+html body .meta .chip+.chip::before{content:'·';margin:0 10px;color:var(--hair)}
+.metricpick{display:none;align-items:center;gap:10px;padding:10px 20px 0;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.metricpick select{font:600 14px var(--disp);color:var(--ink);background:var(--surface);border:1.5px solid var(--hair);border-radius:8px;padding:6px 10px}
+@media (max-width:640px){.metricpick{display:flex}}
 details.more{border-top:1px solid var(--hair)}
 details.more>summary{cursor:pointer;list-style:none;font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue);padding:12px 20px}
 details.more>summary::-webkit-details-marker{display:none}
@@ -120,12 +129,57 @@ SCROLL_JS = '''<script>
   const wide = el.scrollWidth > el.clientWidth + 4; el.classList.toggle('scrolls', wide);
   let h = el.nextElementSibling; if (wide && !(h && h.classList.contains('scrollhint'))) { h = document.createElement('div'); h.className = 'scrollhint'; h.textContent = 'Scroll sideways for more →'; el.after(h); }
   if (h && h.classList.contains('scrollhint')) h.classList.toggle('on', wide); });
-  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300); })();
+  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300);
+  // phones: pick one metric column at a time instead of scrolling a wide table sideways
+  const pick = () => document.querySelectorAll('.st table').forEach((t, n) => {
+    if (t.dataset.pick) return; const head = t.rows[0]; if (!head || head.cells.length < 4) return; t.dataset.pick = 1;
+    const w = document.createElement('label'); w.className = 'metricpick'; w.htmlFor = 'mp' + n; w.textContent = 'Show';
+    const sel = document.createElement('select'); sel.id = 'mp' + n; sel.innerHTML = '<option value="all">all columns</option>' + [...head.cells].slice(1).map((c, i) => `<option value="${i + 1}">${c.textContent}</option>`).join('');
+    w.append(sel); t.closest('.st').before(w);
+    sel.onchange = () => [...t.rows].forEach(r => [...r.cells].forEach((c, i) => { c.hidden = sel.value !== 'all' && i > 0 && i != sel.value; }));
+    if (matchMedia('(max-width:640px)').matches) { sel.value = '1'; sel.onchange(); } }) || mark();
+  addEventListener('load', pick); setTimeout(pick, 400); })();
 </script>'''
 
 def fold_tables(s):
     """detail tables start folded: the chart and the prose carry the finding, the full numbers are one click away"""
     return re.sub(r'<div class="st">(<table>.*?</table>)</div>', r'<details class="more"><summary>Full table</summary><div class="st">\1</div></details>', s, flags=re.S)
+
+def bump_labels(s):
+    # chart and axis labels were 10-11 px; lift them a step so they read on a laptop screen
+    import re
+    s = re.sub(r'font:(\d+) 10\.5px var\(--mono\)', r'font:\1 11.5px var(--mono)', s)
+    s = re.sub(r'font:(\d+) 11px var\(--mono\)', r'font:\1 12px var(--mono)', s)
+    s = s.replace('font-size:10.5px', 'font-size:11.5px').replace('font-size="11"', 'font-size="12.5"')
+    return s
+
+def fold_claims(s):
+    a = '<section class="card feat" id="${f.id}" aria-labelledby="${f.id}-h">'
+    assert a in s
+    s = s.replace(a, '<details class="card featd" id="${f.id}"><summary><span class="fname">${f.name}</span><span class="v ${f.verdict}">${f.vtext}</span><span class="fdelta">${f.delta}</span><span class="tog">Evidence</span></summary><div class="feat" aria-labelledby="${f.id}-h">')
+    b = """${f.mc ? `<div class="unitline">Counted in the emitted code</div>` + mcTable(f.mc.probe, f.mc.cols, f.mc.metrics) : ''}</div>
+</section>`).join('');"""
+    assert b in s
+    s = s.replace(b, b.replace('</div>\n</section>`', '</div>\n</div></details>`'))
+    css = '''<style>
+.featd{padding:0;overflow:hidden}
+.featd>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:14px;align-items:center;padding:18px 20px}
+.featd>summary::-webkit-details-marker{display:none}
+.featd>summary:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+.featd .fname{font:800 22px var(--disp)}
+.featd .fdelta{font:800 18px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
+.featd .tog{font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue)}
+.featd .tog::before{content:'+ '}
+.featd[open] .tog::before{content:'− '}
+.featd[open]>summary{border-bottom:1.5px solid var(--hair)}
+.featd .feat .fh{display:none}
+@media (max-width:640px){.featd>summary{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}.featd .fdelta{grid-column:1}.featd .tog{grid-column:2}}
+</style>
+<script>
+(() => { const open = () => { const id = location.hash.slice(1); const d = id && document.getElementById(id); if (d && d.tagName === 'DETAILS') { d.open = true; d.scrollIntoView(); } };
+  addEventListener('load', () => setTimeout(open, 50)); addEventListener('hashchange', open); })();
+</script>'''
+    return s.replace('</body>', css + '</body>') if '</body>' in s else s + css
 
 def place(frag, cur):
     """put the nav bar right before the page's main wrapper and the pager at the end of it"""
@@ -165,13 +219,15 @@ def strip_personal(name, s):
 if __name__ == '__main__':
     for f, src, *_ in PAGES:
         if src is None:
-            frag = place((HERE / f).read_text(), f)
+            frag = place(bump_labels((HERE / f).read_text()), f)
             if f == 'start.html':
                 (SITE / 'index.html').write_text(light_default(frag))      # the published page (fragment; the host adds the skeleton)
             (SITE / f).write_text(light_default(full_doc(frag)))
         else:
             s = strip_personal(src, (PAGE / src).read_text())
             if f in ('containers.html', 'load.html'): s = fold_tables(s)
+            if f == 'net11.html': s = fold_claims(s)
+            s = bump_labels(s)
             h = s.index('</header>') + len('</header>')
             s = s[:h] + '\n  ' + primer(f) + s[h:]
             (SITE / f).write_text(light_default(full_doc(place(s, f))))

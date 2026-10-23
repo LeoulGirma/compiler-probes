@@ -30,13 +30,13 @@ h1{font-weight:800;font-size:clamp(34px,6vw,60px);line-height:1.02;margin:6px 0 
 h1 em{font-style:normal;color:var(--blue)}
 .lede{font-size:clamp(17px,2.2vw,20px);max-width:68ch;margin:0;color:var(--ink)}
 .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
-.chip{font:700 11px var(--mono);letter-spacing:.08em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.chip{font:700 12px var(--mono);letter-spacing:.08em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
 .chip.warn{border-color:#e0a21a;color:#9a6a00;background:#fff6dd}
 
 :root[data-theme="dark"] .chip.warn{background:#2f2610;color:#f3c85a}
 .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .bar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-label.sel{font:700 11px var(--mono);letter-spacing:.08em;color:var(--mute);display:flex;gap:6px;align-items:center}
+label.sel{font:700 12px var(--mono);letter-spacing:.08em;color:var(--mute);display:flex;gap:6px;align-items:center}
 select{max-width:min(320px,70vw)}
 select,button.btn{font:700 12px var(--mono);letter-spacing:.04em;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:7px;padding:7px 10px;cursor:pointer}
 button.btn:focus-visible,select:focus-visible,.cell:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
@@ -45,7 +45,7 @@ button.btn:focus-visible,select:focus-visible,.cell:focus-visible{outline:3px so
 table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
 th{font:700 12px var(--mono);letter-spacing:.1em;text-align:left;padding:14px 14px 10px;border-bottom:1.5px solid var(--ink)}
 th .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:-1px}
-th small{display:block;font:500 11px var(--mono);letter-spacing:.02em;color:var(--mute);margin-top:4px;text-transform:none}
+th small{display:block;font:500 12px var(--mono);letter-spacing:.02em;color:var(--mute);margin-top:4px;text-transform:none}
 td{padding:0;border-bottom:1px solid var(--hair);vertical-align:top}
 tr:last-child td{border-bottom:0}
 .pcol{padding:16px 14px;width:24%}
@@ -59,7 +59,7 @@ tr:last-child td{border-bottom:0}
 .rel{height:6px;border-radius:3px;background:var(--grid);margin:8px 0;overflow:hidden}
 .rel i{display:block;height:100%;border-radius:3px}
 .tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{font:700 10.5px var(--mono);letter-spacing:.04em;padding:3px 6px;border-radius:4px;background:var(--grid);color:var(--ink)}
+.tag{font:700 11.5px var(--mono);letter-spacing:.04em;padding:3px 6px;border-radius:4px;background:var(--grid);color:var(--ink)}
 .tag.good{background:var(--goodbg);color:var(--good)} .tag.bad{background:var(--badbg);color:var(--bad)} .tag.best{background:var(--ink);color:var(--surface)}
 .detail td{background:var(--code);border-bottom:1.5px solid var(--ink)}
 .dwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px;padding:18px}
@@ -70,14 +70,14 @@ tr:last-child td{border-bottom:0}
 .facts dt{color:var(--mute)} .facts dd{margin:0}
 pre{margin:0;background:var(--surface);border:1.5px solid var(--hair);border-radius:10px;padding:12px;overflow:auto;max-height:420px;font:400 12.5px/1.55 var(--jb)}
 pre .hl{background:color-mix(in srgb,var(--blue) 18%,transparent);display:inline-block;width:100%;font-weight:700}
-.asmhead{font:700 11px var(--mono);letter-spacing:.08em;color:var(--mute);margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.asmhead{font:700 12px var(--mono);letter-spacing:.08em;color:var(--mute);margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px}
 @media (max-width:900px){.two{grid-template-columns:1fr}}
 .pad{padding:20px}
 .pad h2{margin:0 0 4px;font-size:24px}
 .pad .sub{color:var(--mute);margin:0 0 12px;font-size:15px}
 #warm{width:100%;height:auto;display:block}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font:700 11px var(--mono)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font:700 12px var(--mono)}
 .legend i{display:inline-block;width:18px;height:3px;vertical-align:3px;margin-right:6px;border-radius:2px}
 .bets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 @media (max-width:820px){.bets{grid-template-columns:1fr}}
@@ -131,6 +131,15 @@ html body .st th,html body .mc th{font-size:11.5px}
 .scrolls{position:relative;background:linear-gradient(to left,color-mix(in srgb,var(--ink) 10%,transparent),transparent 28px) right/28px 100% no-repeat}
 .scrollhint{display:none;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:6px 20px 0}
 .scrolls + .scrollhint,.scrollhint.on{display:block}
+html body .wrap small{font-size:11px}
+html body .wrap b.best{font-size:11px}
+html body .primer .ph{font-size:11.5px}
+html body .meta{gap:4px 0}
+html body .meta .chip{border:0;background:none;padding:0;font-weight:500;color:var(--mute)}
+html body .meta .chip+.chip::before{content:'·';margin:0 10px;color:var(--hair)}
+.metricpick{display:none;align-items:center;gap:10px;padding:10px 20px 0;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.metricpick select{font:600 14px var(--disp);color:var(--ink);background:var(--surface);border:1.5px solid var(--hair);border-radius:8px;padding:6px 10px}
+@media (max-width:640px){.metricpick{display:flex}}
 details.more{border-top:1px solid var(--hair)}
 details.more>summary{cursor:pointer;list-style:none;font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue);padding:12px 20px}
 details.more>summary::-webkit-details-marker{display:none}
@@ -271,8 +280,8 @@ function warm(R){const svg=$('#warm');const W=640,H=330,L=56,Rr=16,T=14,B=40;con
   const extra=runsFor('cs').filter(r=>r!==R[2]);extra.forEach(r=>r.warmup.forEach(w=>all.push(w[2])));
   const ymin=Math.max(10,Math.min(...all)*0.7),ymax=Math.max(...all)*1.4;const X=c=>L+(Math.log2(c)/Math.log2(20000))*(W-L-Rr),Y=v=>T+(1-Math.log10(v/ymin)/Math.log10(ymax/ymin))*(H-T-B);
   const ink=getComputedStyle(document.documentElement).getPropertyValue('--mute');
-  let s='';[1e1,1e2,1e3,1e4,1e5,1e6].filter(v=>v>=ymin&&v<=ymax).forEach(v=>{s+=`<line x1="${L}" x2="${W-Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--hair)"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--mute)">${v>=1000?(v/1000)+' µs':v+' ns'}</text>`});
-  [1,10,100,1000,10000].forEach(c=>{s+=`<text x="${X(c)}" y="${H-B+18}" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--mute)">call ${c.toLocaleString('en-US')}</text>`});
+  let s='';[1e1,1e2,1e3,1e4,1e5,1e6].filter(v=>v>=ymin&&v<=ymax).forEach(v=>{s+=`<line x1="${L}" x2="${W-Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--hair)"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-family="var(--mono)" font-size="12.5" fill="var(--mute)">${v>=1000?(v/1000)+' µs':v+' ns'}</text>`});
+  [1,10,100,1000,10000].forEach(c=>{s+=`<text x="${X(c)}" y="${H-B+18}" text-anchor="middle" font-family="var(--mono)" font-size="12.5" fill="var(--mute)">call ${c.toLocaleString('en-US')}</text>`});
   const line=(r,col,dash)=>{const pts=r.warmup.map(w=>[X(Math.sqrt(w[0]*w[1])),Y(w[2])]);return `<polyline fill="none" stroke="${col}" stroke-width="${dash?2:3}" ${dash?`stroke-dasharray="${dash}" opacity=".85"`:''} stroke-linejoin="round" points="${pts.map(p=>p.join(',')).join(' ')}"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${col}"/>`).join('')};
   const DASH=['6 5','2 4','12 4 2 4','1 3','8 3'];extra.forEach((r,k)=>s+=line(r,r.mode==='aot'?'var(--good)':r.mode==='r2r'?'var(--blue)':'var(--cs)',DASH[k%DASH.length]));R.forEach((r,i)=>{if(r)s+=line(r,LANGS[i][2])});svg.innerHTML=s;
   $('#wleg').innerHTML=R.map((r,i)=>r?`<span><i style="background:${LANGS[i][2]}"></i>${LANGS[i][1]} · ${esc(r.version.replace(/\s*\(.*$/,'').replace('go version ','').replace(/ linux.*/,''))}</span>`:'').join('')+extra.map(r=>{const c=r.mode==='aot'?'var(--good)':r.mode==='r2r'?'var(--blue)':'var(--cs)';return `<span><i style="background:repeating-linear-gradient(90deg,${c} 0 6px,transparent 6px 10px)"></i>C# · ${esc(r.version.replace(/\s*\(.*$/,''))}</span>`}).join('')}
@@ -291,7 +300,16 @@ open=[0,0];render();
   const wide = el.scrollWidth > el.clientWidth + 4; el.classList.toggle('scrolls', wide);
   let h = el.nextElementSibling; if (wide && !(h && h.classList.contains('scrollhint'))) { h = document.createElement('div'); h.className = 'scrollhint'; h.textContent = 'Scroll sideways for more →'; el.after(h); }
   if (h && h.classList.contains('scrollhint')) h.classList.toggle('on', wide); });
-  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300); })();
+  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300);
+  // phones: pick one metric column at a time instead of scrolling a wide table sideways
+  const pick = () => document.querySelectorAll('.st table').forEach((t, n) => {
+    if (t.dataset.pick) return; const head = t.rows[0]; if (!head || head.cells.length < 4) return; t.dataset.pick = 1;
+    const w = document.createElement('label'); w.className = 'metricpick'; w.htmlFor = 'mp' + n; w.textContent = 'Show';
+    const sel = document.createElement('select'); sel.id = 'mp' + n; sel.innerHTML = '<option value="all">all columns</option>' + [...head.cells].slice(1).map((c, i) => `<option value="${i + 1}">${c.textContent}</option>`).join('');
+    w.append(sel); t.closest('.st').before(w);
+    sel.onchange = () => [...t.rows].forEach(r => [...r.cells].forEach((c, i) => { c.hidden = sel.value !== 'all' && i > 0 && i != sel.value; }));
+    if (matchMedia('(max-width:640px)').matches) { sel.value = '1'; sel.onchange(); } }) || mark();
+  addEventListener('load', pick); setTimeout(pick, 400); })();
 </script>
 </body>
 </html>

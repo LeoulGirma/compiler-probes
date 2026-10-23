@@ -32,14 +32,14 @@ h1 em{font-style:normal;color:var(--blue)}
 h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .lede{font-size:clamp(17px,2.2vw,20px);max-width:66ch;margin:0}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.chip{font:700 11px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.chip{font:700 12px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
 .card{background:var(--surface);border:1.5px solid var(--ink);border-radius:14px}
 .pad{padding:20px}
 .sub{color:var(--mute);margin:4px 0 0;font-size:15px;max-width:70ch}
 /* verdict board */
 .board{overflow-x:auto}
 .board table{width:100%;border-collapse:collapse;min-width:720px}
-.board th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+.board th{font:700 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
 .board td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
 .board tr:last-child td{border-bottom:0}
 .board td b{display:block;font-size:17px;line-height:1.2}
@@ -47,7 +47,7 @@ h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .board td a:hover b{text-decoration:underline}
 .board .claim{color:var(--mute);font-size:14px;max-width:34ch}
 .big{font:800 22px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
-.v{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.v{display:inline-block;font:700 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
 .v.yes{background:var(--goodbg);color:var(--good)} .v.no{background:var(--badbg);color:var(--bad)} .v.part{background:var(--mehbg);color:var(--meh)}
 /* feature cards */
 .feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0}
@@ -61,25 +61,25 @@ h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 .bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
 .brow{display:grid;grid-template-columns:132px minmax(0,1fr) 92px;gap:10px;align-items:center}
 @media (max-width:460px){.brow{grid-template-columns:96px minmax(0,1fr) 78px}}
-.blab{font:700 11px var(--mono);letter-spacing:.02em;line-height:1.25}
+.blab{font:700 12px var(--mono);letter-spacing:.02em;line-height:1.25}
 .blab small{display:block;font-weight:500;color:var(--mute)}
 .btrack{position:relative;height:18px;background:var(--grid);border-radius:4px}
 .bfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
 .berr{position:absolute;top:50%;height:2px;background:var(--ink);opacity:.45;transform:translateY(-50%)}
 .bval{font:700 13px var(--jb);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.bval small{display:block;font:500 10.5px var(--mono);color:var(--mute)}
-.unitline{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
+.bval small{display:block;font:500 11.5px var(--mono);color:var(--mute)}
+.unitline{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
 .mc{width:100%;border-collapse:collapse;margin-top:8px;font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
 .mc th,.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair)}
 .mc th:first-child,.mc td:first-child{text-align:left}
-.mc th{font-weight:700;color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.mc th{font-weight:700;color:var(--mute);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
 .mcw{overflow-x:auto}
 details{margin-top:14px}
 summary{cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em}
 summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
 .asm2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
 @media (max-width:640px){.asm2{grid-template-columns:minmax(0,1fr)}}
-.asmh{font:700 10.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+.asmh{font:700 11.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
 pre{margin:0;background:var(--code);border:1.5px solid var(--hair);border-radius:10px;padding:10px;overflow:auto;max-height:340px;font:400 11.5px/1.5 var(--jb)}
 pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-block;width:100%;font-weight:700}
 /* startup */
@@ -87,7 +87,7 @@ pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-
 .st table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
 .st th,.st td{padding:10px 14px;border-bottom:1px solid var(--hair);text-align:right}
 .st th:first-child,.st td:first-child{text-align:left}
-.st th{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
+.st th{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
 .st td{font:500 13px var(--jb)}
 .st td:first-child{font:700 14px var(--disp)}
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
@@ -104,7 +104,7 @@ footer{font:500 12px var(--mono);color:var(--mute)}
 :root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--grid2:#262b36;--hotbg:#8f86ff1f}
 a{color:var(--blue)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips a{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
+.chips a{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
 .chips a:hover{border-color:var(--blue);color:var(--blue)}
 .chips a.go{border-color:var(--blue);color:var(--blue)}
 .watchcta{display:flex;gap:16px;align-items:center;padding:14px 18px;color:inherit;text-decoration:none;border-color:var(--blue)}
@@ -122,7 +122,7 @@ a{color:var(--blue)}
 .tile .n{font:800 clamp(30px,3.4vw,40px)/1 var(--disp);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .tile .n small{font-size:.5em;font-weight:700;color:var(--mute);margin-left:2px}
 .tile .c{font-size:14.5px;line-height:1.35;flex:1}
-.tile .vs{font:500 11px var(--mono);color:var(--mute)}
+.tile .vs{font:500 12px var(--mono);color:var(--mute)}
 /* start: the gap chart */
 .gap{padding:20px}
 .gap svg{width:100%;height:auto;display:block;color:var(--ink);min-width:560px}
@@ -136,7 +136,7 @@ a{color:var(--blue)}
 .stop:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .stop h3{margin:0;font-size:20px;line-height:1.15}
 .stop p{margin:0;font-size:14.5px;color:var(--mute);flex:1}
-.stop .adds{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink)}
+.stop .adds{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--ink)}
 .stop .adds b{color:var(--blue)}
 .realism{display:flex;gap:3px}
 .realism i{height:5px;flex:1;border-radius:2px;background:var(--hair)}
@@ -153,16 +153,16 @@ a{color:var(--blue)}
 .concept h3{margin:0;font-size:19px;line-height:1.2}
 .concept p{margin:0;font-size:15px;max-width:68ch}
 .concept .why{border-left:3px solid var(--blue);padding-left:10px}
-.concept .why b{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
+.concept .why b{font:700 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
 figure.dg{margin:6px 0 0;min-width:0}
 figure.dg .scroll{overflow-x:auto}
 figure.dg svg{width:100%;min-width:620px;height:auto;display:block;color:var(--ink)}
 figure.dg figcaption{color:var(--mute);font-size:13.5px;margin-top:6px;max-width:72ch}
 .dn{font:700 13px var(--disp);fill:currentColor}
 .db{font:500 12px var(--mono);fill:currentColor}
-.dl{font:700 10.5px var(--mono);letter-spacing:.1em;fill:var(--mute)}
+.dl{font:700 11.5px var(--mono);letter-spacing:.1em;fill:var(--mute)}
 .dlab{font:700 12px var(--mono)}
-.tk{font:500 11px var(--mono);fill:var(--mute)}
+.tk{font:500 12px var(--mono);fill:var(--mute)}
 .big{font:800 26px var(--disp);fill:currentColor}
 /* takeaways */
 .dec{width:100%;border-collapse:collapse}
@@ -170,7 +170,7 @@ figure.dg figcaption{color:var(--mute);font-size:13.5px;margin-top:6px;max-width
 .dec tr:first-child td{border-top:0}
 .dec td:first-child{font-weight:700;width:28%}
 .dec td.pick{width:22%}
-.dec .p{display:inline-block;font:700 11px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:6px;background:var(--hotbg);color:var(--blue);white-space:nowrap}
+.dec .p{display:inline-block;font:700 12px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:6px;background:var(--hotbg);color:var(--blue);white-space:nowrap}
 .dec .ev{color:var(--mute)}
 .decw{overflow-x:auto}
 .decw table{min-width:640px}
@@ -227,6 +227,15 @@ html body .st th,html body .mc th{font-size:11.5px}
 .scrolls{position:relative;background:linear-gradient(to left,color-mix(in srgb,var(--ink) 10%,transparent),transparent 28px) right/28px 100% no-repeat}
 .scrollhint{display:none;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:6px 20px 0}
 .scrolls + .scrollhint,.scrollhint.on{display:block}
+html body .wrap small{font-size:11px}
+html body .wrap b.best{font-size:11px}
+html body .primer .ph{font-size:11.5px}
+html body .meta{gap:4px 0}
+html body .meta .chip{border:0;background:none;padding:0;font-weight:500;color:var(--mute)}
+html body .meta .chip+.chip::before{content:'·';margin:0 10px;color:var(--hair)}
+.metricpick{display:none;align-items:center;gap:10px;padding:10px 20px 0;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.metricpick select{font:600 14px var(--disp);color:var(--ink);background:var(--surface);border:1.5px solid var(--hair);border-radius:8px;padding:6px 10px}
+@media (max-width:640px){.metricpick{display:flex}}
 details.more{border-top:1px solid var(--hair)}
 details.more>summary{cursor:pointer;list-style:none;font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue);padding:12px 20px}
 details.more>summary::-webkit-details-marker{display:none}
@@ -284,7 +293,16 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
   const wide = el.scrollWidth > el.clientWidth + 4; el.classList.toggle('scrolls', wide);
   let h = el.nextElementSibling; if (wide && !(h && h.classList.contains('scrollhint'))) { h = document.createElement('div'); h.className = 'scrollhint'; h.textContent = 'Scroll sideways for more →'; el.after(h); }
   if (h && h.classList.contains('scrollhint')) h.classList.toggle('on', wide); });
-  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300); })();
+  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300);
+  // phones: pick one metric column at a time instead of scrolling a wide table sideways
+  const pick = () => document.querySelectorAll('.st table').forEach((t, n) => {
+    if (t.dataset.pick) return; const head = t.rows[0]; if (!head || head.cells.length < 4) return; t.dataset.pick = 1;
+    const w = document.createElement('label'); w.className = 'metricpick'; w.htmlFor = 'mp' + n; w.textContent = 'Show';
+    const sel = document.createElement('select'); sel.id = 'mp' + n; sel.innerHTML = '<option value="all">all columns</option>' + [...head.cells].slice(1).map((c, i) => `<option value="${i + 1}">${c.textContent}</option>`).join('');
+    w.append(sel); t.closest('.st').before(w);
+    sel.onchange = () => [...t.rows].forEach(r => [...r.cells].forEach((c, i) => { c.hidden = sel.value !== 'all' && i > 0 && i != sel.value; }));
+    if (matchMedia('(max-width:640px)').matches) { sel.value = '1'; sel.onchange(); } }) || mark();
+  addEventListener('load', pick); setTimeout(pick, 400); })();
 </script>
 </body>
 </html>
