@@ -4,6 +4,8 @@ Rust, Go and C# (.NET 10, .NET 11 RC2 and Native AOT) measured in four steps, fr
 compiler emits to a payment service running in containers. This repository holds the harnesses, the raw
 results and the scripts that turn them into the site and the video.
 
+**Read the results:** https://leoulgirma.github.io/compiler-probes/ (start page, an eight-minute explainer video, and one page per set).
+
 **Main finding:** the gap between the fastest and slowest language was 7.3× in a tight loop, 1.26× for an
 in-memory HTTP API, and 1.05× on median latency once Postgres, Redis and a payment provider were in the path.
 The ratios measure different things; that is the point.

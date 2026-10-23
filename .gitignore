@@ -15,3 +15,4 @@ video/tts/
 video/frames/
 *.mp4
 *.wav
+!site/explainer.mp4
