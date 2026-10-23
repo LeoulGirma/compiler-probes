@@ -70,6 +70,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sitenav .mlist a{font:700 13px var(--mono);color:var(--ink);text-decoration:none;padding:11px 12px;border-radius:8px}
 .sitenav .mlist a:hover,.sitenav .mlist a[aria-current]{background:color-mix(in srgb,var(--blue) 12%,transparent);color:var(--blue)}
 @media (max-width:1040px){.sitenav ul{display:none}.sitenav .mnav{display:block}.sitenav .in{justify-content:space-between}}
+.srcline{margin:0;font:500 13px var(--mono);color:var(--mute)}
+.srcline a{color:var(--blue);font-weight:700}
 .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:700 12px var(--mono)}
 .pager a{color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);background:var(--surface);border-radius:8px;padding:10px 14px}
 .pager a:hover{border-color:var(--blue)}
@@ -110,7 +112,8 @@ def pager(cur):
     i = [p[0] for p in PAGES].index(cur)
     prev = f'<a href="{PAGES[i-1][0]}"><small>Previous</small>← {PAGES[i-1][2]}</a>' if i > 0 else '<span></span>'
     nxt = f'<a href="{PAGES[i+1][0]}"><small>Next</small>{PAGES[i+1][2]} →</a>' if i + 1 < len(PAGES) else '<span></span>'
-    return f'<div class="pager">{prev}{nxt}</div>'
+    src = '<p class="srcline">Source, raw results and the commands to rerun this: <a href="https://github.com/LeoulGirma/compiler-probes">github.com/LeoulGirma/compiler-probes</a></p>'
+    return src + f'<div class="pager">{prev}{nxt}</div>'
 
 SCROLL_JS = '''<script>
 (() => { const mark = () => document.querySelectorAll('.st,.board,.mcw,.tw,.decw,.scroll').forEach(el => {

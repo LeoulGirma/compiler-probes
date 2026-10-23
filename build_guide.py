@@ -431,7 +431,7 @@ start_body = START_CSS + f"""  <section class="hero">
       <div><span class="eyebrow">Prefer to watch?</span><h3>See the investigation unfold.</h3><p>Under eight minutes, narrated, from a CPU graph that does not add up to a payment provider that fails on purpose.</p><a href="watch.html">Play the explainer →</a></div></div>
     <div class="card panel"><span class="eyebrow">Prefer to read?</span><h3>Start with the concepts, finish with the trade-offs.</h3><p>Two-line explanations of the internals, and a decision guide based on what the tests showed.</p><a href="concepts.html">Learn the concepts →</a><a href="takeaways.html">Read the takeaways →</a></div>
   </section>
-  <footer class="foot"><span>One laptop. Four sets of tests. Results are specific to these workloads.</span><span><a href="takeaways.html#mh">Methods and limits</a><a href="takeaways.html">What it means</a></span></footer>
+  <footer class="foot"><span>One laptop. Four sets of tests. Results are specific to these workloads.</span><span><a href="https://github.com/LeoulGirma/compiler-probes">Source on GitHub</a><a href="takeaways.html#mh">Methods and limits</a><a href="takeaways.html">What it means</a></span></footer>
 """
 
 # ---------- takeaways ----------
