@@ -191,6 +191,43 @@ def place(frag, cur):
 
 DOC = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>\n'
 
+BASE = 'https://leoulgirma.github.io/compiler-probes/'
+SEO = {  # page: (title, description)
+ 'start.html': ('Rust vs Go vs C# Benchmark: From Machine Code to Production',
+   'Rust, Go and C# (.NET 10, .NET 11, Native AOT) measured from machine code to a payment service in Docker. A 7.3× gap in a loop shrinks to 1.05× in production.'),
+ 'watch.html': ('Rust vs Go vs C# Explained: An Eight-Minute Video',
+   'An animated, narrated walk through four benchmark sets: machine code, .NET 11 claims, an HTTP API under load, and a payment service with Postgres and Redis.'),
+ 'concepts.html': ('JIT, AOT, GC and Tail Latency Explained for Backend Engineers',
+   'Sixteen short primers on the runtime internals behind the benchmarks: JIT tiers, PGO, Native AOT, vectorisation, garbage collection, p99 latency and open-loop load.'),
+ 'probes.html': ('Rust vs Go vs C# Machine Code: What Each Compiler Emits',
+   'Six micro-probes with the real assembly behind each number: LLVM vectorises loops about 7× faster, RyuJIT PGO makes interface calls cheapest, Go builds fastest.'),
+ 'net11.html': ('.NET 11 Performance: Which Claims Hold Up (RC2 Benchmarks)',
+   'Six .NET 11 RC2 claims tested against .NET 10: devirtualisation 6.5× faster, runtime async awaits about 4× cheaper, Math.BigMul 31% slower, two with no change.'),
+ 'load.html': ('Rust vs Go vs C# HTTP API Under Load: Latency and CPU',
+   'An in-memory HTTP API under open-loop load: throughput is within 1.26×, so the real differences are CPU per request, memory and p99 tail latency.'),
+ 'containers.html': ('Native AOT vs JIT in Docker: Payment Service Benchmark',
+   'Rust, Go and C# payment services with Postgres, Redis and a failing provider: medians converge at 28–30 ms; Native AOT removes C# warm-up but not its CPU cost.'),
+ 'takeaways.html': ('Rust vs Go vs C#: Which to Choose, Backed by Benchmarks',
+   'What the four benchmark sets mean for choosing Rust, Go or C# for a backend service: where the language matters, where it does not, and what to test next.'),
+}
+LD_VIDEO = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoObject","name":"Rust vs Go vs C#: from machine code to production","description":"An animated, narrated walk through four benchmark sets comparing Rust, Go and C#.","thumbnailUrl":"' + BASE + 'og.jpg","uploadDate":"2026-10-23","duration":"PT7M49S","contentUrl":"' + BASE + 'explainer.mp4"}</script>'
+
+def seo_head(f, s):
+    t, d = SEO[f]
+    s = re.sub(r'<meta name="description"[^>]*>\n?', '', s)
+    url = BASE if f == 'start.html' else BASE + f
+    tags = (f'<title>{t}</title>\n<meta name="description" content="{d}">\n<link rel="canonical" href="{url}">\n'
+            f'<meta property="og:type" content="{"video.other" if f == "watch.html" else "article"}"><meta property="og:site_name" content="Compiler Probes">\n'
+            f'<meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{url}">\n'
+            f'<meta property="og:image" content="{BASE}og.jpg"><meta property="og:image:width" content="1280"><meta property="og:image:height" content="720">\n'
+            f'<meta name="twitter:card" content="summary_large_image">' + (LD_VIDEO if f == 'watch.html' else ''))
+    return re.sub(r'<title>[^<]*</title>', lambda m: tags, s, count=1)
+
+def write_extras():
+    (SITE / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n')
+    urls = ''.join(f'<url><loc>{BASE if f == "start.html" else BASE + f}</loc></url>' for f in SEO)
+    (SITE / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
+
 def full_doc(frag):
     head_end = frag.index('<div class="wrap">') if '<nav class="sitenav"' not in frag else frag.index('<style>\n/* site navigation')
     return DOC + frag[:head_end] + '\n</head>\n<body>\n' + frag[head_end:] + '\n</body>\n</html>\n'
@@ -219,7 +256,7 @@ def strip_personal(name, s):
 if __name__ == '__main__':
     for f, src, *_ in PAGES:
         if src is None:
-            frag = place(bump_labels((HERE / f).read_text()), f)
+            frag = seo_head(f, place(bump_labels((HERE / f).read_text()), f))
             if f == 'start.html':
                 (SITE / 'index.html').write_text(light_default(frag))      # the published page (fragment; the host adds the skeleton)
             (SITE / f).write_text(light_default(full_doc(frag)))
@@ -230,5 +267,6 @@ if __name__ == '__main__':
             s = bump_labels(s)
             h = s.index('</header>') + len('</header>')
             s = s[:h] + '\n  ' + primer(f) + s[h:]
-            (SITE / f).write_text(light_default(full_doc(place(s, f))))
+            (SITE / f).write_text(light_default(full_doc(seo_head(f, place(s, f)))))
+    write_extras()
     for p in sorted(SITE.iterdir()): print(p.name, p.stat().st_size)

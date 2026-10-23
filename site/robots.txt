@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://leoulgirma.github.io/compiler-probes/sitemap.xml

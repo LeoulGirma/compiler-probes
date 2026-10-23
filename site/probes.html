@@ -4,8 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
-<title>Compiler Probes</title>
-<meta name="description" content="Rust, Go and C# measured on six small probes: vectorisation, bounds checks, interface calls, allocation, warm-up and build time, with the real machine code behind every number.">
+<title>Rust vs Go vs C# Machine Code: What Each Compiler Emits</title>
+<meta name="description" content="Six micro-probes with the real assembly behind each number: LLVM vectorises loops about 7× faster, RyuJIT PGO makes interface calls cheapest, Go builds fastest.">
+<link rel="canonical" href="https://leoulgirma.github.io/compiler-probes/probes.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Compiler Probes">
+<meta property="og:title" content="Rust vs Go vs C# Machine Code: What Each Compiler Emits"><meta property="og:description" content="Six micro-probes with the real assembly behind each number: LLVM vectorises loops about 7× faster, RyuJIT PGO makes interface calls cheapest, Go builds fastest."><meta property="og:url" content="https://leoulgirma.github.io/compiler-probes/probes.html">
+<meta property="og:image" content="https://leoulgirma.github.io/compiler-probes/og.jpg"><meta property="og:image:width" content="1280"><meta property="og:image:height" content="720">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Martian+Mono:wght@500;700&display=swap">
