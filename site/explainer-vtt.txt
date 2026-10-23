@@ -1,0 +1,297 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.830
+At five hundred payments a second, our C# service was using eighty-five percent of its CPU.
+
+2
+00:00:07.200 --> 00:00:12.190
+Ninety seconds later, it was down to fifty-two. Same code. Same traffic.
+
+3
+00:00:12.570 --> 00:00:17.770
+So what changed? And if we had written it in Rust or Go instead, would it even matter?
+
+4
+00:00:19.170 --> 00:00:26.210
+We tested five builds, pushed three and a half million payments through them, and deliberately broke the payment provider.
+
+5
+00:00:27.600 --> 00:00:31.670
+The answer was not as simple as the benchmark charts suggest.
+
+6
+00:00:33.867 --> 00:00:40.357
+All three languages end up running machine code. The difference is when that machine code gets made.
+
+7
+00:00:40.737 --> 00:00:47.437
+Rust, Go, and C# compiled with Native AOT do all of it before the program starts.
+
+8
+00:00:47.797 --> 00:00:56.457
+Regular C# ships an intermediate language, and the JIT compiler finishes the job while the service is already handling traffic.
+
+9
+00:00:57.437 --> 00:01:06.947
+It starts each method on quick, unoptimised code. The methods that run hot get profiled, then recompiled with full optimisation.
+
+10
+00:01:09.337 --> 00:01:15.417
+That eighty-five percent is the service doing its real work, and compiling at the same time.
+
+11
+00:01:15.797 --> 00:01:21.047
+Native AOT and Go have nothing left to compile, so they never show that warm-up.
+
+12
+00:01:21.437 --> 00:01:26.707
+So compilation explains how the service starts. But what happens once the code is
+
+13
+00:01:26.707 --> 00:01:31.977
+warm? We started with the smallest workload there is: a loop that adds numbers.
+
+14
+00:01:32.967 --> 00:01:36.977
+Here is the machine code each compiler produced for the same loop.
+
+15
+00:01:37.367 --> 00:01:42.007
+The .NET 10 JIT adds one number per pass. Rust's compiler proved the
+
+16
+00:01:42.007 --> 00:01:46.647
+loop safe to batch, and adds four at a time, twice per pass.
+
+17
+00:01:48.037 --> 00:01:55.517
+On this loop, Rust was about seven times faster: a tenth of a nanosecond per number, against three quarters.
+
+18
+00:01:55.897 --> 00:02:03.537
+Seven times sounds enormous. But that is one tiny loop, and a payment request does much more than add numbers.
+
+19
+00:02:04.533 --> 00:02:11.463
+.NET 11 changes the machine code too. Two of its changes showed up clearly in our benchmarks.
+
+20
+00:02:11.863 --> 00:02:16.803
+In our generic virtual call test, the JIT could finally see the exact
+
+21
+00:02:16.803 --> 00:02:21.743
+type and inline the call: six and a half times faster. Microsoft's own
+
+22
+00:02:21.743 --> 00:02:25.923
+example shows about four, so the gain depends on your code.
+
+23
+00:02:27.303 --> 00:02:32.633
+Runtime async made an await in our test chain about four times cheaper, and
+
+24
+00:02:32.633 --> 00:02:37.963
+removed its allocation. In release candidate two, you still have to switch it on.
+
+25
+00:02:38.333 --> 00:02:45.393
+Big wins, on small pieces of code. So we started adding the things a real API has to deal with.
+
+26
+00:02:46.367 --> 00:02:53.597
+Each time we added something a real service needs, we measured how far apart the fastest and slowest builds were.
+
+27
+00:02:53.967 --> 00:02:55.887
+A loop: seven times apart.
+
+28
+00:02:56.267 --> 00:03:01.107
+An in-memory API with HTTP and JSON: about a quarter.
+
+29
+00:03:01.497 --> 00:03:08.197
+Add a database, a cache and a payment provider, and the median response time is within five percent.
+
+30
+00:03:09.167 --> 00:03:14.124
+But the median is not the whole story. At the same traffic, the builds
+
+31
+00:03:14.124 --> 00:03:18.727
+still differed in their slowest requests, and in how much CPU they burned.
+
+32
+00:03:19.700 --> 00:03:26.459
+Then we did what production eventually does to every service. One payment service, five hundred payments a
+
+33
+00:03:26.459 --> 00:03:32.820
+second, and a simulated payment provider that is about to have a very bad thirty seconds.
+
+34
+00:03:33.230 --> 00:03:39.100
+At thirty seconds, the provider became ten times slower, and one call in ten simply hung.
+
+35
+00:03:39.500 --> 00:03:45.400
+Latency jumped to the provider's new speed. Every hung call was cut off at its
+
+36
+00:03:45.400 --> 00:03:51.300
+one-second timeout and failed fast, instead of piling up. Memory stayed far below the limit.
+
+37
+00:03:51.700 --> 00:03:55.800
+When the provider recovered, the service recovered with it, within a second.
+
+38
+00:03:56.800 --> 00:04:03.090
+Then came the real test. Every captured payment had to appear exactly once in a merchant balance.
+
+39
+00:04:03.470 --> 00:04:10.380
+It did, for all five builds, in every run. Three and a half million payments: none
+
+40
+00:04:10.380 --> 00:04:17.290
+lost, none counted twice. On reliability, the language made no difference. Timeouts and bounded resources did.
+
+41
+00:04:18.267 --> 00:04:24.557
+One more thing about measuring. How a load test sends requests decides what latency it sees.
+
+42
+00:04:24.937 --> 00:04:31.717
+A test that waits for each answer sends nothing while the server stalls, so it records one slow request.
+
+43
+00:04:32.097 --> 00:04:36.037
+Real users keep arriving, so every one of them waits. All
+
+44
+00:04:36.037 --> 00:04:39.977
+the latency numbers in this video were measured the second way.
+
+45
+00:04:40.967 --> 00:04:48.457
+Three results pushed back on the simple story. First, the same .NET 11 build went in opposite directions.
+
+46
+00:04:48.837 --> 00:04:56.407
+In the plain in-memory API, it used about eleven percent more CPU per request than .NET 10.
+
+47
+00:04:56.797 --> 00:05:01.967
+In the payment service, about a quarter less. One workload does not predict another.
+
+48
+00:05:02.937 --> 00:05:10.397
+Second, .NET 11 turns Math dot BigMul into a single multiply instruction. The loop got shorter.
+
+49
+00:05:10.767 --> 00:05:15.332
+And thirty-one percent slower. The running total now goes out to memory and back
+
+50
+00:05:15.332 --> 00:05:19.897
+on every pass, so each step has to wait for the one before it.
+
+51
+00:05:20.867 --> 00:05:25.869
+Third, in one of five rounds, .NET 10 Native AOT stopped answering near
+
+52
+00:05:25.869 --> 00:05:30.487
+the end of the outage, and stayed stuck until the test ended.
+
+53
+00:05:30.867 --> 00:05:36.581
+Fourteen thousand requests timed out while its CPU sat mostly idle. Three more
+
+54
+00:05:36.581 --> 00:05:41.857
+rounds, with extra diagnostics, were clean, and the cause is still open.
+
+55
+00:05:42.237 --> 00:05:47.697
+We report it anyway. One stalled run is exactly what a single benchmark would hide.
+
+56
+00:05:48.667 --> 00:05:56.137
+So which C# would you deploy: the default JIT, or Native AOT? Here are the trade-offs, one at a time.
+
+57
+00:05:56.537 --> 00:06:03.877
+Native AOT is ready in under half a second, like Go and Rust. The JIT build needs just over one.
+
+58
+00:06:04.267 --> 00:06:07.467
+It idles in about forty percent less memory.
+
+59
+00:06:07.837 --> 00:06:13.127
+But once the JIT has warmed up, it handles about six percent more payments at its peak.
+
+60
+00:06:14.097 --> 00:06:21.626
+What about efficiency? At a fixed five hundred payments a second, CPU time per payment shows how much
+
+61
+00:06:21.626 --> 00:06:28.737
+compute each payment needs. Your bill also depends on memory, instance size, and how you buy capacity.
+
+62
+00:06:29.137 --> 00:06:34.752
+Rust and Go do the same work for the least CPU. C# on .NET
+
+63
+00:06:34.752 --> 00:06:39.967
+11 costs about a third more. On .NET 10, about eighty percent more.
+
+64
+00:06:40.967 --> 00:06:45.537
+And the graph we started with? Here is the same service on .NET 10.
+
+65
+00:06:45.897 --> 00:06:51.730
+Settled, it used seventy-two percent of its CPU. .NET 11 needed fifty-three for the
+
+66
+00:06:51.730 --> 00:06:57.147
+same traffic: about a quarter less, in our tests, on a release candidate.
+
+67
+00:06:58.133 --> 00:07:02.633
+So, which language was fastest? That depends on what we asked it to do.
+
+68
+00:07:04.033 --> 00:07:08.213
+In a tight loop, the generated machine code mattered enormously.
+
+69
+00:07:08.603 --> 00:07:15.383
+Once a database was in the path, the median barely moved, but CPU cost and start-up still did.
+
+70
+00:07:15.763 --> 00:07:23.663
+And when the provider failed, every build depended on the same discipline: timeouts, bounded resources, and recovery.
+
+71
+00:07:25.033 --> 00:07:30.040
+A fast instruction is not necessarily a fast request. And a fast
+
+72
+00:07:30.040 --> 00:07:35.047
+request is not necessarily an efficient, reliable service. The right benchmark is
+
+73
+00:07:35.047 --> 00:07:40.053
+the one that measures the problem you are actually trying to solve.
+
+74
+00:07:41.433 --> 00:07:46.273
+Every result, every chart, and the machine code behind them are on the site.

@@ -1,0 +1,11 @@
+A1Hook 0.0
+A2Machine 33.9
+A3Loop 93.0
+A3Net11 124.5
+A4Gap 166.4
+A4Outage 199.7
+A4Load 258.3
+A4Surprises 281.0
+A5Deploy 348.7
+A5End 418.1
+total 469.2

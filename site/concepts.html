@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Compiler Probes Concepts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Martian+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: a lab notebook on graph paper — verdict board first, then one card per .NET 11 claim with the measurement and the machine code behind it */
+:root{
+  --bg:#f1f2ef; --surface:#fbfbf9; --ink:#141a2b; --mute:#646c7f; --hair:#d3d7d0; --grid:#e4e7e1; --code:#f4f5f2;
+  --blue:#3a2cf2; --good:#1b8a34; --goodbg:#dcf8cf; --bad:#c81d47; --badbg:#ffe3ea; --meh:#8a6400; --mehbg:#fff2cc;
+  --rust:#d9501f; --go:#0088ad; --cs10:#9b8fb8; --cs11:#7e35cf; --csra:#3a2cf2;
+  --disp:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --mono:"Martian Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --jb:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+
+:root[data-theme="dark"]{--bg:#11141b;--surface:#181c25;--ink:#e9ecf3;--mute:#9aa2b4;--hair:#2c3240;--grid:#1a1f29;--code:#11151d;--blue:#8f86ff;--good:#5fd479;--goodbg:#173322;--bad:#ff6b8a;--badbg:#3a1822;--meh:#f3c85a;--mehbg:#2f2610;--rust:#ff7a47;--go:#2cc4ec;--cs10:#8d84a6;--cs11:#b07cff;--csra:#8f86ff;color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--disp);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.wrap>*,#feats>*{min-width:0}
+.eyebrow{font:700 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+h1{font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1.02;margin:6px 0 10px;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--blue)}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
+.lede{font-size:clamp(17px,2.2vw,20px);max-width:66ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font:700 11px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.card{background:var(--surface);border:1.5px solid var(--ink);border-radius:14px}
+.pad{padding:20px}
+.sub{color:var(--mute);margin:4px 0 0;font-size:15px;max-width:70ch}
+/* verdict board */
+.board{overflow-x:auto}
+.board table{width:100%;border-collapse:collapse;min-width:720px}
+.board th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+.board td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
+.board tr:last-child td{border-bottom:0}
+.board td b{display:block;font-size:17px;line-height:1.2}
+.board td a{color:inherit;text-decoration:none}
+.board td a:hover b{text-decoration:underline}
+.board .claim{color:var(--mute);font-size:14px;max-width:34ch}
+.big{font:800 22px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.v.yes{background:var(--goodbg);color:var(--good)} .v.no{background:var(--badbg);color:var(--bad)} .v.part{background:var(--mehbg);color:var(--meh)}
+/* feature cards */
+.feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0}
+@media (max-width:860px){.feat{grid-template-columns:1fr}}
+.feat>div{padding:20px;min-width:0}
+.feat>div+div{border-left:1.5px solid var(--hair)}
+@media (max-width:860px){.feat>div+div{border-left:0;border-top:1.5px solid var(--hair)}}
+.fh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.feat p{margin:10px 0 0;max-width:60ch}
+.code-in{font:400 13px var(--jb);background:var(--code);border:1px solid var(--hair);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.brow{display:grid;grid-template-columns:132px minmax(0,1fr) 92px;gap:10px;align-items:center}
+@media (max-width:460px){.brow{grid-template-columns:96px minmax(0,1fr) 78px}}
+.blab{font:700 11px var(--mono);letter-spacing:.02em;line-height:1.25}
+.blab small{display:block;font-weight:500;color:var(--mute)}
+.btrack{position:relative;height:18px;background:var(--grid);border-radius:4px}
+.bfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.berr{position:absolute;top:50%;height:2px;background:var(--ink);opacity:.45;transform:translateY(-50%)}
+.bval{font:700 13px var(--jb);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bval small{display:block;font:500 10.5px var(--mono);color:var(--mute)}
+.unitline{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
+.mc{width:100%;border-collapse:collapse;margin-top:8px;font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
+.mc th,.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair)}
+.mc th:first-child,.mc td:first-child{text-align:left}
+.mc th{font-weight:700;color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.mcw{overflow-x:auto}
+details{margin-top:14px}
+summary{cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em}
+summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+.asm2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.asm2{grid-template-columns:minmax(0,1fr)}}
+.asmh{font:700 10.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+pre{margin:0;background:var(--code);border:1.5px solid var(--hair);border-radius:10px;padding:10px;overflow:auto;max-height:340px;font:400 11.5px/1.5 var(--jb)}
+pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-block;width:100%;font-weight:700}
+/* startup */
+.st{overflow-x:auto}
+.st table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
+.st th,.st td{padding:10px 14px;border-bottom:1px solid var(--hair);text-align:right}
+.st th:first-child,.st td:first-child{text-align:left}
+.st th{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
+.st td{font:500 13px var(--jb)}
+.st td:first-child{font:700 14px var(--disp)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.notes p{margin:6px 0 0;font-size:15px}
+.notes h3{margin:0;font-size:17px}
+footer{font:500 12px var(--mono);color:var(--mute)}
+@media (prefers-reduced-motion:no-preference){.bfill{transition:width .5s ease}}
+</style>
+<style>
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--grid2:#e1e4de;--hotbg:#3a2cf214}
+
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--grid2:#262b36;--hotbg:#8f86ff1f}
+a{color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
+.chips a:hover{border-color:var(--blue);color:var(--blue)}
+.chips a.go{border-color:var(--blue);color:var(--blue)}
+.watchcta{display:flex;gap:16px;align-items:center;padding:14px 18px;color:inherit;text-decoration:none;border-color:var(--blue)}
+.watchcta:hover{box-shadow:4px 4px 0 var(--blue)}
+.watchcta:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.watchcta .play{flex:none;width:44px;height:44px;border-radius:50%;background:var(--blue);clip-path:none;position:relative}
+.watchcta .play::after{content:"";position:absolute;left:17px;top:13px;border-left:14px solid var(--surface);border-top:9px solid transparent;border-bottom:9px solid transparent}
+.watchcta b{display:block;font-size:18px}
+.watchcta small{display:block;color:var(--mute);font-size:14px}
+/* start: stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.tiles{grid-template-columns:minmax(0,1fr)}}
+.tile{padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile .n{font:800 clamp(30px,3.4vw,40px)/1 var(--disp);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tile .n small{font-size:.5em;font-weight:700;color:var(--mute);margin-left:2px}
+.tile .c{font-size:14.5px;line-height:1.35;flex:1}
+.tile .vs{font:500 11px var(--mono);color:var(--mute)}
+/* start: the gap chart */
+.gap{padding:20px}
+.gap svg{width:100%;height:auto;display:block;color:var(--ink);min-width:560px}
+.gap .scroll{overflow-x:auto}
+/* start: route */
+.route{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;counter-reset:r}
+@media (max-width:1000px){.route{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.route{grid-template-columns:minmax(0,1fr)}}
+.stop{padding:16px;display:flex;flex-direction:column;gap:8px;color:inherit;text-decoration:none;min-width:0}
+.stop:hover{box-shadow:4px 4px 0 var(--ink)}
+.stop:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.stop h3{margin:0;font-size:20px;line-height:1.15}
+.stop p{margin:0;font-size:14.5px;color:var(--mute);flex:1}
+.stop .adds{font:700 10.5px var(--mono);letter-spacing:.04em;color:var(--ink)}
+.stop .adds b{color:var(--blue)}
+.realism{display:flex;gap:3px}
+.realism i{height:5px;flex:1;border-radius:2px;background:var(--hair)}
+.realism i.on{background:var(--blue)}
+/* concepts */
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.cgroup{display:flex;flex-direction:column;gap:12px}
+.cgroup>h2{font-size:clamp(20px,2.6vw,24px)}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.cgrid{grid-template-columns:minmax(0,1fr)}}
+.concept{padding:18px;display:flex;flex-direction:column;gap:8px;scroll-margin-top:70px;min-width:0}
+.concept.wide{grid-column:1/-1}
+.concept h3{margin:0;font-size:19px;line-height:1.2}
+.concept p{margin:0;font-size:15px;max-width:68ch}
+.concept .why{border-left:3px solid var(--blue);padding-left:10px}
+.concept .why b{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
+figure.dg{margin:6px 0 0;min-width:0}
+figure.dg .scroll{overflow-x:auto}
+figure.dg svg{width:100%;min-width:620px;height:auto;display:block;color:var(--ink)}
+figure.dg figcaption{color:var(--mute);font-size:13.5px;margin-top:6px;max-width:72ch}
+.dn{font:700 13px var(--disp);fill:currentColor}
+.db{font:500 12px var(--mono);fill:currentColor}
+.dl{font:700 10.5px var(--mono);letter-spacing:.1em;fill:var(--mute)}
+.dlab{font:700 12px var(--mono)}
+.tk{font:500 11px var(--mono);fill:var(--mute)}
+.big{font:800 26px var(--disp);fill:currentColor}
+/* takeaways */
+.dec{width:100%;border-collapse:collapse}
+.dec td{padding:14px 16px;border-top:1px solid var(--hair);vertical-align:top;font-size:15px}
+.dec tr:first-child td{border-top:0}
+.dec td:first-child{font-weight:700;width:28%}
+.dec td.pick{width:22%}
+.dec .p{display:inline-block;font:700 11px var(--mono);letter-spacing:.04em;padding:4px 8px;border-radius:6px;background:var(--hotbg);color:var(--blue);white-space:nowrap}
+.dec .ev{color:var(--mute)}
+.decw{overflow-x:auto}
+.decw table{min-width:640px}
+.holds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.holds{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.holds{grid-template-columns:minmax(0,1fr)}}
+.holds div{border-top:3px solid var(--ink);padding-top:8px}
+.holds b{display:block;font-size:16px;line-height:1.25}
+.holds span{color:var(--mute);font-size:14px}
+.next{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.next li{border:1.5px solid var(--hair);border-radius:999px;padding:6px 12px;background:var(--bg);font-size:14px}
+.next b{font-weight:700}
+details.method summary{font:700 13px var(--mono);cursor:pointer}
+details.method p{margin:8px 0 0;max-width:72ch;font-size:15px}
+</style>
+
+</head>
+<body>
+<style>
+/* site navigation: one sticky bar shared by every page; colours come from each page's own tokens */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.sitenav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin:-28px -16px 26px;background:color-mix(in srgb,var(--surface) 96%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--hair)}
+.sitenav .in{max-width:1164px;margin:0 auto;display:flex;align-items:center;gap:28px;padding:0 22px;min-height:62px}
+.sitenav .brand{font:800 17px var(--disp);letter-spacing:-.03em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.sitenav .brand b{color:var(--blue)}
+.sitenav ul{list-style:none;margin:0 0 0 auto;padding:0;display:flex;align-items:center;gap:4px;min-width:0}
+.sitenav a.l{display:block;font:700 10.5px var(--mono);letter-spacing:.03em;text-transform:uppercase;color:var(--mute);text-decoration:none;padding:10px 9px;border-radius:6px;white-space:nowrap}
+.sitenav a.l:hover{color:var(--blue);background:color-mix(in srgb,var(--blue) 9%,transparent)}
+.sitenav a.l:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.sitenav a.l[aria-current=page]{color:var(--blue);background:color-mix(in srgb,var(--blue) 11%,transparent)}
+.sitenav .mnav{display:none;margin-left:auto;position:relative}
+.sitenav .mnav summary{list-style:none;cursor:pointer;white-space:nowrap;display:flex;gap:10px;align-items:center;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);border:1.5px solid var(--hair);border-radius:8px;padding:8px 12px;background:var(--surface)}
+.sitenav .mnav summary::-webkit-details-marker{display:none}
+.sitenav .mnav summary i{font-style:normal;color:var(--blue)}
+.sitenav .mnav summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.sitenav .mlist{position:absolute;right:0;top:calc(100% + 8px);min-width:240px;background:var(--surface);border:1.5px solid var(--ink);border-radius:12px;padding:6px;display:flex;flex-direction:column;box-shadow:6px 6px 0 color-mix(in srgb,var(--ink) 15%,transparent)}
+.sitenav .mlist a{font:700 13px var(--mono);color:var(--ink);text-decoration:none;padding:11px 12px;border-radius:8px}
+.sitenav .mlist a:hover,.sitenav .mlist a[aria-current]{background:color-mix(in srgb,var(--blue) 12%,transparent);color:var(--blue)}
+@media (max-width:1040px){.sitenav ul{display:none}.sitenav .mnav{display:block}.sitenav .in{justify-content:space-between}}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:700 12px var(--mono)}
+.pager a{color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);background:var(--surface);border-radius:8px;padding:10px 14px}
+.pager a:hover{border-color:var(--blue)}
+.primer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:14px;gap:18px;padding:16px 20px;border-color:var(--hair);background:var(--surface)}
+@media (max-width:860px){.primer{grid-template-columns:minmax(0,1fr)}}
+.primer>div{min-width:0}
+.primer .ans{grid-column:1/-1;border-bottom:1px solid var(--hair);padding-bottom:14px}
+.primer .ans p{font-size:19px;line-height:1.45;max-width:78ch;font-weight:600}
+/* quieter background, larger small labels, and a visible hint on tables that scroll sideways */
+html body{background-image:linear-gradient(color-mix(in srgb,var(--grid) 50%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--grid) 50%,transparent) 1px,transparent 1px)}
+html body .blab{font-size:12px} html body .tk{font-size:11px} html body .chip{font-size:11.5px} html body .bval small{font-size:11.5px}
+html body .st th,html body .mc th{font-size:11.5px}
+.scrolls{position:relative;background:linear-gradient(to left,color-mix(in srgb,var(--ink) 10%,transparent),transparent 28px) right/28px 100% no-repeat}
+.scrollhint{display:none;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:6px 20px 0}
+.scrolls + .scrollhint,.scrollhint.on{display:block}
+details.more{border-top:1px solid var(--hair)}
+details.more>summary{cursor:pointer;list-style:none;font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--blue);padding:12px 20px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:'+ '}
+details.more[open]>summary::before{content:'− '}
+details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.primer .ph{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.primer p{margin:0;font-size:15px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchips a{font:700 11.5px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border:1.5px solid var(--hair);border-radius:999px;padding:3px 9px;background:var(--bg)}
+.pchips a:hover{border-color:var(--blue);color:var(--blue)}
+.pager small{display:block;font:500 10px var(--mono);color:var(--mute);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+</style><nav class="sitenav" aria-label="Sections"><div class="in"><a class="brand" href="start.html">Compiler <b>probes</b></a><ul><li><a class="l" href="start.html">Start</a></li><li><a class="l" href="watch.html">Watch</a></li><li><a class="l" href="concepts.html" aria-current="page">Concepts</a></li><li><a class="l" href="probes.html">1 Machine code</a></li><li><a class="l" href="net11.html">2 .NET 11</a></li><li><a class="l" href="load.html">3 Load</a></li><li><a class="l" href="containers.html">4 Containers</a></li><li><a class="l" href="takeaways.html">Takeaways</a></li></ul><details class="mnav"><summary><span>Concepts</span><i aria-hidden="true">Menu</i></summary><div class="mlist"><a href="start.html">Start here</a><a href="watch.html">Watch</a><a href="concepts.html" aria-current="page">Concepts</a><a href="probes.html">1 · Machine code</a><a href="net11.html">2 · .NET 11 claims</a><a href="load.html">3 · Under load</a><a href="containers.html">4 · In containers</a><a href="takeaways.html">Takeaways</a></div></details></div></nav><div class="wrap">
+  <header>
+    <div class="eyebrow">Concepts</div>
+    <h1>What happens <em>under your code</em></h1>
+    <p class="lede">Sixteen ideas the results depend on, two lines each. Jump to the one you need.</p>
+    <nav class="toc chips" aria-label="Concepts"><a href="#aot-vs-jit">AOT vs JIT</a><a href="#tiering">Tiered JIT</a><a href="#pgo">Dynamic PGO</a><a href="#r2r">ReadyToRun</a><a href="#nativeaot">NativeAOT</a><a href="#simd">SIMD</a><a href="#bounds">Bounds checks</a><a href="#devirt">Devirtualisation</a><a href="#async">Runtime async</a><a href="#regalloc">Register spills</a><a href="#gc">Garbage collection</a><a href="#footprint">Footprint</a><a href="#tail">Tail latency</a><a href="#openloop">Open-loop load</a><a href="#coldstart">Cold start</a><a href="#cpulimit">CPU limits</a></nav>
+  </header>
+  <div class="cgroup"><h2>Getting to machine code</h2><div class="cgrid">
+<section class="card concept wide" id="aot-vs-jit" aria-labelledby="aot-vs-jit-h"><h3 id="aot-vs-jit-h">Ahead-of-time vs just-in-time</h3><p>Rust and Go compile to machine code at build time. C# ships IL and the runtime's JIT compiles it while the program runs.</p><p class="why"><b>Why it matters</b>Run-time compiling costs CPU at start-up but can optimise for the traffic it actually sees.</p><figure class="dg"><div class="scroll"><svg viewBox="0 0 900 302" role="img" aria-label="Rust, Go and NativeAOT C# finish compiling at build time; JIT C# ships IL and finishes compiling at run time, in two tiers."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs><line x1="600" y1="24" x2="600" y2="292" stroke="currentColor" stroke-dasharray="4 4" opacity=".55"/><text x="590" y="18" text-anchor="end" class="dl">BUILD TIME</text><text x="610" y="18" class="dl">RUN TIME</text><text x="0" y="68" class="dn">Rust</text><rect x="120" y="46" width="110" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="175.0" y="67" text-anchor="middle" class="db">source</text><line x1="230" y1="63" x2="256" y2="63" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="260" y="46" width="120" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="320.0" y="67" text-anchor="middle" class="db">rustc + LLVM</text><line x1="380" y1="63" x2="406" y2="63" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="410" y="46" width="160" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="490.0" y="67" text-anchor="middle" class="db">native binary</text><line x1="570" y1="63" x2="656" y2="63" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="660" y="46" width="200" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="760.0" y="67" text-anchor="middle" class="db">runs at full speed</text><text x="0" y="132" class="dn">Go</text><rect x="120" y="110" width="110" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="175.0" y="131" text-anchor="middle" class="db">source</text><line x1="230" y1="127" x2="256" y2="127" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="260" y="110" width="120" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="320.0" y="131" text-anchor="middle" class="db">go build</text><line x1="380" y1="127" x2="406" y2="127" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="410" y="110" width="160" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="490.0" y="131" text-anchor="middle" class="db">native binary + GC</text><line x1="570" y1="127" x2="656" y2="127" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="660" y="110" width="200" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="760.0" y="131" text-anchor="middle" class="db">runs at full speed</text><text x="0" y="196" class="dn">C# · JIT</text><rect x="120" y="174" width="110" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="175.0" y="195" text-anchor="middle" class="db">source</text><line x1="230" y1="191" x2="256" y2="191" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="260" y="174" width="120" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="320.0" y="195" text-anchor="middle" class="db">Roslyn</text><line x1="380" y1="191" x2="406" y2="191" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="410" y="174" width="160" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="490.0" y="195" text-anchor="middle" class="db">IL in a .dll</text><line x1="570" y1="191" x2="656" y2="191" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="660" y="174" width="200" height="34" rx="6" fill="var(--hotbg)" stroke="var(--blue)" stroke-width="1.5"/><text x="760.0" y="195" text-anchor="middle" class="db">Tier 0 → Tier 1</text><text x="0" y="260" class="dn">C# · NativeAOT</text><rect x="120" y="238" width="110" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="175.0" y="259" text-anchor="middle" class="db">source</text><line x1="230" y1="255" x2="256" y2="255" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="260" y="238" width="120" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="320.0" y="259" text-anchor="middle" class="db">Roslyn → ILC</text><line x1="380" y1="255" x2="406" y2="255" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="410" y="238" width="160" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="490.0" y="259" text-anchor="middle" class="db">native binary</text><line x1="570" y1="255" x2="656" y2="255" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/><rect x="660" y="238" width="200" height="34" rx="6" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><text x="760.0" y="259" text-anchor="middle" class="db">runs at full speed</text><text x="760.0" y="226" text-anchor="middle" class="dl" fill="var(--blue)">COMPILES WHILE IT RUNS</text></svg></div><figcaption>Only JIT C# is still compiling after the program starts.</figcaption></figure><div class="chips"><a class="go" href="probes.html">Set 1 →</a><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept wide" id="tiering" aria-labelledby="tiering-h"><h3 id="tiering-h">Tiered compilation</h3><p>The JIT first compiles each method quickly (Tier 0), then recompiles the hot ones with full optimisation (Tier 1).</p><p class="why"><b>Why it matters</b>Until hot code reaches Tier 1, the service is slower and uses more CPU. Here that took about 90 s under load.</p><figure class="dg"><div class="scroll"><svg viewBox="0 0 900 320" role="img" aria-label="CPU after a cold start at 500 payments a second: the JIT build runs near 85 to 100 percent until about 90 seconds, then drops to about 52 percent; the NativeAOT build is near 51 percent from the start; Go stays near 42 percent."><line x1="44" x2="888" y1="286.0" y2="286.0" stroke="var(--grid2)"/><text x="38" y="290.0" text-anchor="end" class="tk">0%</text><line x1="44" x2="888" y1="230.1" y2="230.1" stroke="var(--grid2)"/><text x="38" y="234.1" text-anchor="end" class="tk">25%</text><line x1="44" x2="888" y1="174.2" y2="174.2" stroke="var(--grid2)"/><text x="38" y="178.2" text-anchor="end" class="tk">50%</text><line x1="44" x2="888" y1="118.3" y2="118.3" stroke="var(--grid2)"/><text x="38" y="122.3" text-anchor="end" class="tk">75%</text><line x1="44" x2="888" y1="62.4" y2="62.4" stroke="var(--grid2)"/><text x="38" y="66.4" text-anchor="end" class="tk">100%</text><text x="44.0" y="308" text-anchor="middle" class="tk">45 s</text><text x="255.0" y="308" text-anchor="middle" class="tk">75 s</text><text x="466.0" y="308" text-anchor="middle" class="tk">105 s</text><text x="677.0" y="308" text-anchor="middle" class="tk">135 s</text><text x="888.0" y="308" text-anchor="middle" class="tk">165 s</text><path d="M44.0,89.6 L58.1,82.3 L72.1,92.4 L86.2,88.2 L100.3,93.9 L114.3,98.5 L128.4,95.4 L143.2,100.1 L157.2,87.8 L171.3,88.4 L185.4,78.6 L199.4,105.0 L213.5,101.4 L227.6,94.6 L241.6,116.6 L255.7,83.5 L269.8,95.6 L283.8,118.3 L298.6,53.3 L312.7,144.2 L326.7,56.3 L340.8,73.3 L354.9,161.3 L368.9,167.7 L383.0,162.8 L397.1,168.9 L411.1,159.4 L425.2,177.6 L439.3,160.2 L453.3,173.2 L467.4,165.8 L481.5,158.6 L496.2,166.0 L510.3,164.5 L524.4,169.6 L538.4,166.0 L552.5,171.5 L566.6,169.5 L580.6,164.7 L594.7,171.7 L608.8,165.4 L622.8,162.0 L637.6,169.4 L651.7,171.7 L665.7,173.2 L679.8,148.9 L693.9,170.0 L707.9,172.5 L722.0,177.2 L736.1,172.3 L750.1,179.9 L764.2,175.5 L778.3,165.0 L793.0,163.8 L807.1,175.1 L821.2,183.6 L835.2,170.3 L849.3,169.7 L863.4,174.9 L877.5,177.6" fill="none" stroke="var(--s2)" stroke-width="2.2" stroke-linejoin="round"/><path d="M44.0,173.3 L58.1,169.9 L72.1,175.7 L86.2,170.8 L100.3,171.8 L114.3,162.9 L128.4,176.0 L143.2,176.0 L157.2,169.5 L171.3,172.3 L185.4,168.1 L199.4,173.1 L213.5,174.5 L227.6,176.2 L241.6,175.9 L255.7,174.5 L269.8,178.7 L283.8,175.1 L298.6,167.9 L312.7,173.3 L326.7,171.6 L340.8,175.5 L354.9,172.6 L368.9,171.1 L383.0,177.2 L397.1,174.9 L411.1,174.5 L425.2,177.5 L440.0,154.2 L454.0,162.7 L473.0,155.3 L487.1,153.2 L501.2,174.8 L515.2,170.0 L529.3,170.2 L543.4,169.0 L557.4,170.2 L571.5,174.3 L585.6,165.6 L599.6,165.1 L614.4,170.3 L628.5,169.4 L642.5,173.0 L656.6,174.8 L670.7,172.4 L684.7,176.8 L698.8,176.3 L712.9,169.3 L726.9,169.2 L741.0,165.1 L755.1,168.7 L769.1,174.5 L783.2,174.0 L798.0,168.2 L812.0,166.7 L826.1,175.6 L840.2,170.0 L854.2,171.3 L868.3,168.2 L882.4,166.2" fill="none" stroke="var(--s1)" stroke-width="2.2" stroke-linejoin="round"/><path d="M44.0,196.2 L58.1,195.1 L72.1,196.0 L86.2,191.8 L100.3,194.7 L114.3,189.5 L129.1,189.3 L143.2,190.3 L157.9,195.3 L171.3,161.6 L185.4,188.7 L199.4,177.7 L213.5,189.4 L227.6,194.8 L241.6,192.3 L256.4,192.2 L270.5,188.5 L284.5,192.4 L298.6,192.0 L312.7,198.4 L326.7,193.2 L340.8,192.7 L354.9,195.2 L368.9,193.1 L383.0,196.7 L397.1,191.7 L411.1,192.1 L425.2,190.0 L439.3,197.4 L453.3,192.9 L467.4,187.3 L482.2,191.4 L496.2,191.7 L510.3,194.2 L524.4,194.1 L538.4,191.6 L552.5,189.9 L566.6,197.4 L580.6,199.9 L594.7,194.2 L608.8,196.2 L623.5,190.8 L637.6,190.9 L651.7,199.5 L665.7,197.4 L679.8,195.0 L693.9,189.5 L707.9,193.9 L722.0,198.3 L736.1,193.2 L750.1,191.7 L764.2,195.2 L778.3,197.4 L793.0,195.5 L807.1,193.0 L821.2,189.5 L835.2,193.2 L849.3,193.7 L863.4,195.7 L877.5,196.8" fill="none" stroke="var(--s4)" stroke-width="2.2" stroke-linejoin="round"/><rect x="44" y="6" width="14" height="4" rx="1" fill="var(--s2)"/><text x="64" y="13" class="dlab" fill="var(--s2)">C# .NET 11 · JIT</text><rect x="195.6" y="6" width="14" height="4" rx="1" fill="var(--s1)"/><text x="215.6" y="13" class="dlab" fill="var(--s1)">C# .NET 11 · NativeAOT</text><rect x="392.79999999999995" y="6" width="14" height="4" rx="1" fill="var(--s4)"/><text x="412.79999999999995" y="13" class="dlab" fill="var(--s4)">Go</text><line x1="353.5" x2="353.5" y1="40" y2="286" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><text x="359.5" y="52" class="tk">≈ 90 s: JIT build settles</text></svg></div><figcaption>CPU of one container at 500 payments/s after a cold start (set 4 soaks).</figcaption></figure><div class="chips"><a class="go" href="probes.html">Set 1 →</a><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept" id="pgo" aria-labelledby="pgo-h"><h3 id="pgo-h">Dynamic PGO</h3><p>Before Tier 1, the JIT records which types and branches really occur, then specialises the code for them. On by default since .NET 8.</p><p class="why"><b>Why it matters</b>It is why warm JIT code can beat ahead-of-time code.</p><div class="chips"><a class="go" href="probes.html">Set 1 →</a><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept" id="r2r" aria-labelledby="r2r-h"><h3 id="r2r-h">ReadyToRun</h3><p>A publish option that ships precompiled code next to the IL, so less starts at Tier 0.</p><p class="why"><b>Why it matters</b>Shorter start-up and warm-up, PGO kept, bigger binaries.</p><div class="chips"><a class="go" href="probes.html">Set 1 →</a><a class="go" href="net11.html">Set 2 →</a></div></section><section class="card concept" id="nativeaot" aria-labelledby="nativeaot-h"><h3 id="nativeaot-h">NativeAOT</h3><p>Publishes the app as one native executable: no IL, no JIT, unused code removed.</p><p class="why"><b>Why it matters</b>Go-like start-up and memory, no warm-up. No PGO, and reflection-heavy libraries need source generators.</p><div class="chips"><a class="go" href="load.html">Set 3 →</a><a class="go" href="containers.html">Set 4 →</a></div></section>
+  </div></div>
+  <div class="cgroup"><h2>What optimisers do</h2><div class="cgrid">
+<section class="card concept" id="simd" aria-labelledby="simd-h"><h3 id="simd-h">SIMD vectorisation</h3><p>Using CPU instructions that process 4–16 numbers at once.</p><p class="why"><b>Why it matters</b>A loop can get 4–8× faster with no source change. LLVM does it automatically; in C# you ask for it with <span class="code-in">Vector&lt;T&gt;</span>.</p><div class="chips"><a class="go" href="probes.html">Set 1 →</a></div></section><section class="card concept" id="bounds" aria-labelledby="bounds-h"><h3 id="bounds-h">Bounds-check elimination</h3><p>Deleting an array index check when the compiler can prove it always passes.</p><p class="why"><b>Why it matters</b>Leftover checks cost a branch each and block vectorisation.</p><div class="chips"><a class="go" href="probes.html">Set 1 →</a><a class="go" href="net11.html">Set 2 →</a></div></section><section class="card concept" id="devirt" aria-labelledby="devirt-h"><h3 id="devirt-h">Devirtualisation</h3><p>Replacing an interface or virtual call with a direct, often inlined, call when the type is known.</p><p class="why"><b>Why it matters</b>Abstractions become nearly free when the compiler can see through them.</p><div class="chips"><a class="go" href="net11.html">Set 2 →</a></div></section><section class="card concept" id="async" aria-labelledby="async-h"><h3 id="async-h">Runtime async</h3><p>In .NET 11 the runtime, not a compiler-generated class, tracks where an async method paused.</p><p class="why"><b>Why it matters</b>Awaits that finish immediately get 4× cheaper and stop allocating. Off by default in RC2.</p><div class="chips"><a class="go" href="net11.html">Set 2 →</a></div></section><section class="card concept" id="regalloc" aria-labelledby="regalloc-h"><h3 id="regalloc-h">Register spills</h3><p>When values do not fit in CPU registers, the compiler parks them in memory and reloads them.</p><p class="why"><b>Why it matters</b>Fewer instructions can still be slower. Only timing tells.</p><div class="chips"><a class="go" href="net11.html">Set 2 →</a></div></section>
+  </div></div>
+  <div class="cgroup"><h2>Memory</h2><div class="cgrid">
+<section class="card concept" id="gc" aria-labelledby="gc-h"><h3 id="gc-h">Garbage collection</h3><p>C# and Go free unused memory automatically by pausing or running a collector. Rust frees memory when its owner goes away.</p><p class="why"><b>Why it matters</b>Collections show up as latency spikes and as memory headroom.</p><div class="chips"><a class="go" href="load.html">Set 3 →</a></div></section><section class="card concept" id="footprint" aria-labelledby="footprint-h"><h3 id="footprint-h">Footprint</h3><p>Memory held before any traffic, and the size of the image a node must pull.</p><p class="why"><b>Why it matters</b>It decides how many instances fit on a node and how fast a new one can start.</p><div class="chips"><a class="go" href="containers.html">Set 4 →</a></div></section>
+  </div></div>
+  <div class="cgroup"><h2>Reading the numbers</h2><div class="cgrid">
+<section class="card concept" id="tail" aria-labelledby="tail-h"><h3 id="tail-h">Percentiles</h3><p>p50 is the median. p99 means 1 request in 100 was slower than this.</p><p class="why"><b>Why it matters</b>Users feel the tail: a page that makes 20 backend calls hits their p99 on about 1 load in 5.</p><div class="chips"><a class="go" href="load.html">Set 3 →</a><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept wide" id="openloop" aria-labelledby="openloop-h"><h3 id="openloop-h">Open-loop load</h3><p>Requests are sent on a fixed schedule and timed from when they were due, as real traffic would be.</p><p class="why"><b>Why it matters</b>Tests that wait for each answer hide stalls. See the drawing below.</p><figure class="dg"><div class="scroll"><svg viewBox="0 0 900 250" role="img" aria-label="In a closed loop, one slow answer means fewer requests are sent, so the stall shows up as one slow request. In an open loop requests keep arriving on schedule, so every request due during the stall waits and is counted as slow."><text x="0" y="16" class="dn">Closed loop: send, wait for the answer, send again</text><rect x="330" y="26" width="230" height="44" fill="var(--hotbg)"/><text x="552" y="40" text-anchor="end" class="tk">server stalls</text><line x1="20" x2="54" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="46" r="3.5" fill="currentColor"/><line x1="75" x2="109" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="75" cy="46" r="3.5" fill="currentColor"/><line x1="130" x2="164" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="130" cy="46" r="3.5" fill="currentColor"/><line x1="185" x2="219" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="185" cy="46" r="3.5" fill="currentColor"/><line x1="240" x2="274" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="240" cy="46" r="3.5" fill="currentColor"/><line x1="295" x2="329" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="295" cy="46" r="3.5" fill="currentColor"/><line x1="350" x2="572" y1="46" y2="46" stroke="var(--bad)" stroke-width="3"/><circle cx="350" cy="46" r="3.5" fill="currentColor"/><line x1="593" x2="627" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="593" cy="46" r="3.5" fill="currentColor"/><line x1="648" x2="682" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="648" cy="46" r="3.5" fill="currentColor"/><line x1="703" x2="737" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="703" cy="46" r="3.5" fill="currentColor"/><line x1="758" x2="792" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="758" cy="46" r="3.5" fill="currentColor"/><line x1="813" x2="847" y1="46" y2="46" stroke="currentColor" stroke-width="2"/><circle cx="813" cy="46" r="3.5" fill="currentColor"/><text x="336" y="61" class="tk">1 slow request recorded</text><text x="0" y="114" class="dn">Open loop: requests leave on a fixed schedule</text><rect x="330" y="124" width="230" height="104" fill="var(--hotbg)"/><text x="552" y="138" text-anchor="end" class="tk">server stalls</text><line x1="20" x2="54" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="150" r="3.5" fill="currentColor"/><line x1="75" x2="109" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="75" cy="150" r="3.5" fill="currentColor"/><line x1="130" x2="164" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="130" cy="150" r="3.5" fill="currentColor"/><line x1="185" x2="219" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="185" cy="150" r="3.5" fill="currentColor"/><line x1="240" x2="274" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="240" cy="150" r="3.5" fill="currentColor"/><line x1="295" x2="329" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="295" cy="150" r="3.5" fill="currentColor"/><line x1="350" x2="572" y1="150" y2="150" stroke="var(--bad)" stroke-width="3"/><circle cx="350" cy="150" r="3.5" fill="currentColor"/><line x1="405" x2="572" y1="164" y2="164" stroke="var(--bad)" stroke-width="3"/><circle cx="405" cy="164" r="3.5" fill="currentColor"/><line x1="460" x2="572" y1="178" y2="178" stroke="var(--bad)" stroke-width="3"/><circle cx="460" cy="178" r="3.5" fill="currentColor"/><line x1="515" x2="572" y1="192" y2="192" stroke="var(--bad)" stroke-width="3"/><circle cx="515" cy="192" r="3.5" fill="currentColor"/><line x1="570" x2="604" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="570" cy="150" r="3.5" fill="currentColor"/><line x1="625" x2="659" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="625" cy="150" r="3.5" fill="currentColor"/><line x1="680" x2="714" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="680" cy="150" r="3.5" fill="currentColor"/><line x1="735" x2="769" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="735" cy="150" r="3.5" fill="currentColor"/><line x1="790" x2="824" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="790" cy="150" r="3.5" fill="currentColor"/><line x1="845" x2="879" y1="150" y2="150" stroke="currentColor" stroke-width="2"/><circle cx="845" cy="150" r="3.5" fill="currentColor"/><text x="578" y="196" class="tk">4 slow requests recorded</text></svg></div><figcaption>Same stall. The open-loop client counts every request that was waiting, as users would.</figcaption></figure><div class="chips"><a class="go" href="load.html">Set 3 →</a><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept" id="coldstart" aria-labelledby="coldstart-h"><h3 id="coldstart-h">Cold start</h3><p>Time from launching the process to its first answered request.</p><p class="why"><b>Why it matters</b>It sets how fast you recover from a crash and scale out.</p><div class="chips"><a class="go" href="containers.html">Set 4 →</a></div></section><section class="card concept" id="cpulimit" aria-labelledby="cpulimit-h"><h3 id="cpulimit-h">CPU limits</h3><p>A one-CPU container gets one core's worth of time per second. 100% means all of it.</p><p class="why"><b>Why it matters</b>CPU per request is a large part of compute cost, alongside memory, instance size and how capacity is billed. At the limit, extra work turns into queueing and latency.</p><div class="chips"><a class="go" href="containers.html">Set 4 →</a></div></section>
+  </div></div>
+
+<div class="pager"><a href="watch.html"><small>Previous</small>← Watch</a><a href="probes.html"><small>Next</small>1 · Machine code →</a></div></div>
+<script>
+(() => { const mark = () => document.querySelectorAll('.st,.board,.mcw,.tw,.decw,.scroll').forEach(el => {
+  const wide = el.scrollWidth > el.clientWidth + 4; el.classList.toggle('scrolls', wide);
+  let h = el.nextElementSibling; if (wide && !(h && h.classList.contains('scrollhint'))) { h = document.createElement('div'); h.className = 'scrollhint'; h.textContent = 'Scroll sideways for more →'; el.after(h); }
+  if (h && h.classList.contains('scrollhint')) h.classList.toggle('on', wide); });
+  addEventListener('load', mark); addEventListener('resize', mark); setTimeout(mark, 300); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,2586 @@
+{
+ "runs": [
+  {
+   "id": "rust",
+   "name": "Rust",
+   "version": "rustc 1.99.0 (b940084d7 2026-09-28)",
+   "flags": "rustc -C opt-level=3 (cargo --release)",
+   "compile_ms": 1041.6,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 427.5,
+    "bounds_one": 452.9,
+    "bounds_two": 2391.6,
+    "dyn": 9400.8,
+    "generic": 1748.6,
+    "alloc": 8871.7,
+    "alloc_per_elem": 0.0,
+    "alloc_bytes_per_elem": 0.0,
+    "alloc_counted": false,
+    "check": 21544000,
+    "runs": 3
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     1000
+    ],
+    [
+     2,
+     3,
+     750.0
+    ],
+    [
+     4,
+     7,
+     700.0
+    ],
+    [
+     8,
+     15,
+     550.0
+    ],
+    [
+     16,
+     31,
+     600.0
+    ],
+    [
+     32,
+     63,
+     700.0
+    ],
+    [
+     64,
+     127,
+     700.0
+    ],
+    [
+     128,
+     255,
+     700.0
+    ],
+    [
+     256,
+     511,
+     700.0
+    ],
+    [
+     512,
+     1023,
+     600.0
+    ],
+    [
+     1024,
+     2047,
+     400.0
+    ],
+    [
+     2048,
+     4095,
+     400.0
+    ],
+    [
+     4096,
+     8191,
+     400.0
+    ],
+    [
+     8192,
+     16383,
+     400.0
+    ],
+    [
+     16384,
+     20000,
+     400
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "probe_vec_sum:",
+     "\ttest\trdx, rdx",
+     "\tje\t.LBB27_1",
+     "\tlea\tr9, [4*rdx]",
+     "\tadd\tr9, -4",
+     "\txor\teax, eax",
+     "\tmov\tr8, rcx",
+     "\tcmp\tr9, 28",
+     "\tjb\t.LBB27_6",
+     "\tshr\tr9, 2",
+     "\tinc\tr9",
+     "\tmov\tr10, r9",
+     "\tand\tr10, -8",
+     "\tlea\tr8, [rcx + 4*r10]",
+     "\tpxor\txmm0, xmm0",
+     "\txor\teax, eax",
+     "\tpxor\txmm1, xmm1",
+     ".LBB27_4:",
+     "\tmovdqu\txmm2, xmmword ptr [rcx + 4*rax]",
+     "\tpaddd\txmm1, xmm2",
+     "\tmovdqu\txmm2, xmmword ptr [rcx + 4*rax + 16]",
+     "\tpaddd\txmm0, xmm2",
+     "\tadd\trax, 8",
+     "\tcmp\tr10, rax",
+     "\tjne\t.LBB27_4",
+     "\tpaddd\txmm0, xmm1",
+     "\tpshufd\txmm1, xmm0, 238",
+     "\tpaddd\txmm1, xmm0",
+     "\tpshufd\txmm0, xmm1, 85",
+     "\tpaddd\txmm0, xmm1",
+     "\tmovd\teax, xmm0",
+     "\tcmp\tr9, r10",
+     "\tje\t.LBB27_8",
+     ".LBB27_6:",
+     "\tlea\trcx, [rcx + 4*rdx]",
+     ".LBB27_7:",
+     "\tadd\teax, dword ptr [r8]",
+     "\tadd\tr8, 4",
+     "\tcmp\tr8, rcx",
+     "\tjne\t.LBB27_7",
+     ".LBB27_8:",
+     "\tret",
+     ".LBB27_1:",
+     "\txor\teax, eax",
+     "\tret"
+    ],
+    "bounds_one": [
+     "probe_bounds_one:",
+     "\ttest\trdx, rdx",
+     "\tje\t.LBB23_1",
+     "\tcmp\trdx, 8",
+     "\tjae\t.LBB23_5",
+     "\txor\teax, eax",
+     "\txor\tr8d, r8d",
+     "\tjmp\t.LBB23_4",
+     ".LBB23_1:",
+     "\txor\teax, eax",
+     "\tret",
+     ".LBB23_5:",
+     "\tmovabs\tr8, 2305843009213693944",
+     "\tand\tr8, rdx",
+     "\tlea\trax, [4*rdx]",
+     "\tand\trax, -32",
+     "\tpxor\txmm0, xmm0",
+     "\txor\tr9d, r9d",
+     "\tpxor\txmm1, xmm1",
+     ".LBB23_6:",
+     "\tmovdqu\txmm2, xmmword ptr [rcx + r9]",
+     "\tpaddd\txmm1, xmm2",
+     "\tmovdqu\txmm2, xmmword ptr [rcx + r9 + 16]",
+     "\tpaddd\txmm0, xmm2",
+     "\tadd\tr9, 32",
+     "\tcmp\trax, r9",
+     "\tjne\t.LBB23_6",
+     "\tpaddd\txmm0, xmm1",
+     "\tpshufd\txmm1, xmm0, 238",
+     "\tpaddd\txmm1, xmm0",
+     "\tpshufd\txmm0, xmm1, 85",
+     "\tpaddd\txmm0, xmm1",
+     "\tmovd\teax, xmm0",
+     "\tjmp\t.LBB23_8",
+     ".LBB23_4:",
+     "\tadd\teax, dword ptr [rcx + 4*r8]",
+     "\tinc\tr8",
+     ".LBB23_8:",
+     "\tcmp\trdx, r8",
+     "\tjne\t.LBB23_4",
+     "\tret"
+    ],
+    "bounds_two": [
+     "probe_bounds_two:",
+     "\tsub\trsp, 56",
+     "\tmovdqa\txmmword ptr [rsp + 32], xmm6",
+     "\ttest\trdx, rdx",
+     "\tje\t.LBB24_4",
+     "\tlea\trax, [rdx - 1]",
+     "\tcmp\tr9, rax",
+     "\tjbe\t.LBB24_8",
+     "\tcmp\trdx, 8",
+     "\tjae\t.LBB24_5",
+     "\txor\teax, eax",
+     "\txor\tr9d, r9d",
+     "\tjmp\t.LBB24_9",
+     ".LBB24_4:",
+     "\txor\teax, eax",
+     "\tmovaps\txmm6, xmmword ptr [rsp + 32]",
+     "\tadd\trsp, 56",
+     "\tret",
+     ".LBB24_5:",
+     "\tmovabs\tr9, 2305843009213693944",
+     "\tand\tr9, rdx",
+     "\tlea\trax, [4*rdx]",
+     "\tand\trax, -32",
+     "\tpxor\txmm0, xmm0",
+     "\txor\tr10d, r10d",
+     "\tpxor\txmm1, xmm1",
+     ".LBB24_6:",
+     "\tmovdqu\txmm2, xmmword ptr [rcx + r10]",
+     "\tmovdqu\txmm3, xmmword ptr [rcx + r10 + 16]",
+     "\tmovdqu\txmm4, xmmword ptr [r8 + r10]",
+     "\tmovdqu\txmm5, xmmword ptr [r8 + r10 + 16]",
+     "\tpshufd\txmm6, xmm4, 245",
+     "\tpmuludq\txmm4, xmm2",
+     "\tpshufd\txmm4, xmm4, 232",
+     "\tpshufd\txmm2, xmm2, 245",
+     "\tpmuludq\txmm2, xmm6",
+     "\tpshufd\txmm2, xmm2, 232",
+     "\tpunpckldq\txmm4, xmm2",
+     "\tpaddd\txmm1, xmm4",
+     "\tpshufd\txmm2, xmm5, 245",
+     "\tpmuludq\txmm5, xmm3",
+     "\tpshufd\txmm4, xmm5, 232",
+     "\tpshufd\txmm3, xmm3, 245",
+     "\tpmuludq\txmm3, xmm2",
+     "\tpshufd\txmm2, xmm3, 232",
+     "\tpunpckldq\txmm4, xmm2",
+     "\tpaddd\txmm0, xmm4",
+     "\tadd\tr10, 32",
+     "\tcmp\trax, r10",
+     "\tjne\t.LBB24_6",
+     "\tpaddd\txmm0, xmm1",
+     "\tpshufd\txmm1, xmm0, 238",
+     "\tpaddd\txmm1, xmm0",
+     "\tpshufd\txmm0, xmm1, 85",
+     "\tpaddd\txmm0, xmm1",
+     "\tmovd\teax, xmm0",
+     "\tjmp\t.LBB24_10",
+     ".LBB24_8:",
+     "\tlea\tr8, [rip + anon.9da48e6b207b8f517f973e4b92d6922b.14]",
+     "\tmov\trcx, r9",
+     "\tmov\trdx, r9",
+     "\tcall\t_RNvNtCs9rw95XCWuke_4core9panicking18panic_bounds_check",
+     "\tud2",
+     ".LBB24_9:",
+     "\tmov\tr10d, dword ptr [r8 + 4*r9]",
+     "\timul\tr10d, dword ptr [rcx + 4*r9]",
+     "\tinc\tr9",
+     "\tadd\teax, r10d",
+     ".LBB24_10:",
+     "\tcmp\trdx, r9",
+     "\tjne\t.LBB24_9",
+     "\tmovaps\txmm6, xmmword ptr [rsp + 32]",
+     "\tadd\trsp, 56",
+     "\tret"
+    ],
+    "dyn": [
+     "probe_dyn:",
+     "\tpush\trsi",
+     "\tpush\trdi",
+     "\tpush\trbx",
+     "\tsub\trsp, 32",
+     "\ttest\trdx, rdx",
+     "\tje\t.LBB25_1",
+     "\tmov\trsi, rdx",
+     "\tmov\trdi, rcx",
+     "\tshl\trsi, 4",
+     "\tadd\trsi, rcx",
+     "\txor\tebx, ebx",
+     ".LBB25_3:",
+     "\tmov\trcx, qword ptr [rdi]",
+     "\tmov\trax, qword ptr [rdi + 8]",
+     "\tcall\tqword ptr [rax + 24]",
+     "\tadd\trbx, rax",
+     "\tadd\trdi, 16",
+     "\tcmp\trdi, rsi",
+     "\tjne\t.LBB25_3",
+     "\tjmp\t.LBB25_4",
+     ".LBB25_1:",
+     "\txor\tebx, ebx",
+     ".LBB25_4:",
+     "\tmov\trax, rbx",
+     "\tadd\trsp, 32",
+     "\tpop\trbx",
+     "\tpop\trdi",
+     "\tpop\trsi",
+     "\tret"
+    ],
+    "alloc": [
+     "probe_alloc:",
+     "\tpush\tr15",
+     "\tpush\tr14",
+     "\tpush\trsi",
+     "\tpush\trdi",
+     "\tpush\trbx",
+     "\tsub\trsp, 32",
+     "\ttest\trdx, rdx",
+     "\tje\t.LBB22_1",
+     "\tmov\trsi, rdx",
+     "\tmov\trdi, rcx",
+     "\tshl\trsi, 2",
+     "\txor\tebx, ebx",
+     "\txor\tr14d, r14d",
+     ".LBB22_3:",
+     "\tmovsxd\tr15, dword ptr [rdi + r14]",
+     "\tcall\t_RNvCsdtSMxSA38aw_7___rustc35___rust_no_alloc_shim_is_unstable_v2",
+     "\tlea\trax, [r15 + 2*r15]",
+     "\tadd\trbx, rax",
+     "\tadd\tr14, 4",
+     "\tcmp\trsi, r14",
+     "\tjne\t.LBB22_3",
+     "\tjmp\t.LBB22_4",
+     ".LBB22_1:",
+     "\txor\tebx, ebx",
+     ".LBB22_4:",
+     "\tmov\trax, rbx",
+     "\tadd\trsp, 32",
+     "\tpop\trbx",
+     "\tpop\trdi",
+     "\tpop\trsi",
+     "\tpop\tr14",
+     "\tpop\tr15",
+     "\tret"
+    ],
+    "generic": [
+     "probe_generic:",
+     "\tjmp\t_RINvCs7myzn0S5mcU_6probes13generic_totalNtB2_6SquareEB2_"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 5,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 5,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 5,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    }
+   }
+  },
+  {
+   "id": "go",
+   "name": "Go",
+   "version": "go version go1.27.2 windows/amd64",
+   "flags": "go build (defaults) \u00b7 PGO column: go build -pgo=profile",
+   "compile_ms": 2646.5,
+   "bench": {
+    "alloc": 3032.3,
+    "alloc_bytes_per_elem": 0,
+    "alloc_per_elem": 0,
+    "bounds_one": 2418.3,
+    "bounds_two": 3749.9,
+    "check": 21544000,
+    "dyn": 12081,
+    "n": 4096,
+    "vec_sum": 2350.1,
+    "runs": 3,
+    "dyn_pgo": 7012.4
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     2600
+    ],
+    [
+     2,
+     3,
+     2350.0
+    ],
+    [
+     4,
+     7,
+     2400.0
+    ],
+    [
+     8,
+     15,
+     2400.0
+    ],
+    [
+     16,
+     31,
+     2350.0
+    ],
+    [
+     32,
+     63,
+     2400.0
+    ],
+    [
+     64,
+     127,
+     3800.0
+    ],
+    [
+     128,
+     255,
+     3800.0
+    ],
+    [
+     256,
+     511,
+     3800.0
+    ],
+    [
+     512,
+     1023,
+     2400.0
+    ],
+    [
+     1024,
+     2047,
+     2400.0
+    ],
+    [
+     2048,
+     4095,
+     2400.0
+    ],
+    [
+     4096,
+     8191,
+     2400.0
+    ],
+    [
+     8192,
+     16383,
+     2400.0
+    ],
+    [
+     16384,
+     20000,
+     2400
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "main.probeVecSum STEXT nosplit size=25 align=0x0 args=0x18 locals=0x0 funcid=0x0",
+     "TEXT\tmain.probeVecSum(SB), NOSPLIT|NOFRAME|ABIInternal, $0-24",
+     "MOVQ\tAX, main.a+8(FP)",
+     "XORL\tCX, CX",
+     "XORL\tDX, DX",
+     "JMP\t17",
+     "ADDL\t(AX)(DX*4), CX",
+     "INCQ\tDX",
+     "CMPQ\tBX, DX",
+     "JGT\t11",
+     "MOVL\tCX, AX",
+     "RET"
+    ],
+    "bounds_one": [
+     "main.probeBoundsOne STEXT nosplit size=25 align=0x0 args=0x18 locals=0x0 funcid=0x0",
+     "TEXT\tmain.probeBoundsOne(SB), NOSPLIT|NOFRAME|ABIInternal, $0-24",
+     "MOVQ\tAX, main.a+8(FP)",
+     "XORL\tCX, CX",
+     "XORL\tDX, DX",
+     "JMP\t17",
+     "ADDL\t(AX)(DX*4), CX",
+     "INCQ\tDX",
+     "CMPQ\tBX, DX",
+     "JGT\t11",
+     "MOVL\tCX, AX",
+     "RET"
+    ],
+    "bounds_two": [
+     "main.probeBoundsTwo STEXT nosplit size=60 align=0x0 args=0x30 locals=0x8 funcid=0x0",
+     "TEXT\tmain.probeBoundsTwo(SB), NOSPLIT|ABIInternal, $8-48",
+     "PUSHQ\tBP",
+     "MOVQ\tSP, BP",
+     "MOVQ\tAX, main.a+16(FP)",
+     "MOVQ\tDI, main.b+40(FP)",
+     "XORL\tCX, CX",
+     "XORL\tDX, DX",
+     "JMP\t34",
+     "MOVL\t(DI)(DX*4), R9",
+     "IMULL\tR9, R8",
+     "ADDL\tR8, CX",
+     "INCQ\tDX",
+     "CMPQ\tBX, DX",
+     "JLE\t50",
+     "MOVL\t(AX)(DX*4), R8",
+     "CMPQ\tSI, DX",
+     "JHI\t20",
+     "JMP\t54",
+     "MOVL\tCX, AX",
+     "POPQ\tBP",
+     "RET",
+     "CALL\truntime.panicBounds(SB)",
+     "XCHGL\tAX, AX",
+     "\trel 55+4 t=R_CALL runtime.panicBounds+0"
+    ],
+    "dyn": [
+     "main.probeDyn STEXT size=139 align=0x0 args=0x18 locals=0x28 funcid=0x0",
+     "TEXT\tmain.probeDyn(SB), ABIInternal, $40-24",
+     "CMPQ\tSP, 16(R14)",
+     "JLS\t99",
+     "PUSHQ\tBP",
+     "MOVQ\tSP, BP",
+     "SUBQ\t$32, SP",
+     "MOVQ\tAX, main.xs+48(FP)",
+     "XORL\tCX, CX",
+     "JMP\t85",
+     "MOVQ\tBX, main..autotmp_12+16(SP)",
+     "MOVQ\tCX, main.s+8(SP)",
+     "MOVQ\tAX, main..autotmp_13+24(SP)",
+     "MOVQ\t8(AX), CX",
+     "MOVQ\t(AX), DX",
+     "MOVQ\t24(DX), DX",
+     "MOVQ\tCX, AX",
+     "CALL\tDX",
+     "MOVQ\tmain..autotmp_13+24(SP), CX",
+     "ADDQ\t$16, CX",
+     "MOVQ\tmain.s+8(SP), DX",
+     "ADDQ\tAX, DX",
+     "MOVQ\tmain..autotmp_12+16(SP), BX",
+     "DECQ\tBX",
+     "MOVQ\tCX, AX",
+     "MOVQ\tDX, CX",
+     "TESTQ\tBX, BX",
+     "JGT\t23",
+     "MOVQ\tCX, AX",
+     "ADDQ\t$32, SP",
+     "POPQ\tBP",
+     "RET",
+     "NOP",
+     "MOVQ\tAX, 8(SP)",
+     "MOVQ\tBX, 16(SP)",
+     "MOVQ\tCX, 24(SP)",
+     "CALL\truntime.morestack_noctxt(SB)",
+     "MOVQ\t8(SP), AX",
+     "MOVQ\t16(SP), BX",
+     "MOVQ\t24(SP), CX",
+     "JMP\t0",
+     "\trel 2+0 t=R_USEIFACEMETHOD type:main.Shape+96",
+     "\trel 52+0 t=R_CALLIND +0",
+     "\trel 115+4 t=R_CALL runtime.morestack_noctxt+0"
+    ],
+    "alloc": [
+     "main.probeAlloc STEXT nosplit size=41 align=0x0 args=0x18 locals=0x0 funcid=0x0",
+     "TEXT\tmain.probeAlloc(SB), NOSPLIT|NOFRAME|ABIInternal, $0-24",
+     "MOVQ\tAX, main.a+8(FP)",
+     "XORL\tCX, CX",
+     "XORL\tDX, DX",
+     "JMP\t32",
+     "LEAQ\t(AX)(DX*4), SI",
+     "MOVLQSX\t(SI), SI",
+     "LEAQ\t(SI)(SI*2), SI",
+     "ADDQ\tSI, CX",
+     "INCQ\tDX",
+     "NOP",
+     "CMPQ\tBX, DX",
+     "JGT\t11",
+     "MOVQ\tCX, AX",
+     "RET"
+    ],
+    "dyn_pgo": [
+     "main.probeDyn STEXT size=166 align=0x40 args=0x18 locals=0x28 funcid=0x0",
+     "TEXT\tmain.probeDyn(SB), ABIInternal, $40-24",
+     "CMPQ\tSP, 16(R14)",
+     "JLS\t126",
+     "PUSHQ\tBP",
+     "MOVQ\tSP, BP",
+     "SUBQ\t$32, SP",
+     "MOVQ\tAX, main.xs+48(FP)",
+     "XORL\tCX, CX",
+     "JMP\t33",
+     "PCALIGNMAX\t$64, $31",
+     "ADDQ\t$16, AX",
+     "ADDQ\tDX, CX",
+     "DECQ\tBX",
+     "TESTQ\tBX, BX",
+     "JLE\t117",
+     "MOVQ\t(AX), DX",
+     "MOVQ\t8(AX), SI",
+     "LEAQ\tgo:itab.*main.Square,main.Shape(SB), DI",
+     "CMPQ\tDX, DI",
+     "JNE\t66",
+     "MOVQ\t(SI), DX",
+     "NOP",
+     "IMULQ\tDX, DX",
+     "JMP\t23",
+     "MOVQ\tBX, main..autotmp_20+16(SP)",
+     "MOVQ\tAX, main..autotmp_21+24(SP)",
+     "MOVQ\tCX, main.s+8(SP)",
+     "MOVQ\t24(DX), CX",
+     "MOVQ\tSI, AX",
+     "CALL\tCX",
+     "MOVQ\tmain.s+8(SP), CX",
+     "MOVQ\tmain..autotmp_20+16(SP), BX",
+     "LEAQ\tgo:itab.*main.Square,main.Shape(SB), DI",
+     "MOVQ\tAX, DX",
+     "MOVQ\tmain..autotmp_21+24(SP), AX",
+     "JMP\t23",
+     "MOVQ\tCX, AX",
+     "ADDQ\t$32, SP",
+     "POPQ\tBP",
+     "RET",
+     "NOP",
+     "MOVQ\tAX, 8(SP)",
+     "MOVQ\tBX, 16(SP)",
+     "MOVQ\tCX, 24(SP)",
+     "CALL\truntime.morestack_noctxt(SB)",
+     "MOVQ\t8(SP), AX",
+     "MOVQ\t16(SP), BX",
+     "MOVQ\t24(SP), CX",
+     "JMP\t0",
+     "\trel 2+0 t=R_USEIFACEMETHOD type:main.Shape+96",
+     "\trel 48+4 t=R_PCREL go:itab.*main.Square,main.Shape+0",
+     "\trel 88+0 t=R_CALLIND +0",
+     "\trel 103+4 t=R_PCREL go:itab.*main.Square,main.Shape+0",
+     "\trel 142+4 t=R_CALL runtime.morestack_noctxt+0"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 2,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn_pgo": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 11.0.0-rc.1.26425.128 (SDK 11.0.100-rc.1.26425.128)",
+   "flags": "csc -optimize+ \u00b7 runtime defaults (tiered + dynamic PGO) \u00b7 no-PGO column: DOTNET_TieredPGO=0",
+   "compile_ms": 1468.0,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2307.8,
+    "bounds_one": 2342.7,
+    "bounds_two": 2405.4,
+    "dyn": 4796.2,
+    "alloc": 31550.0,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 11.0.0-rc.1.26425.128",
+    "runs": 3,
+    "dyn_nopgo": 14516.6
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     194500
+    ],
+    [
+     2,
+     3,
+     219950.0
+    ],
+    [
+     4,
+     7,
+     20000.0
+    ],
+    [
+     8,
+     15,
+     13800.0
+    ],
+    [
+     16,
+     31,
+     13150.0
+    ],
+    [
+     32,
+     63,
+     11100.0
+    ],
+    [
+     64,
+     127,
+     9900.0
+    ],
+    [
+     128,
+     255,
+     9400.0
+    ],
+    [
+     256,
+     511,
+     9100.0
+    ],
+    [
+     512,
+     1023,
+     9000.0
+    ],
+    [
+     1024,
+     2047,
+     8900.0
+    ],
+    [
+     2048,
+     4095,
+     8800.0
+    ],
+    [
+     4096,
+     8191,
+     8900.0
+    ],
+    [
+     8192,
+     16383,
+     8800.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "Probes:ProbeVecSum(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_one": [
+     "Probes:ProbeBoundsOne(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_two": [
+     "Probes:ProbeBoundsTwo(int[],int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0004",
+     "       xor      eax, eax",
+     "       xor      r8d, r8d",
+     "       mov      r10d, dword ptr [rcx+0x08]",
+     "       test     r10d, r10d",
+     "       jle      SHORT G_M000_IG07",
+     "G_M000_IG03:                ;; offset=0x0012",
+     "       test     rdx, rdx",
+     "       je       SHORT G_M000_IG08",
+     "G_M000_IG04:                ;; offset=0x0017",
+     "       cmp      dword ptr [rdx+0x08], r10d",
+     "       jl       SHORT G_M000_IG08",
+     "G_M000_IG05:                ;; offset=0x001D",
+     "       mov      r8d, 16",
+     "       align    [0 bytes for IG06]",
+     "G_M000_IG06:                ;; offset=0x0023",
+     "       mov      r9d, dword ptr [rcx+r8]",
+     "       imul     r9d, dword ptr [rdx+r8]",
+     "       add      eax, r9d",
+     "       add      r8, 4",
+     "       dec      r10d",
+     "       jne      SHORT G_M000_IG06",
+     "G_M000_IG07:                ;; offset=0x0038",
+     "       add      rsp, 40",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x003D",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       cmp      r8d, dword ptr [rdx+0x08]",
+     "       jae      SHORT G_M000_IG09",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      r11d, eax",
+     "       mov      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG08",
+     "       jmp      SHORT G_M000_IG07",
+     "G_M000_IG09:                ;; offset=0x0061",
+     "       call     CORINFO_HELP_RNGCHKFAIL",
+     "       int3"
+    ],
+    "dyn": [
+     "Probes:ProbeDyn(IShape[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0008",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG06",
+     "G_M000_IG03:                ;; offset=0x0011",
+     "       mov      rdi, 0x7FFCE61A0F90",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x001F",
+     "       mov      rcx, gword ptr [rbp]",
+     "       cmp      qword ptr [rcx], rdi",
+     "       jne      SHORT G_M000_IG08",
+     "       mov      rax, qword ptr [rcx+0x08]",
+     "       imul     rax, rax",
+     "G_M000_IG05:                ;; offset=0x0030",
+     "       add      rbx, rax",
+     "       add      rbp, 8",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG06:                ;; offset=0x003B",
+     "       mov      rax, rbx",
+     "G_M000_IG07:                ;; offset=0x003E",
+     "       add      rsp, 40",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x0047",
+     "       mov      r11, 0x7FFCE5EC0088",
+     "       call     [r11]IShape:Area():long:this",
+     "       jmp      SHORT G_M000_IG05"
+    ],
+    "alloc": [
+     "Probes:ProbeAlloc(int[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 32",
+     "G_M000_IG02:                ;; offset=0x000A",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0013",
+     "       mov      rdi, 0x7FFCE61A43A0",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x0021",
+     "       mov      r14d, dword ptr [rbp]",
+     "       mov      rcx, rdi",
+     "       call     CORINFO_HELP_NEWSFAST",
+     "       movsxd   rcx, r14d",
+     "       mov      qword ptr [rax+0x08], rcx",
+     "       lea      rdx, [rcx+rcx]",
+     "       mov      qword ptr [rax+0x10], rdx",
+     "       add      rbx, rcx",
+     "       add      rbx, rdx",
+     "       add      rbp, 4",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x004A",
+     "       mov      rax, rbx",
+     "G_M000_IG06:                ;; offset=0x004D",
+     "       add      rsp, 32",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       ret"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 1
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 9.0.17 (SDK 9.0.315)",
+   "flags": "csc -optimize+ \u00b7 runtime defaults (tiered + dynamic PGO) \u00b7 no-PGO column: DOTNET_TieredPGO=0",
+   "compile_ms": 1323.6,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2285.2,
+    "bounds_one": 2316.4,
+    "bounds_two": 3247.7,
+    "dyn": 5227.0,
+    "alloc": 38285.0,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 9.0.17",
+    "runs": 3,
+    "dyn_nopgo": 14427.6
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     163900
+    ],
+    [
+     2,
+     3,
+     200650.0
+    ],
+    [
+     4,
+     7,
+     21500.0
+    ],
+    [
+     8,
+     15,
+     15650.0
+    ],
+    [
+     16,
+     31,
+     14750.0
+    ],
+    [
+     32,
+     63,
+     11900.0
+    ],
+    [
+     64,
+     127,
+     10400.0
+    ],
+    [
+     128,
+     255,
+     9900.0
+    ],
+    [
+     256,
+     511,
+     9400.0
+    ],
+    [
+     512,
+     1023,
+     9300.0
+    ],
+    [
+     1024,
+     2047,
+     9300.0
+    ],
+    [
+     2048,
+     4095,
+     9200.0
+    ],
+    [
+     4096,
+     8191,
+     9300.0
+    ],
+    [
+     8192,
+     16383,
+     9200.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "Probes:ProbeVecSum(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_one": [
+     "Probes:ProbeBoundsOne(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_two": [
+     "Probes:ProbeBoundsTwo(int[],int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0004",
+     "       xor      eax, eax",
+     "       xor      r8d, r8d",
+     "       mov      r10d, dword ptr [rcx+0x08]",
+     "       test     r10d, r10d",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0012",
+     "       test     rdx, rdx",
+     "       je       SHORT G_M000_IG06",
+     "       cmp      dword ptr [rdx+0x08], r10d",
+     "       jl       SHORT G_M000_IG06",
+     "       align    [3 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x0020",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0039",
+     "       add      rsp, 40",
+     "       ret",
+     "G_M000_IG06:                ;; offset=0x003E",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       cmp      r8d, dword ptr [rdx+0x08]",
+     "       jae      SHORT G_M000_IG07",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      r11d, eax",
+     "       mov      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG06",
+     "       jmp      SHORT G_M000_IG05",
+     "G_M000_IG07:                ;; offset=0x0062",
+     "       call     CORINFO_HELP_RNGCHKFAIL",
+     "       int3"
+    ],
+    "dyn": [
+     "Probes:ProbeDyn(IShape[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0008",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG06",
+     "G_M000_IG03:                ;; offset=0x0011",
+     "       mov      rdi, 0x7FFCE61E1038",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x001F",
+     "       mov      rcx, gword ptr [rbp]",
+     "       cmp      qword ptr [rcx], rdi",
+     "       jne      SHORT G_M000_IG08",
+     "       mov      rax, qword ptr [rcx+0x08]",
+     "       imul     rax, rax",
+     "G_M000_IG05:                ;; offset=0x0030",
+     "       add      rbx, rax",
+     "       add      rbp, 8",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG06:                ;; offset=0x003B",
+     "       mov      rax, rbx",
+     "G_M000_IG07:                ;; offset=0x003E",
+     "       add      rsp, 40",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x0047",
+     "       mov      r11, 0x7FFCE5EB0090",
+     "       call     [r11]IShape:Area():long:this",
+     "       jmp      SHORT G_M000_IG05"
+    ],
+    "alloc": [
+     "Probes:ProbeAlloc(int[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 32",
+     "G_M000_IG02:                ;; offset=0x000A",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0013",
+     "       mov      rdi, 0x7FFCE61E4448",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x0021",
+     "       mov      r14d, dword ptr [rbp]",
+     "       mov      rcx, rdi",
+     "       call     CORINFO_HELP_NEWSFAST",
+     "       movsxd   rcx, r14d",
+     "       mov      qword ptr [rax+0x08], rcx",
+     "       lea      rdx, [rcx+rcx]",
+     "       mov      qword ptr [rax+0x10], rdx",
+     "       add      rbx, rcx",
+     "       add      rbx, rdx",
+     "       add      rbp, 4",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x004A",
+     "       mov      rax, rbx",
+     "G_M000_IG06:                ;; offset=0x004D",
+     "       add      rsp, 32",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       ret"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 1
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 8.0.28 (SDK 9.0.315)",
+   "flags": "csc -optimize+ \u00b7 runtime defaults (tiered + dynamic PGO) \u00b7 no-PGO column: DOTNET_TieredPGO=0",
+   "compile_ms": 1244.5,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 3127.1,
+    "bounds_one": 3099.2,
+    "bounds_two": 4020.3,
+    "dyn": 5991.8,
+    "alloc": 37768.3,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 8.0.28",
+    "runs": 3,
+    "dyn_nopgo": 15060.6
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     177300
+    ],
+    [
+     2,
+     3,
+     232200.0
+    ],
+    [
+     4,
+     7,
+     20700.0
+    ],
+    [
+     8,
+     15,
+     14200.0
+    ],
+    [
+     16,
+     31,
+     13550.0
+    ],
+    [
+     32,
+     63,
+     11250.0
+    ],
+    [
+     64,
+     127,
+     9800.0
+    ],
+    [
+     128,
+     255,
+     9200.0
+    ],
+    [
+     256,
+     511,
+     8900.0
+    ],
+    [
+     512,
+     1023,
+     8700.0
+    ],
+    [
+     1024,
+     2047,
+     8600.0
+    ],
+    [
+     2048,
+     4095,
+     8500.0
+    ],
+    [
+     4096,
+     8191,
+     8500.0
+    ],
+    [
+     8192,
+     16383,
+     8500.0
+    ],
+    [
+     16384,
+     20000,
+     8500
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "Probes:ProbeVecSum(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       xor      edx, edx",
+     "       mov      r8d, dword ptr [rcx+0x08]",
+     "       test     r8d, r8d",
+     "       jle      SHORT G_M000_IG04",
+     "       align    [0 bytes for IG03]",
+     "G_M000_IG03:                ;; offset=0x000D",
+     "       mov      r10d, edx",
+     "       add      eax, dword ptr [rcx+4*r10+0x10]",
+     "       inc      edx",
+     "       cmp      r8d, edx",
+     "       jg       SHORT G_M000_IG03",
+     "G_M000_IG04:                ;; offset=0x001C",
+     "       ret"
+    ],
+    "bounds_one": [
+     "Probes:ProbeBoundsOne(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       xor      edx, edx",
+     "       mov      r8d, dword ptr [rcx+0x08]",
+     "       test     r8d, r8d",
+     "       jle      SHORT G_M000_IG04",
+     "       align    [0 bytes for IG03]",
+     "G_M000_IG03:                ;; offset=0x000D",
+     "       mov      r10d, edx",
+     "       add      eax, dword ptr [rcx+4*r10+0x10]",
+     "       inc      edx",
+     "       cmp      r8d, edx",
+     "       jg       SHORT G_M000_IG03",
+     "G_M000_IG04:                ;; offset=0x001C",
+     "       ret"
+    ],
+    "bounds_two": [
+     "Probes:ProbeBoundsTwo(int[],int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0004",
+     "       xor      eax, eax",
+     "       xor      r8d, r8d",
+     "       mov      r10d, dword ptr [rcx+0x08]",
+     "       test     r10d, r10d",
+     "       jle      SHORT G_M000_IG08",
+     "G_M000_IG03:                ;; offset=0x0012",
+     "       test     rdx, rdx",
+     "       je       SHORT G_M000_IG07",
+     "G_M000_IG04:                ;; offset=0x0017",
+     "       cmp      dword ptr [rdx+0x08], r10d",
+     "       jl       SHORT G_M000_IG07",
+     "       align    [3 bytes for IG05]",
+     "G_M000_IG05:                ;; offset=0x0020",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG05",
+     "G_M000_IG06:                ;; offset=0x0039",
+     "       jmp      SHORT G_M000_IG08",
+     "G_M000_IG07:                ;; offset=0x003B",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       cmp      r8d, dword ptr [rdx+0x08]",
+     "       jae      SHORT G_M000_IG09",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      r11d, eax",
+     "       mov      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG07",
+     "G_M000_IG08:                ;; offset=0x005D",
+     "       add      rsp, 40",
+     "       ret",
+     "G_M000_IG09:                ;; offset=0x0062",
+     "       call     CORINFO_HELP_RNGCHKFAIL",
+     "       int3"
+    ],
+    "dyn": [
+     "Probes:ProbeDyn(IShape[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 32",
+     "G_M000_IG02:                ;; offset=0x000A",
+     "       xor      ebx, ebx",
+     "       mov      rsi, rcx",
+     "       xor      edi, edi",
+     "       mov      ebp, dword ptr [rsi+0x08]",
+     "       test     ebp, ebp",
+     "       jle      SHORT G_M000_IG06",
+     "G_M000_IG03:                ;; offset=0x0018",
+     "       mov      r14, 0x7FFCE61BDC38",
+     "G_M000_IG04:                ;; offset=0x0022",
+     "       mov      eax, edi",
+     "       mov      rcx, gword ptr [rsi+8*rax+0x10]",
+     "       cmp      qword ptr [rcx], r14",
+     "       jne      SHORT G_M000_IG08",
+     "       mov      rax, qword ptr [rcx+0x08]",
+     "       imul     rax, rax",
+     "G_M000_IG05:                ;; offset=0x0036",
+     "       add      rbx, rax",
+     "       inc      edi",
+     "       cmp      ebp, edi",
+     "       jg       SHORT G_M000_IG04",
+     "G_M000_IG06:                ;; offset=0x003F",
+     "       mov      rax, rbx",
+     "G_M000_IG07:                ;; offset=0x0042",
+     "       add      rsp, 32",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x004D",
+     "       mov      r11, 0x7FFCE5EA0060",
+     "       call     [r11]IShape:Area():long:this",
+     "       jmp      SHORT G_M000_IG05"
+    ],
+    "alloc": [
+     "Probes:ProbeAlloc(int[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r15",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x000C",
+     "       xor      ebx, ebx",
+     "       mov      rsi, rcx",
+     "       xor      edi, edi",
+     "       mov      ebp, dword ptr [rsi+0x08]",
+     "       test     ebp, ebp",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x001A",
+     "       mov      r14, 0x7FFCE61E0948",
+     "G_M000_IG04:                ;; offset=0x0024",
+     "       mov      ecx, edi",
+     "       mov      r15d, dword ptr [rsi+4*rcx+0x10]",
+     "       mov      rcx, r14",
+     "       call     CORINFO_HELP_NEWSFAST",
+     "       movsxd   rcx, r15d",
+     "       mov      qword ptr [rax+0x08], rcx",
+     "       lea      rdx, [rcx+rcx]",
+     "       mov      qword ptr [rax+0x10], rdx",
+     "       add      rbx, rcx",
+     "       add      rbx, rdx",
+     "       inc      edi",
+     "       cmp      ebp, edi",
+     "       jg       SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x004E",
+     "       mov      rax, rbx",
+     "G_M000_IG06:                ;; offset=0x0051",
+     "       add      rsp, 40",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       pop      r15",
+     "       ret"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 1
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 10.0.12 (SDK 10.0.401)",
+   "flags": "csc -optimize+ \u00b7 runtime defaults (tiered + dynamic PGO) \u00b7 no-PGO column: DOTNET_TieredPGO=0",
+   "compile_ms": 2411.1,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 3123.4,
+    "bounds_one": 3335.5,
+    "bounds_two": 3787.2,
+    "dyn": 6170.4,
+    "alloc": 47317.0,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 10.0.12",
+    "runs": 3,
+    "dyn_nopgo": 13254.6
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     186700
+    ],
+    [
+     2,
+     3,
+     451200.0
+    ],
+    [
+     4,
+     7,
+     27750.0
+    ],
+    [
+     8,
+     15,
+     21300.0
+    ],
+    [
+     16,
+     31,
+     20250.0
+    ],
+    [
+     32,
+     63,
+     17800.0
+    ],
+    [
+     64,
+     127,
+     11600.0
+    ],
+    [
+     128,
+     255,
+     9800.0
+    ],
+    [
+     256,
+     511,
+     9700.0
+    ],
+    [
+     512,
+     1023,
+     9300.0
+    ],
+    [
+     1024,
+     2047,
+     9400.0
+    ],
+    [
+     2048,
+     4095,
+     9100.0
+    ],
+    [
+     4096,
+     8191,
+     9300.0
+    ],
+    [
+     8192,
+     16383,
+     8900.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "Probes:ProbeVecSum(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_one": [
+     "Probes:ProbeBoundsOne(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_two": [
+     "Probes:ProbeBoundsTwo(int[],int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0004",
+     "       xor      eax, eax",
+     "       xor      r8d, r8d",
+     "       mov      r10d, dword ptr [rcx+0x08]",
+     "       test     r10d, r10d",
+     "       jle      SHORT G_M000_IG07",
+     "G_M000_IG03:                ;; offset=0x0012",
+     "       test     rdx, rdx",
+     "       je       SHORT G_M000_IG08",
+     "G_M000_IG04:                ;; offset=0x0017",
+     "       cmp      dword ptr [rdx+0x08], r10d",
+     "       jl       SHORT G_M000_IG08",
+     "G_M000_IG05:                ;; offset=0x001D",
+     "       mov      r8d, 16",
+     "       align    [0 bytes for IG06]",
+     "G_M000_IG06:                ;; offset=0x0023",
+     "       mov      r9d, dword ptr [rcx+r8]",
+     "       imul     r9d, dword ptr [rdx+r8]",
+     "       add      eax, r9d",
+     "       add      r8, 4",
+     "       dec      r10d",
+     "       jne      SHORT G_M000_IG06",
+     "G_M000_IG07:                ;; offset=0x0038",
+     "       add      rsp, 40",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x003D",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       cmp      r8d, dword ptr [rdx+0x08]",
+     "       jae      SHORT G_M000_IG09",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      r11d, eax",
+     "       mov      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG08",
+     "       jmp      SHORT G_M000_IG07",
+     "G_M000_IG09:                ;; offset=0x0061",
+     "       call     CORINFO_HELP_RNGCHKFAIL",
+     "       int3"
+    ],
+    "dyn": [
+     "Probes:ProbeDyn(IShape[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0008",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG06",
+     "G_M000_IG03:                ;; offset=0x0011",
+     "       mov      rdi, 0x7FFCE96DF400",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x001F",
+     "       mov      rcx, gword ptr [rbp]",
+     "       cmp      qword ptr [rcx], rdi",
+     "       jne      SHORT G_M000_IG08",
+     "       mov      rax, qword ptr [rcx+0x08]",
+     "       imul     rax, rax",
+     "G_M000_IG05:                ;; offset=0x0030",
+     "       add      rbx, rax",
+     "       add      rbp, 8",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG06:                ;; offset=0x003B",
+     "       mov      rax, rbx",
+     "G_M000_IG07:                ;; offset=0x003E",
+     "       add      rsp, 40",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x0047",
+     "       mov      r11, 0x7FFCE9410090",
+     "       call     [r11]IShape:Area():long:this",
+     "       jmp      SHORT G_M000_IG05"
+    ],
+    "alloc": [
+     "Probes:ProbeAlloc(int[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 32",
+     "G_M000_IG02:                ;; offset=0x000A",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0013",
+     "       mov      rdi, 0x7FFCE9702638",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x0021",
+     "       mov      r14d, dword ptr [rbp]",
+     "       mov      rcx, rdi",
+     "       call     CORINFO_HELP_NEWSFAST",
+     "       movsxd   rcx, r14d",
+     "       mov      qword ptr [rax+0x08], rcx",
+     "       lea      rdx, [rcx+rcx]",
+     "       mov      qword ptr [rax+0x10], rdx",
+     "       add      rbx, rcx",
+     "       add      rbx, rdx",
+     "       add      rbp, 4",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x004A",
+     "       mov      rax, rbx",
+     "G_M000_IG06:                ;; offset=0x004D",
+     "       add      rsp, 32",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       ret"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 1
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 10.0.12 \u00b7 ReadyToRun",
+   "mode": "r2r",
+   "flags": "dotnet publish -c Release -r win-x64 -p:PublishReadyToRun=true",
+   "compile_ms": 1698.4,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2143.0,
+    "bounds_one": 2236.8,
+    "bounds_two": 2652.9,
+    "dyn": 4620.4,
+    "alloc": 26534.7,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 10.0.12",
+    "runs": 3
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     23700
+    ],
+    [
+     2,
+     3,
+     3850.0
+    ],
+    [
+     4,
+     7,
+     3600.0
+    ],
+    [
+     8,
+     15,
+     3600.0
+    ],
+    [
+     16,
+     31,
+     3600.0
+    ],
+    [
+     32,
+     63,
+     3600.0
+    ],
+    [
+     64,
+     127,
+     3600.0
+    ],
+    [
+     128,
+     255,
+     3600.0
+    ],
+    [
+     256,
+     511,
+     3600.0
+    ],
+    [
+     512,
+     1023,
+     3500.0
+    ],
+    [
+     1024,
+     2047,
+     2150.0
+    ],
+    [
+     2048,
+     4095,
+     2100.0
+    ],
+    [
+     4096,
+     8191,
+     2200.0
+    ],
+    [
+     8192,
+     16383,
+     2100.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {},
+   "features": null
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 10.0.12 \u00b7 NativeAOT",
+   "mode": "aot",
+   "flags": "dotnet publish -c Release -r win-x64 -p:PublishAot=true",
+   "compile_ms": 6270.7,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2208.8,
+    "bounds_one": 2244.7,
+    "bounds_two": 2362.5,
+    "dyn": 3721.6,
+    "alloc": 23109.7,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 10.0.12",
+    "runs": 3
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     2300
+    ],
+    [
+     2,
+     3,
+     2150.0
+    ],
+    [
+     4,
+     7,
+     2100.0
+    ],
+    [
+     8,
+     15,
+     2100.0
+    ],
+    [
+     16,
+     31,
+     2100.0
+    ],
+    [
+     32,
+     63,
+     2100.0
+    ],
+    [
+     64,
+     127,
+     2100.0
+    ],
+    [
+     128,
+     255,
+     2100.0
+    ],
+    [
+     256,
+     511,
+     2100.0
+    ],
+    [
+     512,
+     1023,
+     2100.0
+    ],
+    [
+     1024,
+     2047,
+     2100.0
+    ],
+    [
+     2048,
+     4095,
+     2100.0
+    ],
+    [
+     4096,
+     8191,
+     2100.0
+    ],
+    [
+     8192,
+     16383,
+     2100.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {},
+   "features": null
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 11.0.0-rc.2.26504.105 (SDK 11.0.100-rc.2.26504.105)",
+   "flags": "csc -optimize+ \u00b7 runtime defaults (tiered + dynamic PGO) \u00b7 no-PGO column: DOTNET_TieredPGO=0",
+   "compile_ms": 1520.0,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2492.8,
+    "bounds_one": 2221.2,
+    "bounds_two": 2428.0,
+    "dyn": 4690.2,
+    "alloc": 31845.0,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "runs": 3,
+    "dyn_nopgo": 16115.2
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     220200
+    ],
+    [
+     2,
+     3,
+     242100.0
+    ],
+    [
+     4,
+     7,
+     20150.0
+    ],
+    [
+     8,
+     15,
+     14100.0
+    ],
+    [
+     16,
+     31,
+     13000.0
+    ],
+    [
+     32,
+     63,
+     10900.0
+    ],
+    [
+     64,
+     127,
+     9900.0
+    ],
+    [
+     128,
+     255,
+     9100.0
+    ],
+    [
+     256,
+     511,
+     8700.0
+    ],
+    [
+     512,
+     1023,
+     13300.0
+    ],
+    [
+     1024,
+     2047,
+     11900.0
+    ],
+    [
+     2048,
+     4095,
+     8600.0
+    ],
+    [
+     4096,
+     8191,
+     8600.0
+    ],
+    [
+     8192,
+     16383,
+     8300.0
+    ],
+    [
+     16384,
+     20000,
+     2200
+    ]
+   ],
+   "asm": {
+    "vec_sum": [
+     "Probes:ProbeVecSum(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_one": [
+     "Probes:ProbeBoundsOne(int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "G_M000_IG02:                ;; offset=0x0000",
+     "       xor      eax, eax",
+     "       mov      edx, dword ptr [rcx+0x08]",
+     "       test     edx, edx",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0009",
+     "       add      rcx, 16",
+     "       align    [0 bytes for IG04]",
+     "G_M000_IG04:                ;; offset=0x000D",
+     "       add      eax, dword ptr [rcx]",
+     "       add      rcx, 4",
+     "       dec      edx",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x0017",
+     "       ret"
+    ],
+    "bounds_two": [
+     "Probes:ProbeBoundsTwo(int[],int[]):int (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0004",
+     "       xor      eax, eax",
+     "       xor      r8d, r8d",
+     "       mov      r10d, dword ptr [rcx+0x08]",
+     "       test     r10d, r10d",
+     "       jle      SHORT G_M000_IG07",
+     "G_M000_IG03:                ;; offset=0x0012",
+     "       test     rdx, rdx",
+     "       je       SHORT G_M000_IG08",
+     "G_M000_IG04:                ;; offset=0x0017",
+     "       cmp      dword ptr [rdx+0x08], r10d",
+     "       jl       SHORT G_M000_IG08",
+     "G_M000_IG05:                ;; offset=0x001D",
+     "       mov      r8d, 16",
+     "       align    [0 bytes for IG06]",
+     "G_M000_IG06:                ;; offset=0x0023",
+     "       mov      r9d, dword ptr [rcx+r8]",
+     "       imul     r9d, dword ptr [rdx+r8]",
+     "       add      eax, r9d",
+     "       add      r8, 4",
+     "       dec      r10d",
+     "       jne      SHORT G_M000_IG06",
+     "G_M000_IG07:                ;; offset=0x0038",
+     "       add      rsp, 40",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x003D",
+     "       mov      r9d, r8d",
+     "       mov      r11d, dword ptr [rcx+4*r9+0x10]",
+     "       cmp      r8d, dword ptr [rdx+0x08]",
+     "       jae      SHORT G_M000_IG09",
+     "       imul     r11d, dword ptr [rdx+4*r9+0x10]",
+     "       add      r11d, eax",
+     "       mov      eax, r11d",
+     "       inc      r8d",
+     "       cmp      r10d, r8d",
+     "       jg       SHORT G_M000_IG08",
+     "       jmp      SHORT G_M000_IG07",
+     "G_M000_IG09:                ;; offset=0x0061",
+     "       call     CORINFO_HELP_RNGCHKFAIL",
+     "       int3"
+    ],
+    "dyn": [
+     "Probes:ProbeDyn(IShape[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 40",
+     "G_M000_IG02:                ;; offset=0x0008",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG06",
+     "G_M000_IG03:                ;; offset=0x0011",
+     "       mov      rdi, 0x7FFB136D0F90",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x001F",
+     "       mov      rcx, gword ptr [rbp]",
+     "       cmp      qword ptr [rcx], rdi",
+     "       jne      SHORT G_M000_IG08",
+     "       mov      rax, qword ptr [rcx+0x08]",
+     "       imul     rax, rax",
+     "G_M000_IG05:                ;; offset=0x0030",
+     "       add      rbx, rax",
+     "       add      rbp, 8",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG06:                ;; offset=0x003B",
+     "       mov      rax, rbx",
+     "G_M000_IG07:                ;; offset=0x003E",
+     "       add      rsp, 40",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       ret",
+     "G_M000_IG08:                ;; offset=0x0047",
+     "       mov      r11, 0x7FFB133F0088",
+     "       call     [r11]IShape:Area():long:this",
+     "       jmp      SHORT G_M000_IG05"
+    ],
+    "alloc": [
+     "Probes:ProbeAlloc(int[]):long (Tier1)",
+     "G_M000_IG01:                ;; offset=0x0000",
+     "       push     r14",
+     "       push     rdi",
+     "       push     rsi",
+     "       push     rbp",
+     "       push     rbx",
+     "       sub      rsp, 32",
+     "G_M000_IG02:                ;; offset=0x000A",
+     "       xor      ebx, ebx",
+     "       mov      esi, dword ptr [rcx+0x08]",
+     "       test     esi, esi",
+     "       jle      SHORT G_M000_IG05",
+     "G_M000_IG03:                ;; offset=0x0013",
+     "       mov      rdi, 0x7FFB136D43A0",
+     "       lea      rbp, bword ptr [rcx+0x10]",
+     "G_M000_IG04:                ;; offset=0x0021",
+     "       mov      r14d, dword ptr [rbp]",
+     "       mov      rcx, rdi",
+     "       call     CORINFO_HELP_NEWSFAST",
+     "       movsxd   rcx, r14d",
+     "       mov      qword ptr [rax+0x08], rcx",
+     "       lea      rdx, [rcx+rcx]",
+     "       mov      qword ptr [rax+0x10], rdx",
+     "       add      rbx, rcx",
+     "       add      rbx, rdx",
+     "       add      rbp, 4",
+     "       dec      esi",
+     "       jne      SHORT G_M000_IG04",
+     "G_M000_IG05:                ;; offset=0x004A",
+     "       mov      rax, rbx",
+     "G_M000_IG06:                ;; offset=0x004D",
+     "       add      rsp, 32",
+     "       pop      rbx",
+     "       pop      rbp",
+     "       pop      rsi",
+     "       pop      rdi",
+     "       pop      r14",
+     "       ret"
+    ]
+   },
+   "features": {
+    "vec_sum": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_one": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "bounds_two": {
+     "vector_add": 0,
+     "bounds_checks": 1,
+     "indirect_calls": 0,
+     "heap_calls": 0
+    },
+    "dyn": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 1,
+     "heap_calls": 0
+    },
+    "alloc": {
+     "vector_add": 0,
+     "bounds_checks": 0,
+     "indirect_calls": 0,
+     "heap_calls": 1
+    }
+   }
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 11.0.0-rc.2.26504.105 \u00b7 ReadyToRun",
+   "mode": "r2r",
+   "flags": "dotnet publish -c Release -r win-x64 -p:PublishReadyToRun=true",
+   "compile_ms": 1058.3,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2479.4,
+    "bounds_one": 2219.4,
+    "bounds_two": 2593.4,
+    "dyn": 5357.6,
+    "alloc": 33975.3,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "runs": 3
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     7100
+    ],
+    [
+     2,
+     3,
+     2450.0
+    ],
+    [
+     4,
+     7,
+     2150.0
+    ],
+    [
+     8,
+     15,
+     2100.0
+    ],
+    [
+     16,
+     31,
+     2100.0
+    ],
+    [
+     32,
+     63,
+     2100.0
+    ],
+    [
+     64,
+     127,
+     2100.0
+    ],
+    [
+     128,
+     255,
+     2100.0
+    ],
+    [
+     256,
+     511,
+     2100.0
+    ],
+    [
+     512,
+     1023,
+     2100.0
+    ],
+    [
+     1024,
+     2047,
+     3500.0
+    ],
+    [
+     2048,
+     4095,
+     2100.0
+    ],
+    [
+     4096,
+     8191,
+     2100.0
+    ],
+    [
+     8192,
+     16383,
+     2100.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {},
+   "features": null
+  },
+  {
+   "id": "cs",
+   "name": "C#",
+   "version": ".NET 11.0.0-rc.2.26504.105 \u00b7 NativeAOT",
+   "mode": "aot",
+   "flags": "dotnet publish -c Release -r win-x64 -p:PublishAot=true",
+   "compile_ms": 1464.3,
+   "bench": {
+    "n": 4096,
+    "vec_sum": 2271.9,
+    "bounds_one": 2265.0,
+    "bounds_two": 2508.9,
+    "dyn": 3927.8,
+    "alloc": 29158.3,
+    "alloc_bytes_per_elem": 32.0,
+    "alloc_per_elem": 1.0,
+    "check": 21544000,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "runs": 3
+   },
+   "warmup": [
+    [
+     1,
+     1,
+     3700
+    ],
+    [
+     2,
+     3,
+     3500.0
+    ],
+    [
+     4,
+     7,
+     3500.0
+    ],
+    [
+     8,
+     15,
+     2100.0
+    ],
+    [
+     16,
+     31,
+     2100.0
+    ],
+    [
+     32,
+     63,
+     3500.0
+    ],
+    [
+     64,
+     127,
+     2200.0
+    ],
+    [
+     128,
+     255,
+     3500.0
+    ],
+    [
+     256,
+     511,
+     3600.0
+    ],
+    [
+     512,
+     1023,
+     3600.0
+    ],
+    [
+     1024,
+     2047,
+     3400.0
+    ],
+    [
+     2048,
+     4095,
+     2100.0
+    ],
+    [
+     4096,
+     8191,
+     2100.0
+    ],
+    [
+     8192,
+     16383,
+     2100.0
+    ],
+    [
+     16384,
+     20000,
+     2100
+    ]
+   ],
+   "asm": {},
+   "features": null
+  }
+ ],
+ "machine": {
+  "cpu": "Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz",
+  "os": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.2"
+ },
+ "generated": "2026-10-21 15:58 E. Africa Standard Time",
+ "baked": true,
+ "label": "LAPTOP RUN \u00b7 WINDOWS 11"
+}

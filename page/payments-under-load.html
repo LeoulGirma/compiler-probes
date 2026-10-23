@@ -1,0 +1,172 @@
+<title>Payments Under Load</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Martian+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: a lab notebook on graph paper — verdict board first, then one card per .NET 11 claim with the measurement and the machine code behind it */
+:root{
+  --bg:#f1f2ef; --surface:#fbfbf9; --ink:#141a2b; --mute:#646c7f; --hair:#d3d7d0; --grid:#e4e7e1; --code:#f4f5f2;
+  --blue:#3a2cf2; --good:#1b8a34; --goodbg:#dcf8cf; --bad:#c81d47; --badbg:#ffe3ea; --meh:#8a6400; --mehbg:#fff2cc;
+  --rust:#d9501f; --go:#0088ad; --cs10:#9b8fb8; --cs11:#7e35cf; --csra:#3a2cf2;
+  --disp:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --mono:"Martian Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --jb:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11141b;--surface:#181c25;--ink:#e9ecf3;--mute:#9aa2b4;--hair:#2c3240;--grid:#1a1f29;--code:#11151d;--blue:#8f86ff;--good:#5fd479;--goodbg:#173322;--bad:#ff6b8a;--badbg:#3a1822;--meh:#f3c85a;--mehbg:#2f2610;--rust:#ff7a47;--go:#2cc4ec;--cs10:#8d84a6;--cs11:#b07cff;--csra:#8f86ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11141b;--surface:#181c25;--ink:#e9ecf3;--mute:#9aa2b4;--hair:#2c3240;--grid:#1a1f29;--code:#11151d;--blue:#8f86ff;--good:#5fd479;--goodbg:#173322;--bad:#ff6b8a;--badbg:#3a1822;--meh:#f3c85a;--mehbg:#2f2610;--rust:#ff7a47;--go:#2cc4ec;--cs10:#8d84a6;--cs11:#b07cff;--csra:#8f86ff;color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--disp);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.wrap>*,#feats>*{min-width:0}
+.eyebrow{font:700 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+h1{font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1.02;margin:6px 0 10px;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--blue)}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
+.lede{font-size:clamp(17px,2.2vw,20px);max-width:66ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font:700 11px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.card{background:var(--surface);border:1.5px solid var(--ink);border-radius:14px}
+.pad{padding:20px}
+.sub{color:var(--mute);margin:4px 0 0;font-size:15px;max-width:70ch}
+/* verdict board */
+.board{overflow-x:auto}
+.board table{width:100%;border-collapse:collapse;min-width:720px}
+.board th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+.board td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
+.board tr:last-child td{border-bottom:0}
+.board td b{display:block;font-size:17px;line-height:1.2}
+.board td a{color:inherit;text-decoration:none}
+.board td a:hover b{text-decoration:underline}
+.board .claim{color:var(--mute);font-size:14px;max-width:34ch}
+.big{font:800 22px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.v.yes{background:var(--goodbg);color:var(--good)} .v.no{background:var(--badbg);color:var(--bad)} .v.part{background:var(--mehbg);color:var(--meh)}
+/* feature cards */
+.feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0}
+@media (max-width:860px){.feat{grid-template-columns:1fr}}
+.feat>div{padding:20px;min-width:0}
+.feat>div+div{border-left:1.5px solid var(--hair)}
+@media (max-width:860px){.feat>div+div{border-left:0;border-top:1.5px solid var(--hair)}}
+.fh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.feat p{margin:10px 0 0;max-width:60ch}
+.code-in{font:400 13px var(--jb);background:var(--code);border:1px solid var(--hair);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.brow{display:grid;grid-template-columns:132px minmax(0,1fr) 92px;gap:10px;align-items:center}
+@media (max-width:460px){.brow{grid-template-columns:96px minmax(0,1fr) 78px}}
+.blab{font:700 11px var(--mono);letter-spacing:.02em;line-height:1.25}
+.blab small{display:block;font-weight:500;color:var(--mute)}
+.btrack{position:relative;height:18px;background:var(--grid);border-radius:4px}
+.bfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.berr{position:absolute;top:50%;height:2px;background:var(--ink);opacity:.45;transform:translateY(-50%)}
+.bval{font:700 13px var(--jb);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bval small{display:block;font:500 10.5px var(--mono);color:var(--mute)}
+.unitline{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
+.mc{width:100%;border-collapse:collapse;margin-top:8px;font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
+.mc th,.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair)}
+.mc th:first-child,.mc td:first-child{text-align:left}
+.mc th{font-weight:700;color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.mcw{overflow-x:auto}
+details{margin-top:14px}
+summary{cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em}
+summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+.asm2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.asm2{grid-template-columns:minmax(0,1fr)}}
+.asmh{font:700 10.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+pre{margin:0;background:var(--code);border:1.5px solid var(--hair);border-radius:10px;padding:10px;overflow:auto;max-height:340px;font:400 11.5px/1.5 var(--jb)}
+pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-block;width:100%;font-weight:700}
+/* startup */
+.st{overflow-x:auto}
+.st table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
+.st th,.st td{padding:10px 14px;border-bottom:1px solid var(--hair);text-align:right}
+.st th:first-child,.st td:first-child{text-align:left}
+.st th{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
+.st td{font:500 13px var(--jb)}
+.st td:first-child{font:700 14px var(--disp)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.notes p{margin:6px 0 0;font-size:15px}
+.notes h3{margin:0;font-size:17px}
+footer{font:500 12px var(--mono);color:var(--mute)}
+@media (prefers-reduced-motion:no-preference){.bfill{transition:width .5s ease}}
+</style>
+<style>
+:root{--aot10:#b7791f;--aot11:#8a5a00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--aot10:#e0a84a;--aot11:#f3c85a}}
+:root[data-theme="dark"]{--aot10:#e0a84a;--aot11:#f3c85a}
+.best{font:700 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--good)}
+.two2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0}
+.two2>div{padding:20px;min-width:0}
+.two2>div+div{border-left:1.5px solid var(--hair)}
+@media (max-width:860px){.two2{grid-template-columns:minmax(0,1fr)}.two2>div+div{border-left:0;border-top:1.5px solid var(--hair)}}
+.st td small{font:500 11px var(--mono);color:var(--mute);margin-left:4px}
+.st td.mute{color:var(--mute);font-size:12px}
+.qa td:first-child{width:24%}
+.prose p{margin:10px 0 0;max-width:68ch}
+</style>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Compiler probes · set 3 · workload</div>
+    <h1>One payment API, <em>seven builds</em>, one laptop</h1>
+    <p class="lede">The same small payment API, written in C#, Go and Rust, built seven ways and load-tested on one laptop. It parses a JSON payment, validates it, signs it with HMAC-SHA256, records it in an in-memory ledger and replies in JSON. Throughput is closer than the language arguments suggest: the slowest build reaches 79% of the fastest. The bigger differences are memory, CPU per request, tail latency and how each runtime copes with a heap under pressure.</p>
+    <div class="meta"><span class="chip">Intel i5-10300H · Windows 11 · turbo on</span><span class="chip">server pinned to 2 cores · load generator on 1 core</span>
+      <span class="chip">.NET 10.0.12 · .NET 11.0.0-rc.2.26504.105</span><span class="chip">go1.27.2</span>
+      <span class="chip">rustc 1.99.0</span><span class="chip">medians of 3 rounds</span></div>
+  </header>
+
+  <section class="card board" aria-labelledby="qh">
+    <div class="pad" style="padding-bottom:6px"><h2 id="qh">The short version</h2></div>
+    <table class="qa"><tr><td><b>Most requests per second</b></td><td>Rust at 43,420/s, with .NET 10 NativeAOT (41,303) and Go (40,797) close enough to call a tie, since runs varied by up to 15%. The C# JIT builds trail by 19–26%.</td></tr><tr><td><b>Least CPU per request</b></td><td>Rust: 77 µs. NativeAOT C# 81–85 µs, Go 88 µs, C# JIT 91–100 µs.</td></tr><tr><td><b>.NET 11 RC2 vs .NET 10</b></td><td>Slightly slower in this service: 11% more CPU per request with the JIT and 4% with NativeAOT. Turning on runtime async brings the JIT build back to 92 µs, level with .NET 10.</td></tr><tr><td><b>Fastest typical response</b></td><td>Rust 105 µs, Go 122 µs, NativeAOT C# about 137 µs, .NET 10 JIT 142 µs, .NET 11 JIT 181 µs, at a steady 8,000 requests a second. The C# JIT builds had the shortest tails, Go the longest.</td></tr><tr><td><b>Smallest memory</b></td><td>Rust peaks at 8 MB under load, Go 18 MB, NativeAOT C# 29–34 MB, JIT C# 64–66 MB.</td></tr><tr><td><b>Smallest thing to ship</b></td><td>Rust 1.2 MB. Go and NativeAOT C# are both about 10 MB. JIT C# is a 0.1 MB app plus a .NET and ASP.NET runtime installed on the machine.</td></tr><tr><td><b>Heap under pressure</b></td><td>Go keeps typical stalls short but still stalls up to 37 ms. .NET server GC has the best throughput and the best p99.9, but each collection freezes the program for about 42 ms on average (up to 115 ms). Workstation GC pauses for about 3 ms at a time, but far more often. Rust never collects but its allocator makes it the slowest at this churn.</td></tr></table>
+  </section>
+
+  <section class="card" aria-labelledby="th">
+    <div class="pad" style="padding-bottom:0"><h2 id="th">Throughput and CPU cost</h2>
+      <p class="sub">64 keep-alive connections sending as fast as the server answers, for 10 seconds after a warm-up. 2% of requests fail validation and get a 422, as in real traffic. The thin line is the range across rounds.</p></div>
+    <div class="two2">
+      <div><div class="unitline">Requests per second at saturation</div><div class="bars" role="img" aria-label="Requests per second at saturation: C# .NET 10 JIT 36,641 req/s; C# .NET 11 RC2 · JIT 34,425 req/s; C# .NET 11 JIT + runtime async 39,171 req/s; C# .NET 10 NativeAOT 41,303 req/s; C# .NET 11 RC2 · NativeAOT 36,790 req/s; Go go1.27.2 40,797 req/s; Rust axum · 1.99.0 43,420 req/s"><div class="brow"><div class="blab">C# .NET 10<small>JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:78.52%;background:var(--cs10)"></div><div class="berr" style="left:75.20%;width:8.09%"></div></div><div class="bval">36,641<small>req/s</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:73.77%;background:var(--cs11)"></div><div class="berr" style="left:72.86%;width:14.82%"></div></div><div class="bval">34,425<small>req/s</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>JIT + runtime async</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:83.94%;background:var(--csra)"></div><div class="berr" style="left:80.33%;width:6.16%"></div></div><div class="bval">39,171<small>req/s</small></div></div><div class="brow"><div class="blab">C# .NET 10<small>NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:88.51%;background:var(--aot10)"></div><div class="berr" style="left:87.63%;width:4.72%"></div></div><div class="bval">41,303<small>req/s</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:78.84%;background:var(--aot11)"></div><div class="berr" style="left:78.71%;width:8.37%"></div></div><div class="bval">36,790<small>req/s</small></div></div><div class="brow"><div class="blab">Go<small>go1.27.2</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:87.43%;background:var(--go)"></div><div class="berr" style="left:83.06%;width:4.69%"></div></div><div class="bval">40,797<small>req/s</small></div></div><div class="brow"><div class="blab">Rust<small>axum · 1.99.0</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:93.05%;background:var(--rust)"></div><div class="berr" style="left:84.05%;width:12.10%"></div></div><div class="bval">43,420<small>req/s <b class="best">best</b></small></div></div></div></div>
+      <div><div class="unitline">Server CPU time per request</div><div class="bars" role="img" aria-label="Server CPU time per request: C# .NET 10 JIT 91 µs CPU; C# .NET 11 RC2 · JIT 100 µs CPU; C# .NET 11 JIT + runtime async 92 µs CPU; C# .NET 10 NativeAOT 81 µs CPU; C# .NET 11 RC2 · NativeAOT 85 µs CPU; Go go1.27.2 88 µs CPU; Rust axum · 1.99.0 77 µs CPU"><div class="brow"><div class="blab">C# .NET 10<small>JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:85.41%;background:var(--cs10)"></div><div class="berr" style="left:82.98%;width:3.36%"></div></div><div class="bval">91<small>µs CPU</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:94.74%;background:var(--cs11)"></div><div class="berr" style="left:86.54%;width:9.61%"></div></div><div class="bval">100<small>µs CPU</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>JIT + runtime async</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:86.63%;background:var(--csra)"></div><div class="berr" style="left:86.13%;width:3.54%"></div></div><div class="bval">92<small>µs CPU</small></div></div><div class="brow"><div class="blab">C# .NET 10<small>NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:76.66%;background:var(--aot10)"></div></div><div class="bval">81<small>µs CPU</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:79.94%;background:var(--aot11)"></div><div class="berr" style="left:77.47%;width:3.59%"></div></div><div class="bval">85<small>µs CPU</small></div></div><div class="brow"><div class="blab">Go<small>go1.27.2</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:82.80%;background:var(--go)"></div></div><div class="bval">88<small>µs CPU</small></div></div><div class="brow"><div class="blab">Rust<small>axum · 1.99.0</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:72.57%;background:var(--rust)"></div><div class="berr" style="left:69.89%;width:5.26%"></div></div><div class="bval">77<small>µs CPU <b class="best">best</b></small></div></div></div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="lh">
+    <div class="pad"><h2 id="lh">Latency at a steady 8,000 requests per second</h2>
+      <p class="sub">About a fifth of capacity, the load a well-sized production service runs at. Requests are sent on a fixed schedule and timed from when they were due, so a stalled server cannot hide the requests that queued behind it. The last column is how long the slowest 1% of requests waited for a free connection before they could even be sent.</p></div>
+    <div class="two2" style="border-top:1.5px solid var(--hair)"><div><div class="unitline">Median response time</div><div class="bars" role="img" aria-label="Median response time: C# .NET 10 JIT 142 µs; C# .NET 11 RC2 · JIT 181 µs; C# .NET 11 JIT + runtime async 179 µs; C# .NET 10 NativeAOT 140 µs; C# .NET 11 RC2 · NativeAOT 137 µs; Go go1.27.2 122 µs; Rust axum · 1.99.0 105 µs"><div class="brow"><div class="blab">C# .NET 10<small>JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:75.41%;background:var(--cs10)"></div><div class="berr" style="left:73.98%;width:2.59%"></div></div><div class="bval">142<small>µs</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · JIT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:95.78%;background:var(--cs11)"></div></div><div class="bval">181<small>µs</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>JIT + runtime async</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:94.78%;background:var(--csra)"></div></div><div class="bval">179<small>µs</small></div></div><div class="brow"><div class="blab">C# .NET 10<small>NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:73.82%;background:var(--aot10)"></div><div class="berr" style="left:73.03%;width:2.12%"></div></div><div class="bval">140<small>µs</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>RC2 · NativeAOT</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:72.55%;background:var(--aot11)"></div><div class="berr" style="left:70.54%;width:2.75%"></div></div><div class="bval">137<small>µs</small></div></div><div class="brow"><div class="blab">Go<small>go1.27.2</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:64.30%;background:var(--go)"></div></div><div class="bval">122<small>µs</small></div></div><div class="brow"><div class="blab">Rust<small>axum · 1.99.0</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:55.62%;background:var(--rust)"></div><div class="berr" style="left:55.35%;width:1.11%"></div></div><div class="bval">105<small>µs <b class="best">best</b></small></div></div></div></div>
+      <div class="prose"><p style="margin-top:0">The median is rock steady: each build landed within a few microseconds of itself in all three rounds. Rust answers in 105 µs and Go in 122 µs. NativeAOT C# and .NET 10's JIT sit together around 142 µs. .NET 11's JIT is the outlier at 181 µs, 27% slower than .NET 10, with or without runtime async.</p>
+      <p>The tail is noisier: p99 moved by 2–3× between rounds for most builds, mostly as moments when all 64 connections were busy at once. Two patterns held in every round: the C# JIT builds had the shortest tails and Go the longest.</p></div></div>
+    <div class="st"><table><tr><th>Build</th><th>p50 µs <small>range</small></th><th>p99 µs <small>range</small></th><th>p99.9 µs <small>range</small></th><th>Queueing p99 µs</th></tr><tr><td><span class='sw' style='background:var(--cs10)'></span>C# .NET 10 <small>JIT</small></td><td>142 <small>140–145</small></td><td>10,303 <small>10,243–13,767</small></td><td>18,650 <small>17,275–24,632</small></td><td class='mute'>6,854</td></tr><tr><td><span class='sw' style='background:var(--cs11)'></span>C# .NET 11 <small>RC2 · JIT</small></td><td>181 <small>180–182</small></td><td>14,536 <small>8,952–30,224</small></td><td>23,700 <small>17,578–60,128</small></td><td class='mute'>10,565</td></tr><tr><td><span class='sw' style='background:var(--csra)'></span>C# .NET 11 <small>JIT + runtime async</small></td><td>179 <small>179–180</small></td><td>10,852 <small>9,647–14,634</small></td><td>23,612 <small>18,727–27,971</small></td><td class='mute'>6,747</td></tr><tr><td><span class='sw' style='background:var(--aot10)'></span>C# .NET 10 <small>NativeAOT</small></td><td>140 <small>138–142</small></td><td>15,439 <small>14,413–24,750</small></td><td>40,383 <small>25,180–41,872</small></td><td class='mute'>10,500</td></tr><tr><td><span class='sw' style='background:var(--aot11)'></span>C# .NET 11 <small>RC2 · NativeAOT</small></td><td>137 <small>133–138</small></td><td>22,251 <small>12,727–30,405</small></td><td>46,600 <small>28,387–56,160</small></td><td class='mute'>17,885</td></tr><tr><td><span class='sw' style='background:var(--go)'></span>Go <small>go1.27.2</small></td><td>122 <small>120–122</small></td><td>29,009 <small>19,824–30,222</small></td><td>69,211 <small>42,412–75,784</small></td><td class='mute'>25,980</td></tr><tr><td><span class='sw' style='background:var(--rust)'></span>Rust <small>axum · 1.99.0</small></td><td>105 <small>105–107</small></td><td>18,582 <small>9,190–23,504</small></td><td>28,944 <small>20,216–54,556</small></td><td class='mute'>14,252</td></tr></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="fh">
+    <div class="pad"><h2 id="fh">Memory and what you ship</h2>
+      <p class="sub">Working set measured by Windows: one second after start-up, and the peak during the load test.</p></div>
+    <div class="st"><table><tr><th>Build</th><th>Idle</th><th>Peak under load</th><th>Executable</th><th>Deploy</th></tr><tr><td><span class='sw' style='background:var(--cs10)'></span>C# .NET 10 <small>JIT</small></td><td>46 MB</td><td>64 MB</td><td>0.1 MB</td><td class='mute'>needs the shared .NET + ASP.NET runtime</td></tr><tr><td><span class='sw' style='background:var(--cs11)'></span>C# .NET 11 <small>RC2 · JIT</small></td><td>46 MB</td><td>66 MB</td><td>0.1 MB</td><td class='mute'>needs the shared .NET + ASP.NET runtime</td></tr><tr><td><span class='sw' style='background:var(--csra)'></span>C# .NET 11 <small>JIT + runtime async</small></td><td>46 MB</td><td>66 MB</td><td>0.1 MB</td><td class='mute'>needs the shared .NET + ASP.NET runtime</td></tr><tr><td><span class='sw' style='background:var(--aot10)'></span>C# .NET 10 <small>NativeAOT</small></td><td>19 MB</td><td>29 MB</td><td>10.1 MB</td><td class='mute'>single file, nothing else to install</td></tr><tr><td><span class='sw' style='background:var(--aot11)'></span>C# .NET 11 <small>RC2 · NativeAOT</small></td><td>19 MB</td><td>34 MB</td><td>10.3 MB</td><td class='mute'>single file, nothing else to install</td></tr><tr><td><span class='sw' style='background:var(--go)'></span>Go <small>go1.27.2</small></td><td>8 MB</td><td>18 MB</td><td>9.5 MB</td><td class='mute'>single file, nothing else to install</td></tr><tr><td><span class='sw' style='background:var(--rust)'></span>Rust <small>axum · 1.99.0</small></td><td>5 MB</td><td>8 MB</td><td>1.2 MB</td><td class='mute'>single file, nothing else to install</td></tr></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="gh">
+    <div class="pad" style="padding-bottom:0"><h2 id="gh">A heap under pressure</h2>
+      <p class="sub">A separate program keeps one million small orders alive (about 150 MB), then for 10 seconds allocates 200 short-lived orders and replaces 20 random long-lived ones per loop. Every loop is timed, so a pause shows up the way a request handler would feel it. Writing new objects into an old, large array is the hardest case for a generational collector, so treat this as a stress test, not a typical service.</p></div>
+    <div class="two2">
+      <div><div class="unitline">Longest single stall</div><div class="bars" role="img" aria-label="Longest single stall: C# .NET 10 workstation GC 18 ms; C# .NET 10 server GC 115 ms; C# .NET 11 workstation GC 18 ms; C# .NET 11 server GC 130 ms; Go concurrent GC 37 ms; Rust no GC 35 ms"><div class="brow"><div class="blab">C# .NET 10<small>workstation GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:4.02%;background:var(--cs10)"></div><div class="berr" style="left:3.90%;width:0.34%"></div></div><div class="bval">18<small>ms <b class="best">best</b></small></div></div><div class="brow"><div class="blab">C# .NET 10<small>server GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:26.36%;background:var(--aot10)"></div><div class="berr" style="left:26.09%;width:11.02%"></div></div><div class="bval">115<small>ms</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>workstation GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:4.15%;background:var(--cs11)"></div><div class="berr" style="left:3.75%;width:1.67%"></div></div><div class="bval">18<small>ms</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>server GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:29.82%;background:var(--aot11)"></div><div class="berr" style="left:27.28%;width:68.87%"></div></div><div class="bval">130<small>ms</small></div></div><div class="brow"><div class="blab">Go<small>concurrent GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:8.41%;background:var(--go)"></div><div class="berr" style="left:7.45%;width:8.63%"></div></div><div class="bval">37<small>ms</small></div></div><div class="brow"><div class="blab">Rust<small>no GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:8.02%;background:var(--rust)"></div><div class="berr" style="left:1.02%;width:11.05%"></div></div><div class="bval">35<small>ms</small></div></div></div></div>
+      <div><div class="unitline">Loops completed per second</div><div class="bars" role="img" aria-label="Loops completed per second: C# .NET 10 workstation GC 24,369 loops/s; C# .NET 10 server GC 52,542 loops/s; C# .NET 11 workstation GC 24,747 loops/s; C# .NET 11 server GC 53,090 loops/s; Go concurrent GC 19,131 loops/s; Rust no GC 14,082 loops/s"><div class="brow"><div class="blab">C# .NET 10<small>workstation GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:42.14%;background:var(--cs10)"></div><div class="berr" style="left:41.03%;width:1.49%"></div></div><div class="bval">24,369<small>loops/s</small></div></div><div class="brow"><div class="blab">C# .NET 10<small>server GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:90.86%;background:var(--aot10)"></div><div class="berr" style="left:89.63%;width:3.24%"></div></div><div class="bval">52,542<small>loops/s</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>workstation GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:42.79%;background:var(--cs11)"></div><div class="berr" style="left:42.73%;width:3.11%"></div></div><div class="bval">24,747<small>loops/s</small></div></div><div class="brow"><div class="blab">C# .NET 11<small>server GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:91.80%;background:var(--aot11)"></div><div class="berr" style="left:59.17%;width:36.98%"></div></div><div class="bval">53,090<small>loops/s <b class="best">best</b></small></div></div><div class="brow"><div class="blab">Go<small>concurrent GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:33.08%;background:var(--go)"></div><div class="berr" style="left:20.06%;width:15.38%"></div></div><div class="bval">19,131<small>loops/s</small></div></div><div class="brow"><div class="blab">Rust<small>no GC</small></div><div class="btrack" aria-hidden="true"><div class="bfill" style="width:24.35%;background:var(--rust)"></div><div class="berr" style="left:20.46%;width:3.95%"></div></div><div class="bval">14,082<small>loops/s</small></div></div></div></div>
+    </div>
+    <div class="st"><table><tr><th>Runtime</th><th>Loops/s</th><th>p99</th><th>p99.9</th><th>Worst</th><th>Stalls over 10 ms</th><th>Peak memory</th></tr><tr><td><span class='sw' style='background:var(--cs10)'></span>C# .NET 10 <small>workstation GC</small></td><td>24,369</td><td>34 µs</td><td>7,035 µs</td><td>18 ms</td><td>170</td><td>432 MB</td></tr><tr><td><span class='sw' style='background:var(--aot10)'></span>C# .NET 10 <small>server GC</small></td><td>52,542</td><td>23 µs</td><td>41 µs</td><td>115 ms</td><td>109</td><td>655 MB</td></tr><tr><td><span class='sw' style='background:var(--cs11)'></span>C# .NET 11 <small>workstation GC</small></td><td>24,747</td><td>37 µs</td><td>6,656 µs</td><td>18 ms</td><td>178</td><td>429 MB</td></tr><tr><td><span class='sw' style='background:var(--aot11)'></span>C# .NET 11 <small>server GC</small></td><td>53,090</td><td>26 µs</td><td>49 µs</td><td>130 ms</td><td>108</td><td>645 MB</td></tr><tr><td><span class='sw' style='background:var(--go)'></span>Go <small>concurrent GC</small></td><td>19,131</td><td>136 µs</td><td>975 µs</td><td>37 ms</td><td>12</td><td>208 MB</td></tr><tr><td><span class='sw' style='background:var(--rust)'></span>Rust <small>no GC</small></td><td>14,082</td><td>136 µs</td><td>278 µs</td><td>35 ms</td><td>3</td><td>152 MB</td></tr></table></div>
+    <div class="pad prose">
+      <p>.NET's server GC finishes the most work and has the best p99.9, but every collection stops the program: 108 collections in 10 seconds, about 42 ms each on average and up to 115 ms. Workstation GC collects 13× more often in smaller pieces: shorter worst case, but a slow p99.9 and half the throughput. .NET 11 behaves the same as .NET 10 here.</p>
+      <p>Go reports only 27 ms of stop-the-world time over the run, yet the loop still stalled for up to 37 ms: Go makes allocating code help with marking while a collection runs, and that work lands on the request path. Rust has nothing to pause, but freeing and allocating through the Windows heap makes it the slowest at this particular churn.</p>
+    </div>
+  </section>
+
+  <section class="card pad" aria-labelledby="mh">
+    <h2 id="mh">How this was measured</h2>
+    <div class="notes" style="margin-top:12px">
+      <div><h3>The service</h3><p>ASP.NET Core minimal API with source-generated JSON (so the same code builds for NativeAOT), Go's net/http with encoding/json, Rust's axum with serde. Each awaits an in-memory ledger call that completes immediately, as a cache hit would. All three return byte-identical signatures for the same request.</p></div>
+      <div><h3>Isolation</h3><p>Each server starts suspended, is pinned to logical CPUs 0–3 (two physical cores), then resumed, so every runtime sizes its thread pool for two cores. The load generator, a raw-socket Go client, runs on CPUs 4–5; 6–7 stay free for Windows. On 2 CPUs it pushed as many requests as on 4, so it is not the bottleneck.</p></div>
+      <div><h3>Rounds</h3><p>Three rounds in a rotating order, 30 s rest between servers, CPU clock logged throughout (it never dropped below 3.3 GHz). Medians across rounds; run-to-run spread on throughput was up to 15%.</p></div>
+      <div><h3>Limits</h3><p>One Windows laptop over loopback, so no network latency and no Linux: production containers can rank differently, especially for GC and threading. Start-up time is not reported, because Windows waits about half a second before retrying a refused local connection, which hides the differences.</p></div>
+    </div>
+  </section>
+  <footer>Service, load generator, GC stress and driver: work3/ (cs, go, rust, loadgen, gc, workload3.py). .NET 11 is a release candidate.</footer>
+</div>

@@ -1,0 +1,101 @@
+# Production-shaped test stack. Binaries are built on the host (build4.py) and copied into small Alpine images.
+# Docker Desktop's VM has 4 CPUs; the caps below add up to 4.25.
+# Only one payment service runs at a time; each one answers as "svc:8080" on the compose network.
+name: payprod
+
+x-svc: &svc
+  environment:
+    DB_HOST: db
+    REDIS_HOST: redis
+    PROVIDER_URL: http://mockpay:9000/charge
+    PROVIDER_TIMEOUT_MS: "1000"
+    DB_POOL: "32"
+    PORT: "8080"
+  cpus: 1.0
+  mem_limit: 512m
+  profiles: [svc]
+  networks:
+    default:
+      aliases: [svc]
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "2" }
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: db
+    environment: { POSTGRES_USER: pay, POSTGRES_PASSWORD: pay, POSTGRES_DB: pay }
+    command: ["postgres", "-c", "max_connections=300", "-c", "shared_buffers=256MB"]
+    volumes: ["./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"]
+    cpus: 1.5
+    mem_limit: 1g
+    healthcheck: { test: ["CMD", "pg_isready", "-U", "pay"], interval: 1s, retries: 60 }
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    cpus: 0.25
+  mockpay:
+    container_name: mockpay
+    build: { context: ., dockerfile_inline: "FROM alpine:3.22\nCOPY bin/mockpay/run /app/run\nENTRYPOINT [\"/app/run\"]\n" }
+    environment: { MEDIAN_MS: "30", SIGMA: "0.6", FAIL: "0.01" }
+    cpus: 0.5
+  loadgen:
+    container_name: loadgen
+    build: { context: ., dockerfile_inline: "FROM alpine:3.22\nCOPY bin/loadgen/run /app/run\nENTRYPOINT [\"sleep\", \"infinity\"]\n" }
+    cpus: 1.0
+
+  cs10:
+    <<: *svc
+    container_name: cs10
+    build: { context: ., dockerfile_inline: "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine\nCOPY bin/cs10/ /app/\nENTRYPOINT [\"/app/paysvc\"]\n" }
+  cs11:
+    <<: *svc
+    container_name: cs11
+    build: { context: ., dockerfile_inline: "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine\nCOPY bin/cs11/ /app/\nENTRYPOINT [\"/app/paysvc\"]\n" }
+  cs11ra:
+    <<: *svc
+    container_name: cs11ra
+    build: { context: ., dockerfile_inline: "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine\nCOPY bin/cs11ra/ /app/\nENTRYPOINT [\"/app/paysvc\"]\n" }
+  go:
+    <<: *svc
+    container_name: go
+    build: { context: ., dockerfile_inline: "FROM alpine:3.22\nCOPY bin/go/run /app/run\nENTRYPOINT [\"/app/run\"]\n" }
+  rust:
+    <<: *svc
+    container_name: rust
+    build: { context: ., dockerfile_inline: "FROM alpine:3.22\nCOPY bin/rust/run /app/run\nENTRYPOINT [\"/app/run\"]\n" }
+
+  # NativeAOT builds: compiled inside Linux (NativeAOT cannot cross-compile from Windows), shipped on the same Alpine base
+  cs10aot:
+    <<: *svc
+    container_name: cs10aot
+    build:
+      context: ./cs
+      dockerfile_inline: |
+        FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+        RUN apk add --no-cache clang lld build-base zlib-dev
+        WORKDIR /src
+        COPY Program.cs paysvc.csproj ./
+        RUN dotnet --version && dotnet publish paysvc.csproj -c Release -r linux-musl-x64 -p:PublishAot=true -o /out --nologo
+        FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
+        COPY --from=build /out/paysvc /app/paysvc
+        ENTRYPOINT ["/app/paysvc"]
+  cs11aot:
+    <<: *svc
+    container_name: cs11aot
+    build:
+      context: ./cs
+      dockerfile_inline: |
+        FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+        RUN apk add --no-cache clang lld build-base zlib-dev bash
+        RUN wget -qO /tmp/i.sh https://dot.net/v1/dotnet-install.sh && bash /tmp/i.sh --version 11.0.100-rc.2.26504.105 --install-dir /usr/share/dotnet
+        WORKDIR /src
+        COPY Program.cs paysvc.csproj ./
+        RUN sed -i 's#<TargetFramework>net10.0</TargetFramework>#<TargetFramework>net11.0</TargetFramework>#' paysvc.csproj \
+         && echo '{"sdk":{"version":"11.0.100-rc.2.26504.105","rollForward":"disable"}}' > global.json \
+         && dotnet --version && dotnet publish paysvc.csproj -c Release -r linux-musl-x64 -p:PublishAot=true -o /out --nologo
+        FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
+        COPY --from=build /out/paysvc /app/paysvc
+        ENTRYPOINT ["/app/paysvc"]

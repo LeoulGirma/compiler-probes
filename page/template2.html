@@ -1,0 +1,203 @@
+<title>Probing .NET 11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Martian+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: a lab notebook on graph paper — verdict board first, then one card per .NET 11 claim with the measurement and the machine code behind it */
+:root{
+  --bg:#f1f2ef; --surface:#fbfbf9; --ink:#141a2b; --mute:#646c7f; --hair:#d3d7d0; --grid:#e4e7e1; --code:#f4f5f2;
+  --blue:#3a2cf2; --good:#1b8a34; --goodbg:#dcf8cf; --bad:#c81d47; --badbg:#ffe3ea; --meh:#8a6400; --mehbg:#fff2cc;
+  --rust:#d9501f; --go:#0088ad; --cs10:#9b8fb8; --cs11:#7e35cf; --csra:#3a2cf2;
+  --disp:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --mono:"Martian Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --jb:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11141b;--surface:#181c25;--ink:#e9ecf3;--mute:#9aa2b4;--hair:#2c3240;--grid:#1a1f29;--code:#11151d;--blue:#8f86ff;--good:#5fd479;--goodbg:#173322;--bad:#ff6b8a;--badbg:#3a1822;--meh:#f3c85a;--mehbg:#2f2610;--rust:#ff7a47;--go:#2cc4ec;--cs10:#8d84a6;--cs11:#b07cff;--csra:#8f86ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11141b;--surface:#181c25;--ink:#e9ecf3;--mute:#9aa2b4;--hair:#2c3240;--grid:#1a1f29;--code:#11151d;--blue:#8f86ff;--good:#5fd479;--goodbg:#173322;--bad:#ff6b8a;--badbg:#3a1822;--meh:#f3c85a;--mehbg:#2f2610;--rust:#ff7a47;--go:#2cc4ec;--cs10:#8d84a6;--cs11:#b07cff;--csra:#8f86ff;color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--disp);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.wrap>*,#feats>*{min-width:0}
+.eyebrow{font:700 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+h1{font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1.02;margin:6px 0 10px;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--blue)}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;text-wrap:balance}
+.lede{font-size:clamp(17px,2.2vw,20px);max-width:66ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font:700 11px var(--mono);letter-spacing:.06em;border:1.5px solid var(--hair);background:var(--surface);border-radius:6px;padding:5px 9px;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
+.card{background:var(--surface);border:1.5px solid var(--ink);border-radius:14px}
+.pad{padding:20px}
+.sub{color:var(--mute);margin:4px 0 0;font-size:15px;max-width:70ch}
+/* verdict board */
+.board{overflow-x:auto}
+.board table{width:100%;border-collapse:collapse;min-width:720px}
+.board th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;color:var(--mute);padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+.board td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
+.board tr:last-child td{border-bottom:0}
+.board td b{display:block;font-size:17px;line-height:1.2}
+.board td a{color:inherit;text-decoration:none}
+.board td a:hover b{text-decoration:underline}
+.board .claim{color:var(--mute);font-size:14px;max-width:34ch}
+.big{font:800 22px var(--disp);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.v.yes{background:var(--goodbg);color:var(--good)} .v.no{background:var(--badbg);color:var(--bad)} .v.part{background:var(--mehbg);color:var(--meh)}
+/* feature cards */
+.feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0}
+@media (max-width:860px){.feat{grid-template-columns:1fr}}
+.feat>div{padding:20px;min-width:0}
+.feat>div+div{border-left:1.5px solid var(--hair)}
+@media (max-width:860px){.feat>div+div{border-left:0;border-top:1.5px solid var(--hair)}}
+.fh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.feat p{margin:10px 0 0;max-width:60ch}
+.code-in{font:400 13px var(--jb);background:var(--code);border:1px solid var(--hair);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.brow{display:grid;grid-template-columns:132px minmax(0,1fr) 92px;gap:10px;align-items:center}
+@media (max-width:460px){.brow{grid-template-columns:96px minmax(0,1fr) 78px}}
+.blab{font:700 11px var(--mono);letter-spacing:.02em;line-height:1.25}
+.blab small{display:block;font-weight:500;color:var(--mute)}
+.btrack{position:relative;height:18px;background:var(--grid);border-radius:4px}
+.bfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.berr{position:absolute;top:50%;height:2px;background:var(--ink);opacity:.45;transform:translateY(-50%)}
+.bval{font:700 13px var(--jb);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bval small{display:block;font:500 10.5px var(--mono);color:var(--mute)}
+.unitline{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:16px}
+.mc{width:100%;border-collapse:collapse;margin-top:8px;font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
+.mc th,.mc td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--hair)}
+.mc th:first-child,.mc td:first-child{text-align:left}
+.mc th{font-weight:700;color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.mcw{overflow-x:auto}
+details{margin-top:14px}
+summary{cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em}
+summary:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+.asm2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.asm2{grid-template-columns:minmax(0,1fr)}}
+.asmh{font:700 10.5px var(--mono);letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+pre{margin:0;background:var(--code);border:1.5px solid var(--hair);border-radius:10px;padding:10px;overflow:auto;max-height:340px;font:400 11.5px/1.5 var(--jb)}
+pre .hl{background:color-mix(in srgb,var(--bad) 18%,transparent);display:inline-block;width:100%;font-weight:700}
+/* startup */
+.st{overflow-x:auto}
+.st table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
+.st th,.st td{padding:10px 14px;border-bottom:1px solid var(--hair);text-align:right}
+.st th:first-child,.st td:first-child{text-align:left}
+.st th{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-bottom:1.5px solid var(--ink)}
+.st td{font:500 13px var(--jb)}
+.st td:first-child{font:700 14px var(--disp)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.notes p{margin:6px 0 0;font-size:15px}
+.notes h3{margin:0;font-size:17px}
+footer{font:500 12px var(--mono);color:var(--mute)}
+@media (prefers-reduced-motion:no-preference){.bfill{transition:width .5s ease}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Compiler probes · set 2</div>
+    <h1>What did <em>.NET 11</em> actually change?</h1>
+    <p class="lede" id="lede"></p>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <section class="card board" aria-labelledby="bh">
+    <div class="pad" style="padding-bottom:6px"><h2 id="bh">Microsoft's claims, measured</h2>
+      <p class="sub">Medians of three rounds. The machine code column is what the compiler actually emitted, read straight from the JIT or the assembler output.</p></div>
+    <table id="board"></table>
+  </section>
+
+  <div id="feats" style="display:flex;flex-direction:column;gap:22px"></div>
+
+  <section class="card" id="startup" aria-labelledby="sh">
+    <div class="pad"><h2 id="sh">Startup: ReadyToRun's precompiled comparers</h2>
+      <p class="sub" id="stsub"></p></div>
+    <div class="st"><table id="st"></table></div>
+  </section>
+
+  <section class="card pad" aria-labelledby="nh">
+    <h2 id="nh">How this was measured</h2>
+    <div class="notes" id="notes" style="margin-top:12px"></div>
+  </section>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const NOTES = /*NOTES*/null;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const runs = DATA.runs;
+const find = (id, test) => runs.find(r => r.id === id && test(r));
+const COL = {
+  cs10: find('cs', r => r.mode === 'jit' && r.version.startsWith('.NET 10')),
+  cs11: find('cs', r => r.mode === 'jit' && r.version.startsWith('.NET 11') && !r.runtime_async),
+  csra: find('cs', r => r.mode === 'jit' && r.version.startsWith('.NET 11') && r.runtime_async),
+  rust: find('rust', () => true),
+  go: find('go', () => true),
+};
+const LAB = {cs10: ['C# .NET 10', 'JIT'], cs11: ['C# .NET 11', 'RC2, JIT'], csra: ['C# .NET 11', '+ runtime async'], rust: ['Rust', 'rustc -O3'], go: ['Go', 'gc']};
+const fmt = (v, d) => v == null ? '—' : v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(d ?? (v < 10 ? 2 : 1));
+
+function bars(spec) {
+  // spec: {key, cols, per, unit}
+  const rows = spec.cols.filter(c => COL[c] && COL[c].bench[spec.key]).map(c => {
+    const b = COL[c].bench[spec.key], k = spec.per || 1;
+    return {c, med: b.med / k, min: b.min / k, max: b.max / k};
+  });
+  const top = Math.max(...rows.map(r => r.max)) * 1.04 || 1;
+  const html = rows.map(r => `<div class="brow"><div class="blab">${LAB[r.c][0]}<small>${LAB[r.c][1]}</small></div>
+    <div class="btrack" aria-hidden="true"><div class="bfill" style="width:${(r.med / top * 100).toFixed(2)}%;background:var(--${r.c})"></div>
+    ${r.max > r.min * 1.02 ? `<div class="berr" style="left:${(r.min / top * 100).toFixed(2)}%;width:${((r.max - r.min) / top * 100).toFixed(2)}%"></div>` : ''}</div>
+    <div class="bval">${fmt(r.med)}<small>${spec.unit}</small></div></div>`).join('');
+  return `<div class="unitline">${esc(spec.title)}</div><div class="bars" role="img" aria-label="${esc(spec.title)}: ${rows.map(r => LAB[r.c].join(' ') + ' ' + fmt(r.med) + ' ' + spec.unit).join('; ')}">${html}</div>`;
+}
+
+function mcTable(probe, cols, metrics) {
+  const head = `<tr><th>Machine code</th>${cols.filter(c => COL[c]).map(c => `<th>${LAB[c][0].replace('C# ', '')}</th>`).join('')}</tr>`;
+  const body = metrics.map(([k, label]) => `<tr><td>${label}</td>${cols.filter(c => COL[c]).map(c => {
+    const f = (COL[c].features || {})[probe]; return `<td>${f ? f[k] ?? 0 : '—'}</td>`; }).join('')}</tr>`).join('');
+  return `<div class="mcw"><table class="mc">${head}${body}</table></div>`;
+}
+
+function asmPair(probe, a = 'cs10', b = 'cs11', mark = /RNGCHKFAIL|VIRTUAL_FUNC_PTR|\bcall\b|\bi?mulx?\b/) {
+  const show = c => {
+    const lines = (COL[c]?.asm || {})[probe]; if (!lines) return '<pre>not captured</pre>';
+    return `<pre>${lines.slice(0, 60).map(l => mark.test(l) ? `<span class="hl">${esc(l)}</span>` : esc(l)).join('\n')}</pre>`;
+  };
+  return `<details><summary>Show the .NET 10 and .NET 11 machine code</summary><div class="asm2">
+    <div><div class="asmh">${LAB[a].join(' · ')}</div>${show(a)}</div><div><div class="asmh">${LAB[b].join(' · ')}</div>${show(b)}</div></div></details>`;
+}
+
+// ---------- render ----------
+$('#lede').innerHTML = NOTES.lede;
+const m = DATA.machine || {};
+$('#meta').innerHTML = [m.cpu, m.os, COL.cs10 && COL.cs10.version, COL.cs11 && COL.cs11.version.replace(' (SDK', ' ('), COL.rust && COL.rust.version.split(' (')[0], COL.go && COL.go.version.replace('go version ', '')]
+  .filter(Boolean).map(t => `<span class="chip">${esc(t)}</span>`).join('');
+
+$('#board').innerHTML = `<tr><th>Feature</th><th>What Microsoft says</th><th>.NET 10 → 11</th><th>Machine code</th><th>Verdict</th></tr>` +
+  NOTES.feats.map(f => `<tr><td><a href="#${f.id}"><b>${f.name}</b></a></td><td class="claim">${f.claim}</td>
+    <td><span class="big">${f.delta}</span></td><td>${f.code}</td><td><span class="v ${f.verdict}">${f.vtext}</span></td></tr>`).join('');
+
+$('#feats').innerHTML = NOTES.feats.filter(f => f.charts.length).map(f => `<section class="card feat" id="${f.id}" aria-labelledby="${f.id}-h">
+  <div><div class="fh"><h2 id="${f.id}-h">${f.name}</h2><span class="v ${f.verdict}">${f.vtext}</span></div>
+    ${f.body.map(p => `<p>${p}</p>`).join('')}
+    ${f.asm ? asmPair(f.asm.probe, f.asm.a, f.asm.b) : ''}</div>
+  <div>${f.charts.map(bars).join('')}
+    ${f.mc ? `<div class="unitline">Counted in the emitted code</div>` + mcTable(f.mc.probe, f.mc.cols, f.mc.metrics) : ''}</div>
+</section>`).join('');
+
+// startup table
+const stRows = runs.filter(r => r.startup && r.startup.wall_ms);
+const order = r => (r.id === 'cs' ? 0 : r.id === 'rust' ? 2 : 3) * 10 + (r.version.startsWith('.NET 11') ? 5 : 0) + ({jit: 0, r2r: 1, aot: 2}[r.mode] || 0) + (r.runtime_async ? 0.5 : 0);
+stRows.sort((a, b) => order(a) - order(b));
+const swc = r => r.id === 'rust' ? 'rust' : r.id === 'go' ? 'go' : r.version.startsWith('.NET 10') ? 'cs10' : 'cs11';
+const nm = r => r.id !== 'cs' ? r.name : (r.version.startsWith('.NET 10') ? '.NET 10' : '.NET 11') + ' · ' + ({jit: 'JIT', r2r: 'ReadyToRun', aot: 'NativeAOT'}[r.mode]) + (r.runtime_async ? ' + runtime async' : '');
+const sv = (r, k, d = 0) => r.startup[k] ? (k.endsWith('_us') ? (r.startup[k].med / 1000).toFixed(1) : r.startup[k].med.toFixed(d)) : '—';
+$('#st').innerHTML = `<tr><th>Build</th><th>Whole process</th><th>Dictionary&lt;Key,int&gt; fill</th><th>Sort + IndexOf</th><th>Methods JIT-compiled</th><th>…of them comparers</th></tr>` +
+  stRows.filter(r => !r.runtime_async).map(r => `<tr><td><span class="sw" style="background:var(--${swc(r)})"></span>${esc(nm(r))}</td><td>${sv(r, 'wall_ms', 1)} ms</td><td>${sv(r, 'dict_us')} ms</td><td>${sv(r, 'sort_us')} ms</td>
+    <td>${r.id === 'cs' ? sv(r, 'jitted_methods') : 'n/a'}</td><td>${r.id === 'cs' ? sv(r, 'jitted_comparer_methods') : 'n/a'}</td></tr>`).join('');
+$('#stsub').innerHTML = NOTES.startup;
+$('#notes').innerHTML = NOTES.method.map(([h, p]) => `<div><h3>${h}</h3><p>${p}</p></div>`).join('');
+$('#foot').textContent = NOTES.foot;
+</script>

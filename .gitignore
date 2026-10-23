@@ -1,0 +1,17 @@
+# build output
+bin/
+obj/
+target/
+build/
+build3/
+out3/
+__pycache__/
+*.log
+# video render cache, voice model and media
+video/media/
+video/vo/
+video/cues/
+video/tts/
+video/frames/
+*.mp4
+*.wav
