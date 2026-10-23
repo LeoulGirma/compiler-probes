@@ -39,10 +39,11 @@ See `docs/set1-probe-reference.md` for what each probe isolates.
 
 ### Set 2 · .NET 11 claims (about 15 minutes)
 ```sh
-python probe2.py --only cs --dotnet 10 --aot
-python probe2.py --only cs --dotnet 11 --aot   # JIT with runtime async off and on, ReadyToRun, Native AOT
-python probe2.py --only rust ; python probe2.py --only go
-python aggregate2.py                           # medians of the rounds -> data2.json
+# one round = all four commands writing to the same file; the site used three rounds
+python probe2.py --only cs --dotnet 10 --aot --out round1.json
+python probe2.py --only cs --dotnet 11 --aot --out round1.json   # JIT (runtime async off and on), ReadyToRun, Native AOT
+python probe2.py --only rust --out round1.json ; python probe2.py --only go --out round1.json
+python aggregate2.py round1.json round2.json round3.json data2.json   # medians (+min/max) per column
 ```
 
 ### Set 3 · under load (Windows, about 40 minutes per round)
@@ -50,7 +51,7 @@ Needs the .NET 10 and 11 RC2 SDKs side by side in one folder (set `DOTNET_LOCAL`
 ```sh
 python work3/workload3.py build
 python work3/workload3.py run --round 1        # repeat for rounds 2 and 3
-python work3/aggregate3.py                     # -> work3/data3.json
+python work3/aggregate3.py work3/w_round1.json work3/w_round2.json work3/w_round3.json work3/data3.json
 ```
 The server is pinned to CPUs 0–3 and the load generator to 4–5; the load generator uses an open-loop schedule
 so stalls are counted (see Concepts › open-loop load on the site).
