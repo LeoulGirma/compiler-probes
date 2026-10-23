@@ -23,7 +23,7 @@ jobs:
       - name: Assemble
         run: |
           mkdir _site
-          cp site/{start,watch,concepts,probes,net11,load,containers,takeaways}.html site/explainer.mp4 site/explainer-vtt.txt site/explainer-poster.jpg site/og.jpg site/robots.txt site/sitemap.xml _site/
+          cp site/{start,watch,concepts,probes,net11,load,containers,takeaways}.html site/explainer.mp4 site/explainer-vtt.txt site/explainer-poster.jpg site/og.jpg site/robots.txt site/sitemap.xml site/google*.html _site/
           cp site/start.html _site/index.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
