@@ -22,7 +22,7 @@ PAGES = [('start.html', None, 'Start here', 'Start'),
 ANSWER = {
  'probes.html': 'Each compiler wins somewhere. LLVM vectorises loops (Rust sums an array about 7× faster), RyuJIT\'s profile-guided JIT makes interface calls cheapest, and Go keeps builds fast and predictable. The machine code under every number explains why.',
  'net11.html': 'Of six .NET 11 claims, two delivered large wins (devirtualisation, 6.5× and 6.3× in our probes), runtime async is real but opt-in (awaits about 4× cheaper), Math.BigMul emits fewer instructions yet runs 31% slower, and two showed no change.',
- 'load.html': 'Throughput is close: the slowest build reaches 79% of the fastest. The real differences are CPU per request, memory and tail latency. Here .NET 11 RC2 used about 11% more CPU per request than .NET 10, the opposite of what set 4 found.',
+ 'load.html': 'Throughput is close: the slowest build reaches 79% of the fastest. The real differences are CPU per request, memory and tail latency. .NET 11 RC2 used about 11% more CPU per request than .NET 10 here, and a follow-up test traced all of it to one changed thread-pool default: set back to .NET 10\'s value, .NET 11 costs the same.',
  'containers.html': 'With a database and a provider in the path, medians converge at 28–30 ms. C# needs about 90 s under load to warm up and more CPU per payment; Native AOT removes the warm-up but not the CPU cost. Every build survived a simulated provider outage with its ledger intact.',
 }
 PRIMER = {

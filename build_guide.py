@@ -315,7 +315,7 @@ EXP = [('probes.html', 'Start with the instructions', 'What did the compiler act
        ('net11.html', "Test the runtime's claims", 'Did .NET 11 deliver its optimisations?', 'Six claims measured: two large wins, one opt-in, one regression, two no-shows.', 'Inspect .NET 11 results'),
        ('load.html', 'Add HTTP and JSON', 'What survives when an API gets busy?', 'Throughput, CPU per request, garbage collection, memory and tail latency.', 'Explore load tests'),
        ('containers.html', 'Add the system around it', 'What happens when the payment provider fails?', 'One CPU per container, Postgres, Redis and a simulated provider: timeouts, recovery and ledger consistency.', 'See the payment experiment')]
-SURPRISE = [('Same runtime, opposite results', '.NET 11 RC2 used about 11% <b>more</b> CPU per request than .NET 10 in the plain in-memory API, and 26% <b>less</b> in the payment service. One workload does not predict another.', [('Set 3', 'load.html#th'), ('Set 4', 'containers.html#sh')], 's2'),
+SURPRISE = [('One default, not the compiler', '.NET 11 RC2 used about 11% <b>more</b> CPU per request than .NET 10 in the in-memory API. The cause: idle threads now spin up to 1024 times before sleeping instead of 70. Set back to 70, .NET 11 costs the same as .NET 10.', [('See the test', 'load.html#spin'), ('Set 4', 'containers.html#sh')], 's2'),
             ('Fewer instructions, slower code', '.NET 11 turns Math.BigMul into a single multiply instruction, cutting the loop from 25 to 20 instructions, and the loop runs 31% slower: the running total now spills to the stack.', [('Read the listing', 'net11.html#bigmul')], 's1'),
             ('One run that hung', 'In one of five rounds, .NET 10 Native AOT stopped answering during the provider outage: 14,812 requests timed out at low CPU. Three repeats with extra diagnostics were clean; the cause is still open.', [('See the run', 'containers.html#ah')], 's3')]
 surprises = ''.join(f"""<article class="card sur" style="border-left-color:var(--{c})"><h3>{t}</h3><p>{d}</p><div class="sl">{''.join(f'<a href="{h}">{l} →</a>' for l, h in links)}</div></article>""" for t, d, links, c in SURPRISE)
@@ -439,7 +439,7 @@ DECIDE = [
  ('Scale out often, scale to zero, short jobs', 'NativeAOT', f"Ready in {ready['cs11aot']:.2f} s and full speed from the first request. Check library support; build on Linux."),
  ('Long-lived service at high load', 'JIT (default)', f"Same CPU as AOT once warm and about {aot_tp:.0f}% more peak throughput (consistent across rounds). Hold readiness until warm, or add ReadyToRun."),
  ('Pack many instances per node', 'NativeAOT, or Go', f"Idle: Rust {idle['rust']:.1f} MB, Go {idle['go']:.0f} MB, C# AOT {idle['cs11aot']:.0f} MB, C# JIT {idle['cs11']:.0f} MB."),
- ('Planning the .NET 11 upgrade', 'Test on RC2 now', f"−{net11_saving:.0f}% CPU in the container service; slightly slower in a bare in-memory API. Recheck hot numeric loops."),
+ ('Planning the .NET 11 upgrade', 'Test on RC2 now', f"−{net11_saving:.0f}% CPU in the container service. On many cores, check the new thread-pool spin default (DOTNET_ThreadPool_UnfairSemaphoreSpinLimit). Recheck hot numeric loops."),
  ('Latency dominated by a database or another service', 'Keep your stack', f"Every build had a {min(p50.values()):.0f}–{max(p50.values()):.0f} ms median and failed the same way. Tune pools and timeouts instead."),
 ]
 dec = ''.join(f'<tr><td>{a}</td><td class="pick"><span class="p">{b}</span></td><td class="ev">{c}</td></tr>' for a, b, c in DECIDE)
@@ -458,7 +458,7 @@ take_body = f'''  <header>
     <div class="holds">
       <div><b>Each compiler wins where its bet pays</b><span>LLVM: loops. RyuJIT: dynamic calls. Go: predictability.</span></div>
       <div><b>Realism compresses differences</b><span>Medians converge; start-up, memory and the tail do not.</span></div>
-      <div><b>Defaults move results</b><span>Runtime async off, PGO on, server GC on.</span></div>
+      <div><b>Defaults move results</b><span>Runtime async off, PGO on, server GC on, and .NET 11's thread-pool spin limit.</span></div>
       <div><b>Read the machine code</b><span>It explained every claim that failed.</span></div>
     </div>
   </section>
@@ -470,6 +470,7 @@ take_body = f'''  <header>
       <li><b>Bare-metal Linux</b> and a real network</li>
       <li><b>Runtime async + NativeAOT</b> together</li>
       <li><b>.NET 11 GA</b></li>
+      <li><b>The spin limit</b> on one CPU and in NativeAOT</li>
     </ul>
   </section>
   <section class="card pad" id="mh">

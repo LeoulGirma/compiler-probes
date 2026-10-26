@@ -262,14 +262,14 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
   </header>
   <section class="card" aria-labelledby="dh">
     <div class="pad" style="padding-bottom:4px"><h2 id="dh">If this is your situation</h2></div>
-    <div class="decw"><table class="dec"><tr><td>Scale out often, scale to zero, short jobs</td><td class="pick"><span class="p">NativeAOT</span></td><td class="ev">Ready in 0.47 s and full speed from the first request. Check library support; build on Linux.</td></tr><tr><td>Long-lived service at high load</td><td class="pick"><span class="p">JIT (default)</span></td><td class="ev">Same CPU as AOT once warm and about 6% more peak throughput (consistent across rounds). Hold readiness until warm, or add ReadyToRun.</td></tr><tr><td>Pack many instances per node</td><td class="pick"><span class="p">NativeAOT, or Go</span></td><td class="ev">Idle: Rust 0.7 MB, Go 5 MB, C# AOT 19 MB, C# JIT 32 MB.</td></tr><tr><td>Planning the .NET 11 upgrade</td><td class="pick"><span class="p">Test on RC2 now</span></td><td class="ev">−26% CPU in the container service; slightly slower in a bare in-memory API. Recheck hot numeric loops.</td></tr><tr><td>Latency dominated by a database or another service</td><td class="pick"><span class="p">Keep your stack</span></td><td class="ev">Every build had a 28–30 ms median and failed the same way. Tune pools and timeouts instead.</td></tr></table></div>
+    <div class="decw"><table class="dec"><tr><td>Scale out often, scale to zero, short jobs</td><td class="pick"><span class="p">NativeAOT</span></td><td class="ev">Ready in 0.47 s and full speed from the first request. Check library support; build on Linux.</td></tr><tr><td>Long-lived service at high load</td><td class="pick"><span class="p">JIT (default)</span></td><td class="ev">Same CPU as AOT once warm and about 6% more peak throughput (consistent across rounds). Hold readiness until warm, or add ReadyToRun.</td></tr><tr><td>Pack many instances per node</td><td class="pick"><span class="p">NativeAOT, or Go</span></td><td class="ev">Idle: Rust 0.7 MB, Go 5 MB, C# AOT 19 MB, C# JIT 32 MB.</td></tr><tr><td>Planning the .NET 11 upgrade</td><td class="pick"><span class="p">Test on RC2 now</span></td><td class="ev">−26% CPU in the container service. On many cores, check the new thread-pool spin default (DOTNET_ThreadPool_UnfairSemaphoreSpinLimit). Recheck hot numeric loops.</td></tr><tr><td>Latency dominated by a database or another service</td><td class="pick"><span class="p">Keep your stack</span></td><td class="ev">Every build had a 28–30 ms median and failed the same way. Tune pools and timeouts instead.</td></tr></table></div>
   </section>
   <section aria-labelledby="th" style="display:flex;flex-direction:column;gap:12px">
     <h2 id="th">What holds across all four sets</h2>
     <div class="holds">
       <div><b>Each compiler wins where its bet pays</b><span>LLVM: loops. RyuJIT: dynamic calls. Go: predictability.</span></div>
       <div><b>Realism compresses differences</b><span>Medians converge; start-up, memory and the tail do not.</span></div>
-      <div><b>Defaults move results</b><span>Runtime async off, PGO on, server GC on.</span></div>
+      <div><b>Defaults move results</b><span>Runtime async off, PGO on, server GC on, and .NET 11's thread-pool spin limit.</span></div>
       <div><b>Read the machine code</b><span>It explained every claim that failed.</span></div>
     </div>
   </section>
@@ -281,6 +281,7 @@ details.more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:
       <li><b>Bare-metal Linux</b> and a real network</li>
       <li><b>Runtime async + NativeAOT</b> together</li>
       <li><b>.NET 11 GA</b></li>
+      <li><b>The spin limit</b> on one CPU and in NativeAOT</li>
     </ul>
   </section>
   <section class="card pad" id="mh">

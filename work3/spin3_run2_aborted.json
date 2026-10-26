@@ -1,0 +1,108 @@
+{
+ "rate": 8000,
+ "runs": [
+  {
+   "id": "cs10_1024",
+   "label": ".NET 10, spin 1024",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x400"
+   },
+   "closed": {
+    "rps": 36577.601800038574,
+    "p99_us": 9753.6,
+    "cpu_us_per_req": 82.79,
+    "mhz": {
+     "min": 3616,
+     "med": 4133,
+     "max": 4221,
+     "n": 12
+    }
+   },
+   "open": {
+    "rps": 8023.7044067296565,
+    "p50_us": 2265.4,
+    "p99_us": 140440.4,
+    "p999_us": 173597.9,
+    "cpu_us_per_req": 206.77,
+    "cores_busy": 1.643,
+    "machine_cores_busy": 7.83,
+    "mhz": {
+     "min": 3606,
+     "med": 3752,
+     "max": 3827,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 350
+  },
+  {
+   "id": "cs11",
+   "label": ".NET 11, default (1024)",
+   "env": {},
+   "closed": {
+    "rps": 45534.536913759584,
+    "p99_us": 3152.9,
+    "cpu_us_per_req": 78.39,
+    "mhz": {
+     "min": 3980,
+     "med": 4038,
+     "max": 4143,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7999.950482782373,
+    "p50_us": 178.5,
+    "p99_us": 26779.2,
+    "p999_us": 57934.7,
+    "cpu_us_per_req": 241.11,
+    "cores_busy": 1.919,
+    "machine_cores_busy": 4.21,
+    "mhz": {
+     "min": 3729,
+     "med": 3753,
+     "max": 3974,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 1266
+  },
+  {
+   "id": "cs11_70",
+   "label": ".NET 11, spin 70",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x46"
+   },
+   "closed": {
+    "rps": 46740.96308015095,
+    "p99_us": 3165.3,
+    "cpu_us_per_req": 74.94,
+    "mhz": {
+     "min": 4126,
+     "med": 4197,
+     "max": 4244,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8004.809165349498,
+    "p50_us": 145.3,
+    "p99_us": 25320.1,
+    "p999_us": 63141.2,
+    "cpu_us_per_req": 151.72,
+    "cores_busy": 1.209,
+    "machine_cores_busy": 3.77,
+    "mhz": {
+     "min": 3892,
+     "med": 3903,
+     "max": 4119,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 364
+  }
+ ]
+}

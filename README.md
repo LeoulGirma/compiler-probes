@@ -55,6 +55,9 @@ python work3/workload3.py build
 python work3/workload3.py run --round 1        # repeat for rounds 2 and 3
 python work3/aggregate3.py work3/w_round1.json work3/w_round2.json work3/w_round3.json work3/data3.json
 ```
+Follow-up, the thread-pool spin limit (.NET 11 raised `DOTNET_ThreadPool_UnfairSemaphoreSpinLimit` from 70 to 1024):
+`python work3/spin3.py build` then `python work3/spin3.py run --rounds 4` (about 25 minutes on a quiet machine; it waits
+for background load to settle before each run). The published runs are `work3/spin3_run1.json` and `spin3_run2.json`.
 The server is pinned to CPUs 0–3 and the load generator to 4–5; the load generator uses an open-loop schedule
 so stalls are counted (see Concepts › open-loop load on the site).
 

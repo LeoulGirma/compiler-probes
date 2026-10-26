@@ -1,0 +1,553 @@
+{
+ "rate": 8000,
+ "runs": [
+  {
+   "id": "cs10_1024",
+   "label": ".NET 10, spin 1024",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x400"
+   },
+   "closed": {
+    "rps": 45988.57113143199,
+    "p99_us": 2842,
+    "cpu_us_per_req": 82.0,
+    "mhz": {
+     "min": 3994,
+     "med": 4063,
+     "max": 4134,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7997.572212713905,
+    "p50_us": 139.6,
+    "p99_us": 49509.1,
+    "p999_us": 71838.7,
+    "cpu_us_per_req": 311.13,
+    "cores_busy": 2.478,
+    "machine_cores_busy": 4.93,
+    "mhz": {
+     "min": 3721,
+     "med": 3753,
+     "max": 3986,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 40
+  },
+  {
+   "id": "cs11",
+   "label": ".NET 11, default (1024)",
+   "env": {},
+   "closed": {
+    "rps": 42383.08294093136,
+    "p99_us": 3633.1,
+    "cpu_us_per_req": 87.2,
+    "mhz": {
+     "min": 3925,
+     "med": 3972,
+     "max": 4130,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8000.02719873254,
+    "p50_us": 182.4,
+    "p99_us": 32679.1,
+    "p999_us": 66040.8,
+    "cpu_us_per_req": 230.63,
+    "cores_busy": 1.837,
+    "machine_cores_busy": 4.33,
+    "mhz": {
+     "min": 3696,
+     "med": 3718,
+     "max": 3910,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11_70",
+   "label": ".NET 11, spin 70",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x46"
+   },
+   "closed": {
+    "rps": 43503.65658091917,
+    "p99_us": 3441.9,
+    "cpu_us_per_req": 83.49,
+    "mhz": {
+     "min": 3882,
+     "med": 3920,
+     "max": 4042,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8072.77242854524,
+    "p50_us": 194.4,
+    "p99_us": 23693.1,
+    "p999_us": 85012.6,
+    "cpu_us_per_req": 110.15,
+    "cores_busy": 0.885,
+    "machine_cores_busy": 3.81,
+    "mhz": {
+     "min": 3687,
+     "med": 3696,
+     "max": 3875,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11_0",
+   "label": ".NET 11, spin 0",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x0"
+   },
+   "closed": {
+    "rps": 39712.22057019208,
+    "p99_us": 3962.1,
+    "cpu_us_per_req": 86.88,
+    "mhz": {
+     "min": 3745,
+     "med": 3911,
+     "max": 4050,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8000.003439915481,
+    "p50_us": 194.7,
+    "p99_us": 46457.1,
+    "p999_us": 86362.2,
+    "cpu_us_per_req": 172.76,
+    "cores_busy": 1.376,
+    "machine_cores_busy": 3.6,
+    "mhz": {
+     "min": 3654,
+     "med": 3666,
+     "max": 3823,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 20
+  },
+  {
+   "id": "cs10",
+   "label": ".NET 10, default (70)",
+   "env": {},
+   "closed": {
+    "rps": 44697.207845446326,
+    "p99_us": 2780.1,
+    "cpu_us_per_req": 81.51,
+    "mhz": {
+     "min": 3842,
+     "med": 3890,
+     "max": 4034,
+     "n": 12
+    }
+   },
+   "open": {
+    "rps": 8002.848790576464,
+    "p50_us": 194.4,
+    "p99_us": 29191.5,
+    "p999_us": 84622.3,
+    "cpu_us_per_req": 72.59,
+    "cores_busy": 0.578,
+    "machine_cores_busy": 3.49,
+    "mhz": {
+     "min": 3633,
+     "med": 3647,
+     "max": 3836,
+     "n": 11
+    }
+   },
+   "round": 1,
+   "waited_s": 20
+  },
+  {
+   "id": "cs10_1024",
+   "label": ".NET 10, spin 1024",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x400"
+   },
+   "closed": {
+    "rps": 43052.23260087641,
+    "p99_us": 3211.4,
+    "cpu_us_per_req": 86.44,
+    "mhz": {
+     "min": 3832,
+     "med": 3886,
+     "max": 4007,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8000.037678293549,
+    "p50_us": 125.5,
+    "p99_us": 26336,
+    "p999_us": 85678.6,
+    "cpu_us_per_req": 339.29,
+    "cores_busy": 2.702,
+    "machine_cores_busy": 5.69,
+    "mhz": {
+     "min": 3583,
+     "med": 3598,
+     "max": 3819,
+     "n": 11
+    }
+   },
+   "round": 2,
+   "waited_s": 20
+  },
+  {
+   "id": "cs10",
+   "label": ".NET 10, default (70)",
+   "env": {},
+   "closed": {
+    "rps": 42964.223545233646,
+    "p99_us": 3384.3,
+    "cpu_us_per_req": 86.58,
+    "mhz": {
+     "min": 3803,
+     "med": 3859,
+     "max": 3993,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8001.374155561477,
+    "p50_us": 195.8,
+    "p99_us": 38759,
+    "p999_us": 81427.6,
+    "cpu_us_per_req": 128.71,
+    "cores_busy": 1.025,
+    "machine_cores_busy": 3.86,
+    "mhz": {
+     "min": 3615,
+     "med": 3620,
+     "max": 3806,
+     "n": 11
+    }
+   },
+   "round": 2,
+   "waited_s": 26
+  },
+  {
+   "id": "cs11_0",
+   "label": ".NET 11, spin 0",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x0"
+   },
+   "closed": {
+    "rps": 43418.331233686054,
+    "p99_us": 2991.7,
+    "cpu_us_per_req": 81.92,
+    "mhz": {
+     "min": 3794,
+     "med": 3843,
+     "max": 3934,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8000.012639388,
+    "p50_us": 195.6,
+    "p99_us": 99431.9,
+    "p999_us": 138401.1,
+    "cpu_us_per_req": 142.75,
+    "cores_busy": 1.137,
+    "machine_cores_busy": 3.28,
+    "mhz": {
+     "min": 3609,
+     "med": 3622,
+     "max": 3791,
+     "n": 11
+    }
+   },
+   "round": 2,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11_70",
+   "label": ".NET 11, spin 70",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x46"
+   },
+   "closed": {
+    "rps": 43219.564953491295,
+    "p99_us": 3392.5,
+    "cpu_us_per_req": 82.92,
+    "mhz": {
+     "min": 3803,
+     "med": 3851,
+     "max": 3970,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7999.898163842278,
+    "p50_us": 196,
+    "p99_us": 6422.9,
+    "p999_us": 30078.8,
+    "cpu_us_per_req": 152.52,
+    "cores_busy": 1.215,
+    "machine_cores_busy": 3.46,
+    "mhz": {
+     "min": 3614,
+     "med": 3619,
+     "max": 3801,
+     "n": 11
+    }
+   },
+   "round": 2,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11",
+   "label": ".NET 11, default (1024)",
+   "env": {},
+   "closed": {
+    "rps": 41251.73350087405,
+    "p99_us": 3491.1,
+    "cpu_us_per_req": 88.7,
+    "mhz": {
+     "min": 3803,
+     "med": 3847,
+     "max": 3968,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8000.013919676228,
+    "p50_us": 185.3,
+    "p99_us": 47121,
+    "p999_us": 71247.5,
+    "cpu_us_per_req": 247.15,
+    "cores_busy": 1.969,
+    "machine_cores_busy": 4.19,
+    "mhz": {
+     "min": 3586,
+     "med": 3604,
+     "max": 3805,
+     "n": 11
+    }
+   },
+   "round": 2,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11_70",
+   "label": ".NET 11, spin 70",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x46"
+   },
+   "closed": {
+    "rps": 42515.0092208285,
+    "p99_us": 3592.9,
+    "cpu_us_per_req": 84.56,
+    "mhz": {
+     "min": 3811,
+     "med": 3841,
+     "max": 3945,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7999.980560047239,
+    "p50_us": 202.6,
+    "p99_us": 88946.3,
+    "p999_us": 151389.6,
+    "cpu_us_per_req": 72.62,
+    "cores_busy": 0.579,
+    "machine_cores_busy": 5.03,
+    "mhz": {
+     "min": 3517,
+     "med": 3557,
+     "max": 3795,
+     "n": 11
+    }
+   },
+   "round": 3,
+   "waited_s": 26
+  },
+  {
+   "id": "cs11_0",
+   "label": ".NET 11, spin 0",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x0"
+   },
+   "closed": {
+    "rps": 44403.95528895955,
+    "p99_us": 3330.5,
+    "cpu_us_per_req": 81.66,
+    "mhz": {
+     "min": 4211,
+     "med": 4235,
+     "max": 4255,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7995.6056991384185,
+    "p50_us": 123.2,
+    "p99_us": 4593.5,
+    "p999_us": 14815.2,
+    "cpu_us_per_req": 114.16,
+    "cores_busy": 0.909,
+    "machine_cores_busy": 3.13,
+    "mhz": {
+     "min": 4236,
+     "med": 4286,
+     "max": 4299,
+     "n": 11
+    }
+   },
+   "round": 3,
+   "waited_s": 851
+  },
+  {
+   "id": "cs10",
+   "label": ".NET 10, default (70)",
+   "env": {},
+   "closed": {
+    "rps": 46891.74841897475,
+    "p99_us": 3312,
+    "cpu_us_per_req": 76.15,
+    "mhz": {
+     "min": 4200,
+     "med": 4212,
+     "max": 4236,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8002.082961292635,
+    "p50_us": 127.2,
+    "p99_us": 13152,
+    "p999_us": 49411.599,
+    "cpu_us_per_req": 147.67,
+    "cores_busy": 1.177,
+    "machine_cores_busy": 3.61,
+    "mhz": {
+     "min": 4162,
+     "med": 4178,
+     "max": 4201,
+     "n": 11
+    }
+   },
+   "round": 3,
+   "waited_s": 20
+  },
+  {
+   "id": "cs10_1024",
+   "label": ".NET 10, spin 1024",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x400"
+   },
+   "closed": {
+    "rps": 47809.52786655023,
+    "p99_us": 2646.8,
+    "cpu_us_per_req": 77.48,
+    "mhz": {
+     "min": 4207,
+     "med": 4225,
+     "max": 4238,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 8002.574754551511,
+    "p50_us": 125.5,
+    "p99_us": 87278.5,
+    "p999_us": 141360.999,
+    "cpu_us_per_req": 309.46,
+    "cores_busy": 2.466,
+    "machine_cores_busy": 4.93,
+    "mhz": {
+     "min": 3972,
+     "med": 3990,
+     "max": 4206,
+     "n": 11
+    }
+   },
+   "round": 3,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11",
+   "label": ".NET 11, default (1024)",
+   "env": {},
+   "closed": {
+    "rps": 46721.2140163642,
+    "p99_us": 3273.6,
+    "cpu_us_per_req": 79.41,
+    "mhz": {
+     "min": 4203,
+     "med": 4231,
+     "max": 4242,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7995.936575153072,
+    "p50_us": 172.401,
+    "p99_us": 14898.301,
+    "p999_us": 40379.901,
+    "cpu_us_per_req": 176.34,
+    "cores_busy": 1.404,
+    "machine_cores_busy": 4.36,
+    "mhz": {
+     "min": 3984,
+     "med": 3994,
+     "max": 4222,
+     "n": 11
+    }
+   },
+   "round": 3,
+   "waited_s": 20
+  },
+  {
+   "id": "cs11_70",
+   "label": ".NET 11, spin 70",
+   "env": {
+    "DOTNET_ThreadPool_UnfairSemaphoreSpinLimit": "0x46"
+   },
+   "closed": {
+    "rps": 17989.39446757701,
+    "p99_us": 10660.799,
+    "cpu_us_per_req": 206.23,
+    "mhz": {
+     "min": 2099,
+     "med": 2100,
+     "max": 2101,
+     "n": 11
+    }
+   },
+   "open": {
+    "rps": 7999.965760146547,
+    "p50_us": 263.2,
+    "p99_us": 6596.4,
+    "p999_us": 18224.999,
+    "cpu_us_per_req": 269.18,
+    "cores_busy": 2.138,
+    "machine_cores_busy": 4.54,
+    "mhz": {
+     "min": 2100,
+     "med": 2100,
+     "max": 2101,
+     "n": 11
+    }
+   },
+   "round": 4,
+   "waited_s": 337
+  }
+ ]
+}

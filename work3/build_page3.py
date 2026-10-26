@@ -48,6 +48,23 @@ cpu = lambda k: med(S[k]['closed']['server_cpu_ms_per_1k'])
 rps = lambda k: med(S[k]['closed']['rps'])
 o = lambda k, f: med(S[k]['open'][f])
 
+# ---------------- thread-pool spin experiment (spin3.py) ----------------
+SPIN_IDS = [('cs10', '.NET 10', 'default, 70'), ('cs10_1024', '.NET 10', 'spin 1024'), ('cs11', '.NET 11', 'default, 1024'), ('cs11_70', '.NET 11', 'spin 70'), ('cs11_0', '.NET 11', 'spin 0')]
+def spin_runs(f):
+    # a run counts only if the machine was quiet enough: saturation throughput not collapsed, whole machine under 7 busy cores, median latency sane
+    rs = json.loads((HERE / f).read_text())['runs']
+    return [r for r in rs if r['closed']['rps'] >= 25000 and r['open']['machine_cores_busy'] <= 7 and r['open']['p50_us'] <= 1000], len(rs)
+SPIN = [spin_runs('spin3_run1.json'), spin_runs('spin3_run2.json')]
+def sp(run, cid, k):
+    v = [r[k]['cpu_us_per_req'] for r in SPIN[run][0] if r['id'] == cid]
+    return sum(v) / len(v), min(v), max(v), len(v)
+spin_rows = ''.join(
+    f"<tr><td><b>{a}</b> <small>{b}</small></td>"
+    + ''.join(f"<td>{sp(n, cid, 'closed')[0]:.0f}</td>" for n in (0, 1))
+    + ''.join(f"<td>{sp(n, cid, 'open')[0]:.0f} <small>{sp(n, cid, 'open')[1]:.0f}–{sp(n, cid, 'open')[2]:.0f}</small></td>" for n in (0, 1)) + '</tr>'
+    for cid, a, b in SPIN_IDS)
+spin_n, spin_all = sum(len(x[0]) for x in SPIN), sum(x[1] for x in SPIN)
+
 # ---------------- copy ----------------
 pct = lambda a, b: (a / b - 1) * 100
 fastest = max(ORDER, key=rps); leanest = min(ORDER, key=cpu)
@@ -63,7 +80,7 @@ board = [
    f"C# JIT {cpu('cs10'):.0f}–{cpu('cs11'):.0f} µs."),
  ('.NET 11 RC2 vs .NET 10', f"Slightly slower in this service: {pct(cpu('cs11'), cpu('cs10')):.0f}% more CPU per request with the JIT and "
    f"{pct(cpu('cs11aot'), cpu('cs10aot')):.0f}% with NativeAOT. Turning on runtime async brings the JIT build back to "
-   f"{cpu('cs11ra'):.0f} µs, level with .NET 10."),
+   f"{cpu('cs11ra'):.0f} µs, level with .NET 10. The cause is one changed thread-pool default, not the compiler (see below)."),
  ('Fastest typical response', f"Rust {o('rust','p50_us'):.0f} µs, Go {o('go','p50_us'):.0f} µs, NativeAOT C# about {o('cs11aot','p50_us'):.0f} µs, .NET 10 JIT {o('cs10','p50_us'):.0f} µs, "
    f".NET 11 JIT {o('cs11','p50_us'):.0f} µs, at a steady {D['rate']:,} requests a second. The C# JIT builds had the shortest tails, Go the longest."),
  ('Smallest memory', f"Rust peaks at {med(S['rust']['peak_mb']):.0f} MB under load, Go {med(S['go']['peak_mb']):.0f} MB, NativeAOT C# "
@@ -132,6 +149,16 @@ html = f'''<title>Payments Under Load</title>
     <div class="two2">
       <div>{bars(srows(lambda s: s['closed']['rps']), 'Requests per second at saturation', 'req/s', d=0)}</div>
       <div>{bars(srows(lambda s: s['closed']['server_cpu_ms_per_1k']), 'Server CPU time per request', 'µs CPU', lower_better=True, d=0)}</div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="spinh" id="spin">
+    <div class="pad"><h2 id="spinh">Why .NET 11 costs more here: one changed default</h2>
+      <p class="sub">.NET 11 raised <code>DOTNET_ThreadPool_UnfairSemaphoreSpinLimit</code> from 70 to 1024: a worker thread with nothing to do now spins much longer before it sleeps. A follow-up test ran the .NET 10 and .NET 11 JIT builds with their own default, with the other version's, and with 0, in two separate runs of rotating rounds. CPU time per request in µs, mean of the clean runs; small numbers are the range.</p></div>
+    <div class="st keep"><table><tr><th>Build · spin limit</th><th>Saturation <small>run 1</small></th><th>Saturation <small>run 2</small></th><th>At 8,000 req/s <small>run 1</small></th><th>At 8,000 req/s <small>run 2</small></th></tr>{spin_rows}</table></div>
+    <div class="pad prose">
+      <p style="margin-top:0">With the limit at 70, .NET 11 matches .NET 10 within run-to-run noise in both runs and at both loads, so the extra CPU above comes from spinning, not from slower generated code. Spinning costs little at saturation, where threads are rarely idle, and a lot at a steady request rate, where every gap between requests is spent spinning. The same limit of 1024 costs .NET 10 far more than .NET 11, so .NET 11 also changed how each spin step works and the number is not comparable across versions. Spin 0 was cheapest in one run and middling in the other, and tail latency was too noisy on this laptop to say whether a lower limit costs any. Set 4 runs each service on one CPU, where the thread pool spins very little; that fits .NET 11 coming out cheaper there, but it has not been tested.</p>
+      <p>{spin_n} of {spin_all} runs were clean; runs where Windows background work collapsed throughput or kept the whole machine busy were dropped. The absolute numbers differ between the two runs because the machine was quieter during the second. Source: <code>work3/spin3.py</code>.</p>
     </div>
   </section>
 
