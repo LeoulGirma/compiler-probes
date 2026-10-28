@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bake data2.json + the write-up into page/compiler-probes-net11.html."""
 import json
+from html import escape as esc
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -120,6 +121,30 @@ notes = {
 }
 html = (HERE / 'page' / 'template2.html').read_text()
 html = html.replace('/*DATA*/null', json.dumps(data, separators=(',', ':'))).replace('/*NOTES*/null', json.dumps(notes, ensure_ascii=False))
+# ---------- second machine: the staging VPS (Haswell, Linux), five JIT rounds with staging paused ----------
+VPS = json.loads((HERE / 'vps' / 'data2b.vps.json').read_text())
+def jit(d, ver, ra=False):
+    return next(r['bench'] for r in d['runs'] if r['id'] == 'cs' and r['mode'] == 'jit' and ver in r['version'] and ('runtime async' in r['version']) == ra)
+def ratio(d, p, ra=False):
+    a, b = jit(d, '10.0')[p]['med'], jit(d, '11.0', ra)[p]['med']
+    return a / b
+def fx(x):   # speed-up or slow-down, as read on the page
+    return f"{x:.1f}× faster" if x >= 1.15 else (f"{(1 / x - 1) * 100:.0f}% slower" if x <= 0.87 else "no change")
+ROWS2 = [('Generic virtual methods', 'gvm', False), ('Default interface methods', 'dim', False), ('Runtime async, cost per await', 'async_ns_per_await', True),
+         ('Bounds checks, a[i] · a[i+1]', 'pairs', False), ('Math.BigMul, signed', 'bigmul_s', False), ('Math.BigMul, unsigned', 'bigmul_u', False)]
+vm = VPS['machine']['cpu'].replace(' Processor', '')
+second = f"""<section class="card" aria-labelledby="vh" id="vps">
+    <div class="pad"><h2 id="vh">Checked on a second machine</h2>
+      <p class="sub">The .NET 10 and .NET 11 JIT columns were rerun on a different CPU and OS: a 4-vCPU cloud server (Intel Haswell, Ubuntu Linux), five rounds with alternating order and its other workloads paused. .NET 11 against .NET 10, median of rounds.</p></div>
+    <div class="st keep"><table><tr><th>Claim</th><th>Laptop <small>Comet Lake, Windows</small></th><th>Server <small>Haswell, Linux</small></th></tr>
+    {''.join(f"<tr><td><b>{n}</b></td><td>{fx(ratio(data, p, ra))}</td><td>{fx(ratio(VPS, p, ra))}</td></tr>" for n, p, ra in ROWS2)}</table></div>
+    <div class="pad prose"><p style="margin-top:0">Every result holds. The devirtualisation wins are larger on the older server, runtime async cuts the cost of an await on both, and Math.BigMul is slower on both: the stack round-trip in the loop costs more on Haswell, not less. Absolute times are not comparable between the two machines and are not shown.</p></div>
+  </section>
+
+  """
+anchor = '<section class="card pad" aria-labelledby="nh">'
+assert anchor in html
+html = html.replace(anchor, second + anchor, 1)
 (HERE / 'page' / 'compiler-probes-net11.html').write_text(html)
 print('ok', len(html))
 for f in notes['feats']: print(f['name'], '|', f['delta'], '|', f['code'])

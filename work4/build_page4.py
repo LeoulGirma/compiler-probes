@@ -115,6 +115,19 @@ steady_rows = ''.join(
     f"<td class='mute'>{fmt(B[k]['steady']['ok_p99_ms'], 0)} ms · {fmt(B[k]['max']['good_rps'], 0)}/s</td></tr>" for k in ORDER)
 
 
+# ---------- tuned NativeAOT: two rounds (10-11), OptimizationPreference=Speed + IlcInstructionSet=native ----------
+TR = [{x['id']: x for x in json.loads((R / f'r4_aott_round{n}.json').read_text())['services']} for n in (10, 11)]
+tmean = lambda k, f: sum(f(r[k]) for r in TR) / len(TR)
+t_rps = lambda k: tmean(k, lambda x: x['max']['good_rps'])
+t_cpu = lambda k: tmean(k, lambda x: x['steady_stats']['cpu_median_pct'])
+t_swing = max(abs(TR[0][k]['max']['good_rps'] / TR[1][k]['max']['good_rps'] - 1) for k in ('cs10aot', 'cs11aot'))
+tuned_p = (f"<p id=\"aotx\"><b>Tuning the AOT build did not change the cost.</b> Two more rounds added AOT builds published with "
+           f"<span class=\"code-in\">OptimizationPreference=Speed</span> and <span class=\"code-in\">IlcInstructionSet=native</span>, which compile for this exact CPU instead of a generic x64 baseline. "
+           f"CPU at 500 payments a second stayed within a few points of the default AOT build (.NET 10: {t_cpu('cs10aot'):.0f}% → {t_cpu('cs10aotx'):.0f}%, .NET 11: {t_cpu('cs11aot'):.0f}% → {t_cpu('cs11aotx'):.0f}%), "
+           f"and start-up, memory and latency did not move. Peak throughput rose {(t_rps('cs10aotx') / t_rps('cs10aot') - 1) * 100:.0f}% for .NET 10 ({t_rps('cs10aot'):,.0f} → {t_rps('cs10aotx'):,.0f}/s) "
+           f"and {(t_rps('cs11aotx') / t_rps('cs11aot') - 1) * 100:.0f}% for .NET 11, but default AOT's own peak moved by up to {t_swing * 100:.0f}% between these two rounds, so neither change is clearly real. "
+           f"The likely reason is that this service spends its CPU in networking, the database driver and the framework rather than in tight loops of its own, which is where these flags help.</p>")
+
 # ---------- NativeAOT: five rounds (5-9) and one soak, same harness ----------
 AR = [{x['id']: x for x in json.loads((R / f).read_text())['services']} for f in
       ('r4_aot_round5.json', 'r4_aot_round6.json', 'r4_aotx_round7.json', 'r4_aotx_round8.json', 'r4_aotx_round9.json')]
@@ -237,8 +250,9 @@ html = f'''<title>Payments in Production</title>
     <div class="pad" style="padding-bottom:6px"><h2 id="ah">NativeAOT: the same code, compiled ahead of time</h2>
       <p class="sub">The C# service unchanged, published with <span class="code-in">PublishAot=true</span> inside a Linux SDK container and shipped on the same Alpine base. It already used the slim builder and source-generated JSON; Npgsql, StackExchange.Redis and JwtBearer built with no trim or AOT warnings. Medians over every clean round that ran each build (last column).</p></div>
     <div class="st"><table><tr><th>Build</th><th>Ready</th><th>Idle memory</th><th>CPU 45–105 s</th><th>p99 45–105 s</th><th>CPU settled</th><th>p99 settled</th><th>Max</th><th>Image</th><th>Rounds</th></tr>{aot_rows}</table></div>
-    <div class="pad prose"><p>AOT takes away everything that comes from compiling at run time: start-up is {aot_gain_ready:.1f}× faster and level with Go and Rust, there is no 90-second warm-up, and the cold-start tail is as short as theirs. It does not make the steady-state work cheaper. Settled CPU is the same as the JIT build, and .NET 11's peak throughput is {abs(aot_tp) * 100:.0f}% lower, because the JIT's profile-guided recompilation does a little better than ahead-of-time code once it has warmed up. That gap is small, but it is not noise: across five rounds the AOT build's peak varied by about 3%, the JIT build's by under 1%. .NET 11 stays cheaper than .NET 10 under AOT too.</p>
-    <p>One run went wrong. In the second of {aot_n} rounds, .NET 10 AOT stopped answering during the provider-outage test. It had already slowed to a 1.5–2 s median for ten seconds before the outage began; then, about 30 seconds after the outage began, nearly every request waited out the 10-second client timeout ({hang_timeouts:,} in all), while its CPU fell to about 30% and memory rose to 204 MB. It stayed up, the ledger stayed consistent, and the next three rounds were clean, with database connection states and service logs recorded and nothing unusual in either. Low CPU while unresponsive suggests something blocked rather than overloaded, but one episode in {aot_n} runs is not enough to pin it on NativeAOT.</p></div>
+    <div class="pad prose"><p>AOT takes away everything that comes from compiling at run time: start-up is {aot_gain_ready:.1f}× faster and level with Go and Rust, there is no 90-second warm-up, and the cold-start tail is as short as theirs. It does not make the steady-state work cheaper. Settled CPU is the same as the JIT build, and .NET 11's peak throughput is {abs(aot_tp) * 100:.0f}% lower, because the JIT's profile-guided recompilation does a little better than ahead-of-time code once it has warmed up. That gap is small: across those five rounds the AOT build's peak varied by about 3% and the JIT build's by under 1%, but two later rounds (below) saw AOT's peak swing by 12–14%, so treat it as indicative. .NET 11 stays cheaper than .NET 10 under AOT too.</p>
+    <p>One run went wrong. In the second of {aot_n} rounds, .NET 10 AOT stopped answering during the provider-outage test. It had already slowed to a 1.5–2 s median for ten seconds before the outage began; then, about 30 seconds after the outage began, nearly every request waited out the 10-second client timeout ({hang_timeouts:,} in all), while its CPU fell to about 30% and memory rose to 204 MB. It stayed up, the ledger stayed consistent, and the next three rounds were clean, with database connection states and service logs recorded and nothing unusual in either. Low CPU while unresponsive suggests something blocked rather than overloaded, but one episode in {aot_n} runs is not enough to pin it on NativeAOT.</p>
+    {tuned_p}</div>
   </section>
 
   <section class="card pad" aria-labelledby="mh">
@@ -247,7 +261,7 @@ html = f'''<title>Payments in Production</title>
       <div><h3>Same work everywhere</h3><p>ASP.NET Core minimal API with JwtBearer, Npgsql, StackExchange.Redis and HttpClient; Go's net/http with pgx, go-redis and golang-jwt; Rust's axum with tokio-postgres, redis, reqwest and jsonwebtoken. Each uses a 32-connection database pool, releases it during the provider call, and returns byte-identical signatures for the same payment.</p></div>
       <div><h3>The load</h3><p>A Go load generator inside the Docker network, with a fresh payment id per request, a JWT per merchant, 2% invalid payments (422) and 1% repeated ids to exercise idempotency. Requests go out on a fixed schedule and are timed from when they were due, so queueing inside a service is counted.</p></div>
       <div><h3>Isolation</h3><p>Docker Desktop's VM has 4 CPUs: the service gets 1, Postgres 1.5, the load generator 1, the provider 0.5 and Redis 0.25. Only one payment service runs at a time, against an emptied database. The C# builds publish self-contained for Alpine with default settings (server GC, tiered PGO).</p></div>
-      <div><h3>Still missing</h3><p>One machine and one laptop CPU underneath Docker, so container CPU is shared with Windows; no real network between services; one replica, no load balancer;, and a deliberately small schema. The next step that would matter is running this harness against a real service's hot endpoint.</p></div>
+      <div><h3>Still missing</h3><p>One machine and one laptop CPU underneath Docker, so container CPU is shared with Windows; no real network between services; one replica, no load balancer; and our schema rather than GovPay's. The next step that would matter is running this same harness against a copy of GovPay's real hot endpoint.</p></div>
     </div>
   </section>
   <footer>Source and raw results: work4/ (cs, go, rust, mockpay, loadgen, compose.yml, run4.py, results/). .NET 11 is a release candidate.</footer>

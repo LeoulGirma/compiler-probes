@@ -115,6 +115,14 @@ footer{font:500 12px var(--mono);color:var(--mute)}
     <div class="st"><table id="st"></table></div>
   </section>
 
+  <section class="card" aria-labelledby="vh" id="vps">
+    <div class="pad"><h2 id="vh">Checked on a second machine</h2>
+      <p class="sub">The .NET 10 and .NET 11 JIT columns were rerun on a different CPU and OS: a 4-vCPU cloud server (Intel Haswell, Ubuntu Linux), five rounds with alternating order and its other workloads paused. .NET 11 against .NET 10, median of rounds.</p></div>
+    <div class="st keep"><table><tr><th>Claim</th><th>Laptop <small>Comet Lake, Windows</small></th><th>Server <small>Haswell, Linux</small></th></tr>
+    <tr><td><b>Generic virtual methods</b></td><td>6.5× faster</td><td>8.4× faster</td></tr><tr><td><b>Default interface methods</b></td><td>6.3× faster</td><td>7.1× faster</td></tr><tr><td><b>Runtime async, cost per await</b></td><td>4.1× faster</td><td>3.0× faster</td></tr><tr><td><b>Bounds checks, a[i] · a[i+1]</b></td><td>no change</td><td>no change</td></tr><tr><td><b>Math.BigMul, signed</b></td><td>31% slower</td><td>39% slower</td></tr><tr><td><b>Math.BigMul, unsigned</b></td><td>67% slower</td><td>79% slower</td></tr></table></div>
+    <div class="pad prose"><p style="margin-top:0">Every result holds. The devirtualisation wins are larger on the older server, runtime async cuts the cost of an await on both, and Math.BigMul is slower on both: the stack round-trip in the loop costs more on Haswell, not less. Absolute times are not comparable between the two machines and are not shown.</p></div>
+  </section>
+
   <section class="card pad" aria-labelledby="nh">
     <h2 id="nh">How this was measured</h2>
     <div class="notes" id="notes" style="margin-top:12px"></div>

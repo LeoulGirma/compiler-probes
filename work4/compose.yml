@@ -82,6 +82,20 @@ services:
         FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
         COPY --from=build /out/paysvc /app/paysvc
         ENTRYPOINT ["/app/paysvc"]
+  cs10aotx:
+    <<: *svc
+    container_name: cs10aotx
+    build:
+      context: ./cs
+      dockerfile_inline: |
+        FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+        RUN apk add --no-cache clang lld build-base zlib-dev
+        WORKDIR /src
+        COPY Program.cs paysvc.csproj ./
+        RUN dotnet --version && dotnet publish paysvc.csproj -c Release -r linux-musl-x64 -p:PublishAot=true -p:OptimizationPreference=Speed -p:IlcInstructionSet=native -o /out --nologo
+        FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
+        COPY --from=build /out/paysvc /app/paysvc
+        ENTRYPOINT ["/app/paysvc"]
   cs11aot:
     <<: *svc
     container_name: cs11aot
@@ -96,6 +110,23 @@ services:
         RUN sed -i 's#<TargetFramework>net10.0</TargetFramework>#<TargetFramework>net11.0</TargetFramework>#' paysvc.csproj \
          && echo '{"sdk":{"version":"11.0.100-rc.2.26504.105","rollForward":"disable"}}' > global.json \
          && dotnet --version && dotnet publish paysvc.csproj -c Release -r linux-musl-x64 -p:PublishAot=true -o /out --nologo
+        FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
+        COPY --from=build /out/paysvc /app/paysvc
+        ENTRYPOINT ["/app/paysvc"]
+  cs11aotx:
+    <<: *svc
+    container_name: cs11aotx
+    build:
+      context: ./cs
+      dockerfile_inline: |
+        FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+        RUN apk add --no-cache clang lld build-base zlib-dev bash
+        RUN wget -qO /tmp/i.sh https://dot.net/v1/dotnet-install.sh && bash /tmp/i.sh --version 11.0.100-rc.2.26504.105 --install-dir /usr/share/dotnet
+        WORKDIR /src
+        COPY Program.cs paysvc.csproj ./
+        RUN sed -i 's#<TargetFramework>net10.0</TargetFramework>#<TargetFramework>net11.0</TargetFramework>#' paysvc.csproj \
+         && echo '{"sdk":{"version":"11.0.100-rc.2.26504.105","rollForward":"disable"}}' > global.json \
+         && dotnet --version && dotnet publish paysvc.csproj -c Release -r linux-musl-x64 -p:PublishAot=true -p:OptimizationPreference=Speed -p:IlcInstructionSet=native -o /out --nologo
         FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
         COPY --from=build /out/paysvc /app/paysvc
         ENTRYPOINT ["/app/paysvc"]

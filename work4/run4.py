@@ -13,7 +13,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 COMPOSE = ['docker', 'compose', '-f', str(HERE / 'compose.yml')]
 SERVICES = [('cs10', 'C# .NET 10'), ('cs11', 'C# .NET 11'), ('cs11ra', 'C# .NET 11 + runtime async'), ('go', 'Go'), ('rust', 'Rust'),
-            ('cs10aot', 'C# .NET 10 NativeAOT'), ('cs11aot', 'C# .NET 11 NativeAOT')]
+            ('cs10aot', 'C# .NET 10 NativeAOT'), ('cs11aot', 'C# .NET 11 NativeAOT'),
+            ('cs10aotx', 'C# .NET 10 NativeAOT, Speed + native ISA'), ('cs11aotx', 'C# .NET 11 NativeAOT, Speed + native ISA')]
 NORMAL = 'median=30&sigma=0.6&fail=0.01'
 DEGRADED = 'median=300&sigma=0.8&fail=0.10'
 
