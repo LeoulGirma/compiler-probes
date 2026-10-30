@@ -64,6 +64,9 @@ spin_rows = ''.join(
     + ''.join(f"<td>{sp(n, cid, 'open')[0]:.0f} <small>{sp(n, cid, 'open')[1]:.0f}–{sp(n, cid, 'open')[2]:.0f}</small></td>" for n in (0, 1)) + '</tr>'
     for cid, a, b in SPIN_IDS)
 spin_n, spin_all = sum(len(x[0]) for x in SPIN), sum(x[1] for x in SPIN)
+# set 4 follow-up: the same swap in the one-CPU payment-service container, two 8-minute soaks (settled CPU, % of one CPU)
+_S4 = [{x['id']: x for x in json.loads((HERE.parent / 'work4' / 'results' / f'r4_spin{n}_soak.json').read_text())['services']} for n in (1, 2)]
+spin4 = {k: sum(d[k]['stats']['cpu_median_pct'] for d in _S4) / len(_S4) for k in ('cs10', 'cs11', 'cs11s70')}
 
 # ---------------- copy ----------------
 pct = lambda a, b: (a / b - 1) * 100
@@ -157,7 +160,7 @@ html = f'''<title>Payments Under Load</title>
       <p class="sub">.NET 11 raised <code>DOTNET_ThreadPool_UnfairSemaphoreSpinLimit</code> from 70 to 1024: a worker thread with nothing to do now spins much longer before it sleeps. A follow-up test ran the .NET 10 and .NET 11 JIT builds with their own default, with the other version's, and with 0, in two separate runs of rotating rounds. CPU time per request in µs, mean of the clean runs; small numbers are the range.</p></div>
     <div class="st keep"><table><tr><th>Build · spin limit</th><th>Saturation <small>run 1</small></th><th>Saturation <small>run 2</small></th><th>At 8,000 req/s <small>run 1</small></th><th>At 8,000 req/s <small>run 2</small></th></tr>{spin_rows}</table></div>
     <div class="pad prose">
-      <p style="margin-top:0">With the limit at 70, .NET 11 matches .NET 10 within run-to-run noise in both runs and at both loads, so the extra CPU above comes from spinning, not from slower generated code. Spinning costs little at saturation, where threads are rarely idle, and a lot at a steady request rate, where every gap between requests is spent spinning. The same limit of 1024 costs .NET 10 far more than .NET 11, so .NET 11 also changed how each spin step works and the number is not comparable across versions. Spin 0 was cheapest in one run and middling in the other, and tail latency was too noisy on this laptop to say whether a lower limit costs any. Set 4 runs each service on one CPU, where the thread pool spins very little; that fits .NET 11 coming out cheaper there, but it has not been tested.</p>
+      <p style="margin-top:0">With the limit at 70, .NET 11 matches .NET 10 within run-to-run noise in both runs and at both loads, so the extra CPU above comes from spinning, not from slower generated code. Spinning costs little at saturation, where threads are rarely idle, and a lot at a steady request rate, where every gap between requests is spent spinning. The same limit of 1024 costs .NET 10 far more than .NET 11, so .NET 11 also changed how each spin step works and the number is not comparable across versions. Spin 0 was cheapest in one run and middling in the other, and tail latency was too noisy on this laptop to say whether a lower limit costs any. Set 4 runs each service on one CPU, and there the setting does not matter: in two 8-minute soaks of the payment service, .NET 11 at spin 70 used {spin4['cs11s70']:.0f}% of its CPU against {spin4['cs11']:.0f}% on its default, while .NET 10 used {spin4['cs10']:.0f}%. So .NET 11's saving in the containers comes from something else, and its extra cost here comes from the spin default.</p>
       <p>{spin_n} of {spin_all} runs were clean; runs where Windows background work collapsed throughput or kept the whole machine busy were dropped. The absolute numbers differ between the two runs because the machine was quieter during the second. Source: <code>work3/spin3.py</code>.</p>
     </div>
   </section>

@@ -54,6 +54,18 @@ services:
     <<: *svc
     container_name: cs11
     build: { context: ., dockerfile_inline: "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine\nCOPY bin/cs11/ /app/\nENTRYPOINT [\"/app/paysvc\"]\n" }
+  cs11s70:
+    <<: *svc
+    container_name: cs11s70
+    image: payprod-cs11
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      PROVIDER_URL: http://mockpay:9000/charge
+      PROVIDER_TIMEOUT_MS: "1000"
+      DB_POOL: "32"
+      PORT: "8080"
+      DOTNET_ThreadPool_UnfairSemaphoreSpinLimit: "0x46"
   cs11ra:
     <<: *svc
     container_name: cs11ra

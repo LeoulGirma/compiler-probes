@@ -470,7 +470,7 @@ take_body = f'''  <header>
       <li><b>Bare-metal Linux</b> and a real network</li>
       <li><b>Runtime async + NativeAOT</b> together</li>
       <li><b>.NET 11 GA</b></li>
-      <li><b>The spin limit</b> on one CPU and in NativeAOT</li>
+      <li><b>The spin limit</b> in NativeAOT</li>
     </ul>
   </section>
   <section class="card pad" id="mh">

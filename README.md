@@ -60,6 +60,8 @@ python work3/aggregate3.py work3/w_round1.json work3/w_round2.json work3/w_round
 Follow-up, the thread-pool spin limit (.NET 11 raised `DOTNET_ThreadPool_UnfairSemaphoreSpinLimit` from 70 to 1024):
 `python work3/spin3.py build` then `python work3/spin3.py run --rounds 4` (about 25 minutes on a quiet machine; it waits
 for background load to settle before each run). The published runs are `work3/spin3_run1.json` and `spin3_run2.json`.
+The same swap in set 4's one-CPU container: `python work4/run4.py soak --minutes 8 --round 1 --only cs10,cs11,cs11s70 --tag _spin1`
+(and `--round 2 --tag _spin2`); `cs11s70` is the .NET 11 image with `DOTNET_ThreadPool_UnfairSemaphoreSpinLimit=0x46`.
 The server is pinned to CPUs 0–3 and the load generator to 4–5; the load generator uses an open-loop schedule
 so stalls are counted (see Concepts › open-loop load on the site).
 
