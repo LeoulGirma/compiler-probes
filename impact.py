@@ -6,6 +6,7 @@ NativeAOT, then runs every build once per round in alternating order and keeps t
 System.IO.Hashing is pinned to one package version, so both runtimes run the same library code.
 
   python impact.py --rounds 3 --out impact.json
+  python impact.py --src cs6/Batch.cs --rounds 5 --out work5/batch.json     # the realistic decimal batch
 """
 import argparse, json, statistics, subprocess, sys
 from pathlib import Path
@@ -14,11 +15,12 @@ import probe2 as p2
 HERE = Path(__file__).resolve().parent
 HASHING = '10.0.0'
 
-def build(major, kind, work):
+def build(major, kind, work, src):
     sdk, rt, _ = p2.pick_dotnet(major)
     mj = rt.split('.')[0]
-    proj = work / f'impact_{mj}_{kind}'; proj.mkdir(parents=True, exist_ok=True)
-    (proj / 'Impact.cs').write_text((HERE / 'cs5' / 'Impact.cs').read_text())
+    proj = work / f'{src.stem.lower()}_{mj}_{kind}'; proj.mkdir(parents=True, exist_ok=True)
+    for old in proj.glob('*.cs'): old.unlink()
+    (proj / src.name).write_text(src.read_text())
     (proj / 'global.json').write_text(json.dumps({'sdk': {'version': sdk, 'rollForward': 'disable'}}))
     prop = '<PublishAot>true</PublishAot>' if kind == 'aot' else '<SelfContained>false</SelfContained>'
     (proj / 'impact.csproj').write_text(
@@ -33,10 +35,11 @@ def build(major, kind, work):
     return dict(id=f'{mj}_{kind}', runtime=rt, kind=kind, exe=str(out / ('impact' + p2.EXE)))
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument('--rounds', type=int, default=3); ap.add_argument('--out', default='impact.json')
+    ap = argparse.ArgumentParser(); ap.add_argument('--rounds', type=int, default=3); ap.add_argument('--out', default='impact.json'); ap.add_argument('--src', default='cs5/Impact.cs')
     a = ap.parse_args()
     work = HERE / 'work5'; work.mkdir(exist_ok=True)
-    builds = [build(m, k, work) for m in (10, 11) for k in ('jit', 'aot')]
+    src = (HERE / a.src).resolve()
+    builds = [build(m, k, work, src) for m in (10, 11) for k in ('jit', 'aot')]
     runs = {b['id']: [] for b in builds}
     for r in range(a.rounds):
         order = builds if r % 2 == 0 else builds[::-1]
@@ -50,7 +53,7 @@ def main():
                ns={k: dict(med=statistics.median(x[k] for x in runs[b['id']]), min=min(x[k] for x in runs[b['id']]), max=max(x[k] for x in runs[b['id']])) for k in keys})
                for b in builds}
     Path(a.out).write_text(json.dumps(dict(machine=dict(cpu=p2.cpu_name(), os=p2.os_name()), hashing=HASHING, rounds=a.rounds, summary=summary, runs=runs), indent=1))
-    print('\nns per op, median: .NET 10 -> .NET 11 (change)')
+    print('\nmedian per op (ns, or ms for the batch): .NET 10 -> .NET 11 (change)')
     for kind in ('jit', 'aot'):
         s10, s11 = summary[f'10_{kind}']['ns'], summary[f'11_{kind}']['ns']
         print(f'  {kind}:')

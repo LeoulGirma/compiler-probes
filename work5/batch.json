@@ -1,0 +1,204 @@
+{
+ "machine": {
+  "cpu": "Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz",
+  "os": "Windows-11-10.0.26300-SP0"
+ },
+ "hashing": "10.0.0",
+ "rounds": 5,
+ "summary": {
+  "10_jit": {
+   "runtime": "10.0.12",
+   "kind": "jit",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 84.695,
+     "min": 80.959,
+     "max": 90.552
+    },
+    "add_only_ms": {
+     "med": 80.668,
+     "min": 78.155,
+     "max": 88.663
+    }
+   }
+  },
+  "10_aot": {
+   "runtime": "10.0.12",
+   "kind": "aot",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 93.503,
+     "min": 92.198,
+     "max": 97.153
+    },
+    "add_only_ms": {
+     "med": 92.197,
+     "min": 91.821,
+     "max": 94.897
+    }
+   }
+  },
+  "11_jit": {
+   "runtime": "11.0.0-rc.2.26504.105",
+   "kind": "jit",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 82.901,
+     "min": 81.163,
+     "max": 86.045
+    },
+    "add_only_ms": {
+     "med": 80.431,
+     "min": 79.824,
+     "max": 88.76
+    }
+   }
+  },
+  "11_aot": {
+   "runtime": "11.0.0-rc.2.26504.105",
+   "kind": "aot",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 91.621,
+     "min": 88.252,
+     "max": 94.161
+    },
+    "add_only_ms": {
+     "med": 86.929,
+     "min": 86.485,
+     "max": 93.08
+    }
+   }
+  }
+ },
+ "runs": {
+  "10_jit": [
+   {
+    "fees_interest_ms": 86.61,
+    "add_only_ms": 80.668,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 84.695,
+    "add_only_ms": 85.835,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 90.552,
+    "add_only_ms": 88.663,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 80.959,
+    "add_only_ms": 78.984,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 81.984,
+    "add_only_ms": 78.155,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   }
+  ],
+  "10_aot": [
+   {
+    "fees_interest_ms": 93.503,
+    "add_only_ms": 93.582,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 97.153,
+    "add_only_ms": 94.897,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 92.585,
+    "add_only_ms": 91.821,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 92.198,
+    "add_only_ms": 91.982,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 93.81,
+    "add_only_ms": 92.197,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   }
+  ],
+  "11_jit": [
+   {
+    "fees_interest_ms": 86.045,
+    "add_only_ms": 81.948,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 84.471,
+    "add_only_ms": 88.76,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 81.163,
+    "add_only_ms": 79.824,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 82.124,
+    "add_only_ms": 80.351,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 82.901,
+    "add_only_ms": 80.431,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   }
+  ],
+  "11_aot": [
+   {
+    "fees_interest_ms": 94.161,
+    "add_only_ms": 88.824,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 91.988,
+    "add_only_ms": 93.08,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 88.252,
+    "add_only_ms": 86.915,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 88.357,
+    "add_only_ms": 86.929,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 91.621,
+    "add_only_ms": 86.485,
+    "runtime": ".NET 11.0.0-rc.2.26504.105",
+    "check": "218979731.05"
+   }
+  ]
+ }
+}
