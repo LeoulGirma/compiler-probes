@@ -47,6 +47,8 @@ python probe2.py --only cs --dotnet 11 --aot --out round1.json   # JIT (runtime 
 python probe2.py --only rust --out round1.json ; python probe2.py --only go --out round1.json
 python aggregate2.py round1.json round2.json round3.json data2.json   # medians (+min/max) per column
 ```
+Library impact of the BigMul change: `python impact.py --rounds 5 --out work5/impact.json` builds `cs5/Impact.cs` for .NET 10 and 11
+(JIT and NativeAOT) and times decimal, Int128/UInt128, XxHash3/128, Random.NextInt64 and BigInteger. Results in `work5/`.
 Second machine: `vps/` holds the same set 1 and set 2 run on a 4-vCPU Intel Haswell cloud server (Ubuntu), with its other
 workloads paused. `data2b.vps.json` is the five-round .NET 10 vs .NET 11 JIT rerun used on the .NET 11 page.
 
