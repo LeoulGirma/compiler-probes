@@ -72,7 +72,9 @@ static class Shapes
             ("two_acc_signed", () => TwoAccS(la)), ("call_signed", () => CallS(la)),
             ("pressure_signed", () => PressureS(la)), ("high_only_unsigned", () => (long)HighOnlyU(ua)),
         };
-        for (int pass = 0; pass < 2; pass++) { foreach (var (_, f) in probes) for (int r = 0; r < 3000; r++) sink += f(); System.Threading.Thread.Sleep(300); }
+        // warm-up by time, not by call count: .NET 11 can take longer to replace OSR code with the final Tier1 code
+        int warmMs = int.TryParse(Environment.GetEnvironmentVariable("WARM_MS"), out var w) ? w : 0;
+        for (int pass = 0; pass < 2; pass++) { foreach (var (_, f) in probes) { var t0 = Stopwatch.GetTimestamp(); int r = 0; while (r < 3000 || Stopwatch.GetElapsedTime(t0).TotalMilliseconds < warmMs) { sink += f(); r++; } } System.Threading.Thread.Sleep(300); }
         var parts = new List<string>();
         foreach (var (name, f) in probes) parts.Add(FormattableString.Invariant($"\"{name}\":{Bench(f, 400):F4}"));
         parts.Add($"\"runtime\":\"{System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}\"");

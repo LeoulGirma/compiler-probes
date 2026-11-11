@@ -74,7 +74,9 @@ static class Impact
             ("bigint_mul_1000bit", () => (long)(BigIntMul(bx, by) & long.MaxValue), 200, 64),
         };
         // warm-up: enough calls for tiered compilation and PGO to settle, twice with a pause between
-        for (int pass = 0; pass < 2; pass++) { foreach (var p in probes) for (int r = 0; r < 300; r++) sink += p.f(); System.Threading.Thread.Sleep(300); }
+        // warm-up by time, not by call count: .NET 11 can take longer to replace OSR code with the final Tier1 code
+        int warmMs = int.TryParse(Environment.GetEnvironmentVariable("WARM_MS"), out var w) ? w : 0;
+        for (int pass = 0; pass < 2; pass++) { foreach (var p in probes) { var t0 = Stopwatch.GetTimestamp(); int r = 0; while (r < 300 || Stopwatch.GetElapsedTime(t0).TotalMilliseconds < warmMs) { sink += p.f(); r++; } } System.Threading.Thread.Sleep(300); }
 
         var parts = new List<string>();
         foreach (var p in probes) parts.Add(FormattableString.Invariant($"\"{p.name}\":{Bench(p.f, p.reps, p.per):F4}"));
