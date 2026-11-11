@@ -1,0 +1,444 @@
+{
+ "machine": {
+  "cpu": "Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz",
+  "os": "Windows-11-10.0.26300-SP0"
+ },
+ "hashing": "10.0.0",
+ "rounds": 5,
+ "summary": {
+  "10_jit": {
+   "runtime": "10.0.12",
+   "kind": "jit",
+   "ns": {
+    "acc_signed": {
+     "med": 1.1992,
+     "min": 1.166,
+     "max": 1.5955
+    },
+    "acc_unsigned": {
+     "med": 0.8024,
+     "min": 0.721,
+     "max": 0.8336
+    },
+    "store_signed": {
+     "med": 1.16,
+     "min": 1.1592,
+     "max": 1.2058
+    },
+    "store_unsigned": {
+     "med": 0.8031,
+     "min": 0.7917,
+     "max": 1.2084
+    },
+    "two_acc_signed": {
+     "med": 0.9238,
+     "min": 0.9226,
+     "max": 1.2881
+    },
+    "call_signed": {
+     "med": 1.6067,
+     "min": 1.6056,
+     "max": 1.7753
+    },
+    "pressure_signed": {
+     "med": 1.4302,
+     "min": 1.3765,
+     "max": 1.668
+    },
+    "high_only_unsigned": {
+     "med": 0.681,
+     "min": 0.6563,
+     "max": 0.7575
+    }
+   }
+  },
+  "10_aot": {
+   "runtime": "10.0.12",
+   "kind": "aot",
+   "ns": {
+    "acc_signed": {
+     "med": 4.0176,
+     "min": 3.9263,
+     "max": 4.8696
+    },
+    "acc_unsigned": {
+     "med": 2.2491,
+     "min": 2.227,
+     "max": 2.2739
+    },
+    "store_signed": {
+     "med": 3.804,
+     "min": 3.7651,
+     "max": 4.0289
+    },
+    "store_unsigned": {
+     "med": 2.2156,
+     "min": 2.1954,
+     "max": 2.2682
+    },
+    "two_acc_signed": {
+     "med": 3.7896,
+     "min": 3.7463,
+     "max": 3.8885
+    },
+    "call_signed": {
+     "med": 4.2482,
+     "min": 4.215,
+     "max": 4.8174
+    },
+    "pressure_signed": {
+     "med": 4.0294,
+     "min": 3.9653,
+     "max": 4.7429
+    },
+    "high_only_unsigned": {
+     "med": 2.1426,
+     "min": 2.1369,
+     "max": 2.3011
+    }
+   }
+  },
+  "11_jit": {
+   "runtime": "11.0.0",
+   "kind": "jit",
+   "ns": {
+    "acc_signed": {
+     "med": 2.3541,
+     "min": 2.1441,
+     "max": 2.7435
+    },
+    "acc_unsigned": {
+     "med": 2.0738,
+     "min": 2.0403,
+     "max": 2.2164
+    },
+    "store_signed": {
+     "med": 1.7624,
+     "min": 1.6555,
+     "max": 2.6807
+    },
+    "store_unsigned": {
+     "med": 1.6594,
+     "min": 0.6563,
+     "max": 1.7366
+    },
+    "two_acc_signed": {
+     "med": 0.489,
+     "min": 0.4815,
+     "max": 0.5091
+    },
+    "call_signed": {
+     "med": 1.4055,
+     "min": 1.3817,
+     "max": 1.4828
+    },
+    "pressure_signed": {
+     "med": 0.8524,
+     "min": 0.8285,
+     "max": 0.8914
+    },
+    "high_only_unsigned": {
+     "med": 1.309,
+     "min": 1.2864,
+     "max": 1.3666
+    }
+   }
+  },
+  "11_aot": {
+   "runtime": "11.0.0",
+   "kind": "aot",
+   "ns": {
+    "acc_signed": {
+     "med": 1.5537,
+     "min": 1.4958,
+     "max": 1.7444
+    },
+    "acc_unsigned": {
+     "med": 1.2886,
+     "min": 1.2849,
+     "max": 1.4716
+    },
+    "store_signed": {
+     "med": 1.1673,
+     "min": 1.1567,
+     "max": 1.1769
+    },
+    "store_unsigned": {
+     "med": 0.6144,
+     "min": 0.5987,
+     "max": 0.6879
+    },
+    "two_acc_signed": {
+     "med": 1.1617,
+     "min": 1.1521,
+     "max": 1.1725
+    },
+    "call_signed": {
+     "med": 2.0746,
+     "min": 2.0641,
+     "max": 2.0911
+    },
+    "pressure_signed": {
+     "med": 1.2349,
+     "min": 1.2098,
+     "max": 1.2414
+    },
+    "high_only_unsigned": {
+     "med": 1.2863,
+     "min": 1.2853,
+     "max": 1.2936
+    }
+   }
+  }
+ },
+ "runs": {
+  "10_jit": [
+   {
+    "acc_signed": 1.1704,
+    "acc_unsigned": 0.8204,
+    "store_signed": 1.1693,
+    "store_unsigned": 1.2084,
+    "two_acc_signed": 1.2881,
+    "call_signed": 1.7753,
+    "pressure_signed": 1.4982,
+    "high_only_unsigned": 0.7575,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.3466,
+    "acc_unsigned": 0.8336,
+    "store_signed": 1.16,
+    "store_unsigned": 0.7999,
+    "two_acc_signed": 0.9234,
+    "call_signed": 1.6067,
+    "pressure_signed": 1.668,
+    "high_only_unsigned": 0.6563,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.5955,
+    "acc_unsigned": 0.721,
+    "store_signed": 1.1596,
+    "store_unsigned": 0.7917,
+    "two_acc_signed": 0.9226,
+    "call_signed": 1.6056,
+    "pressure_signed": 1.3765,
+    "high_only_unsigned": 0.681,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.1992,
+    "acc_unsigned": 0.8024,
+    "store_signed": 1.2058,
+    "store_unsigned": 0.8342,
+    "two_acc_signed": 0.9596,
+    "call_signed": 1.6591,
+    "pressure_signed": 1.4302,
+    "high_only_unsigned": 0.6989,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.166,
+    "acc_unsigned": 0.7794,
+    "store_signed": 1.1592,
+    "store_unsigned": 0.8031,
+    "two_acc_signed": 0.9238,
+    "call_signed": 1.6066,
+    "pressure_signed": 1.378,
+    "high_only_unsigned": 0.6772,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   }
+  ],
+  "10_aot": [
+   {
+    "acc_signed": 3.9263,
+    "acc_unsigned": 2.227,
+    "store_signed": 3.7651,
+    "store_unsigned": 2.2682,
+    "two_acc_signed": 3.7463,
+    "call_signed": 4.2452,
+    "pressure_signed": 4.0294,
+    "high_only_unsigned": 2.1426,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 3.9504,
+    "acc_unsigned": 2.2491,
+    "store_signed": 3.804,
+    "store_unsigned": 2.2026,
+    "two_acc_signed": 3.7615,
+    "call_signed": 4.2792,
+    "pressure_signed": 3.982,
+    "high_only_unsigned": 2.1372,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 4.8696,
+    "acc_unsigned": 2.2726,
+    "store_signed": 4.0289,
+    "store_unsigned": 2.2605,
+    "two_acc_signed": 3.8885,
+    "call_signed": 4.8174,
+    "pressure_signed": 4.7429,
+    "high_only_unsigned": 2.3011,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 4.0176,
+    "acc_unsigned": 2.2275,
+    "store_signed": 3.7712,
+    "store_unsigned": 2.1954,
+    "two_acc_signed": 3.7896,
+    "call_signed": 4.215,
+    "pressure_signed": 4.0568,
+    "high_only_unsigned": 2.1369,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 4.1788,
+    "acc_unsigned": 2.2739,
+    "store_signed": 3.8492,
+    "store_unsigned": 2.2156,
+    "two_acc_signed": 3.8549,
+    "call_signed": 4.2482,
+    "pressure_signed": 3.9653,
+    "high_only_unsigned": 2.1428,
+    "runtime": ".NET 10.0.12",
+    "sink": 65088
+   }
+  ],
+  "11_jit": [
+   {
+    "acc_signed": 2.3541,
+    "acc_unsigned": 2.06,
+    "store_signed": 2.6807,
+    "store_unsigned": 0.6563,
+    "two_acc_signed": 0.4815,
+    "call_signed": 1.3877,
+    "pressure_signed": 0.8339,
+    "high_only_unsigned": 1.2925,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 2.3494,
+    "acc_unsigned": 2.0403,
+    "store_signed": 1.7624,
+    "store_unsigned": 1.6731,
+    "two_acc_signed": 0.4906,
+    "call_signed": 1.4055,
+    "pressure_signed": 0.8533,
+    "high_only_unsigned": 1.309,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 2.1441,
+    "acc_unsigned": 2.0911,
+    "store_signed": 1.6673,
+    "store_unsigned": 1.6594,
+    "two_acc_signed": 0.4819,
+    "call_signed": 1.3817,
+    "pressure_signed": 0.8285,
+    "high_only_unsigned": 1.2864,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 2.4919,
+    "acc_unsigned": 2.0738,
+    "store_signed": 1.6555,
+    "store_unsigned": 1.6534,
+    "two_acc_signed": 0.489,
+    "call_signed": 1.4265,
+    "pressure_signed": 0.8524,
+    "high_only_unsigned": 1.329,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 2.7435,
+    "acc_unsigned": 2.2164,
+    "store_signed": 1.7624,
+    "store_unsigned": 1.7366,
+    "two_acc_signed": 0.5091,
+    "call_signed": 1.4828,
+    "pressure_signed": 0.8914,
+    "high_only_unsigned": 1.3666,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   }
+  ],
+  "11_aot": [
+   {
+    "acc_signed": 1.7444,
+    "acc_unsigned": 1.2867,
+    "store_signed": 1.1567,
+    "store_unsigned": 0.5987,
+    "two_acc_signed": 1.1521,
+    "call_signed": 2.0641,
+    "pressure_signed": 1.2414,
+    "high_only_unsigned": 1.2863,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.4958,
+    "acc_unsigned": 1.2849,
+    "store_signed": 1.1575,
+    "store_unsigned": 0.6841,
+    "two_acc_signed": 1.1523,
+    "call_signed": 2.0666,
+    "pressure_signed": 1.2369,
+    "high_only_unsigned": 1.2853,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.5977,
+    "acc_unsigned": 1.2949,
+    "store_signed": 1.1769,
+    "store_unsigned": 0.6144,
+    "two_acc_signed": 1.1725,
+    "call_signed": 2.0911,
+    "pressure_signed": 1.2098,
+    "high_only_unsigned": 1.2861,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.4994,
+    "acc_unsigned": 1.2886,
+    "store_signed": 1.17,
+    "store_unsigned": 0.6879,
+    "two_acc_signed": 1.1617,
+    "call_signed": 2.0746,
+    "pressure_signed": 1.2349,
+    "high_only_unsigned": 1.2879,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   },
+   {
+    "acc_signed": 1.5537,
+    "acc_unsigned": 1.4716,
+    "store_signed": 1.1673,
+    "store_unsigned": 0.6088,
+    "two_acc_signed": 1.1694,
+    "call_signed": 2.0881,
+    "pressure_signed": 1.2277,
+    "high_only_unsigned": 1.2936,
+    "runtime": ".NET 11.0.0",
+    "sink": 65088
+   }
+  ]
+ }
+}

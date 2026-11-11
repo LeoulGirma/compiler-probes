@@ -36,25 +36,30 @@ def build(major, kind, work, src):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--rounds', type=int, default=3); ap.add_argument('--out', default='impact.json'); ap.add_argument('--src', default='cs5/Impact.cs')
+    ap.add_argument('--kinds', default='jit,aot', help='jit,aot or just jit (NativeAOT on Linux needs clang)')
+    ap.add_argument('--env', action='append', default=[], help='KEY=VALUE for the benchmark processes, e.g. DOTNET_TieredCompilation=0')
     a = ap.parse_args()
     work = HERE / 'work5'; work.mkdir(exist_ok=True)
     src = (HERE / a.src).resolve()
-    builds = [build(m, k, work, src) for m in (10, 11) for k in ('jit', 'aot')]
+    kinds = a.kinds.split(',')
+    builds = [build(m, k, work, src) for m in (10, 11) for k in kinds]
+    import os
+    penv = dict(os.environ, **dict(e.split('=', 1) for e in a.env))
     runs = {b['id']: [] for b in builds}
     for r in range(a.rounds):
         order = builds if r % 2 == 0 else builds[::-1]
         print(f'== round {r + 1}', flush=True)
         for b in order:
-            res = json.loads(subprocess.run([b['exe']], capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])
+            res = json.loads(subprocess.run([b['exe']], capture_output=True, text=True, check=True, env=penv).stdout.strip().splitlines()[-1])
             runs[b['id']].append(res)
             print(f"   {b['id']:8s} " + ' '.join(f'{k}={v:.2f}' for k, v in res.items() if isinstance(v, float)), flush=True)
     keys = [k for k, v in runs[builds[0]['id']][0].items() if isinstance(v, float)]
     summary = {b['id']: dict(runtime=b['runtime'], kind=b['kind'],
                ns={k: dict(med=statistics.median(x[k] for x in runs[b['id']]), min=min(x[k] for x in runs[b['id']]), max=max(x[k] for x in runs[b['id']])) for k in keys})
                for b in builds}
-    Path(a.out).write_text(json.dumps(dict(machine=dict(cpu=p2.cpu_name(), os=p2.os_name()), hashing=HASHING, rounds=a.rounds, summary=summary, runs=runs), indent=1))
+    Path(a.out).write_text(json.dumps(dict(machine=dict(cpu=p2.cpu_name(), os=p2.os_name()), hashing=HASHING, rounds=a.rounds, env=a.env, summary=summary, runs=runs), indent=1))
     print('\nmedian per op (ns, or ms for the batch): .NET 10 -> .NET 11 (change)')
-    for kind in ('jit', 'aot'):
+    for kind in kinds:
         s10, s11 = summary[f'10_{kind}']['ns'], summary[f'11_{kind}']['ns']
         print(f'  {kind}:')
         for k in keys:
