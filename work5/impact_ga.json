@@ -1,0 +1,504 @@
+{
+ "machine": {
+  "cpu": "Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz",
+  "os": "Windows-11-10.0.26300-SP0"
+ },
+ "hashing": "10.0.0",
+ "rounds": 5,
+ "summary": {
+  "10_jit": {
+   "runtime": "10.0.12",
+   "kind": "jit",
+   "ns": {
+    "bigmul_loop": {
+     "med": 1.3033,
+     "min": 1.2662,
+     "max": 1.398
+    },
+    "decimal_mul": {
+     "med": 8.8901,
+     "min": 8.7139,
+     "max": 9.0085
+    },
+    "decimal_div": {
+     "med": 75.2515,
+     "min": 74.7388,
+     "max": 80.9192
+    },
+    "uint128_mul": {
+     "med": 1.8355,
+     "min": 1.748,
+     "max": 1.9106
+    },
+    "int128_mul": {
+     "med": 1.8309,
+     "min": 1.7904,
+     "max": 1.9142
+    },
+    "xxhash3_per_kb": {
+     "med": 33.7402,
+     "min": 33.1982,
+     "max": 33.9648
+    },
+    "xxhash128_per_kb": {
+     "med": 33.4375,
+     "min": 33.1201,
+     "max": 33.7793
+    },
+    "random_nextint64": {
+     "med": 2.3433,
+     "min": 2.3308,
+     "max": 2.4736
+    },
+    "bigint_mul_1000bit": {
+     "med": 928.2578,
+     "min": 916.3359,
+     "max": 939.3125
+    }
+   }
+  },
+  "10_aot": {
+   "runtime": "10.0.12",
+   "kind": "aot",
+   "ns": {
+    "bigmul_loop": {
+     "med": 4.0769,
+     "min": 3.9648,
+     "max": 4.3145
+    },
+    "decimal_mul": {
+     "med": 8.231,
+     "min": 8.0271,
+     "max": 8.3115
+    },
+    "decimal_div": {
+     "med": 86.4197,
+     "min": 86.2781,
+     "max": 87.7771
+    },
+    "uint128_mul": {
+     "med": 3.1524,
+     "min": 3.061,
+     "max": 3.1636
+    },
+    "int128_mul": {
+     "med": 3.0916,
+     "min": 3.0655,
+     "max": 3.1331
+    },
+    "xxhash3_per_kb": {
+     "med": 50.4883,
+     "min": 49.3555,
+     "max": 50.791
+    },
+    "xxhash128_per_kb": {
+     "med": 51.0498,
+     "min": 50.2783,
+     "max": 51.3428
+    },
+    "random_nextint64": {
+     "med": 4.3242,
+     "min": 4.2156,
+     "max": 4.458
+    },
+    "bigint_mul_1000bit": {
+     "med": 921.0703,
+     "min": 910.7578,
+     "max": 1141.5938
+    }
+   }
+  },
+  "11_jit": {
+   "runtime": "11.0.0",
+   "kind": "jit",
+   "ns": {
+    "bigmul_loop": {
+     "med": 2.4572,
+     "min": 2.2656,
+     "max": 2.5355
+    },
+    "decimal_mul": {
+     "med": 11.676,
+     "min": 11.5256,
+     "max": 13.5835
+    },
+    "decimal_div": {
+     "med": 77.8027,
+     "min": 73.8745,
+     "max": 80.2795
+    },
+    "uint128_mul": {
+     "med": 1.6171,
+     "min": 1.5564,
+     "max": 1.6368
+    },
+    "int128_mul": {
+     "med": 1.5911,
+     "min": 1.5588,
+     "max": 1.6263
+    },
+    "xxhash3_per_kb": {
+     "med": 33.623,
+     "min": 33.1982,
+     "max": 34.4824
+    },
+    "xxhash128_per_kb": {
+     "med": 33.9941,
+     "min": 33.0078,
+     "max": 34.2285
+    },
+    "random_nextint64": {
+     "med": 1.9939,
+     "min": 1.9634,
+     "max": 2.2085
+    },
+    "bigint_mul_1000bit": {
+     "med": 629.4844,
+     "min": 625.3906,
+     "max": 655.3594
+    }
+   }
+  },
+  "11_aot": {
+   "runtime": "11.0.0",
+   "kind": "aot",
+   "ns": {
+    "bigmul_loop": {
+     "med": 1.4259,
+     "min": 1.3647,
+     "max": 1.5997
+    },
+    "decimal_mul": {
+     "med": 6.9368,
+     "min": 6.875,
+     "max": 7.1584
+    },
+    "decimal_div": {
+     "med": 79.5239,
+     "min": 78.031,
+     "max": 80.7153
+    },
+    "uint128_mul": {
+     "med": 1.5801,
+     "min": 1.5662,
+     "max": 1.5951
+    },
+    "int128_mul": {
+     "med": 1.5916,
+     "min": 1.5577,
+     "max": 1.6227
+    },
+    "xxhash3_per_kb": {
+     "med": 50.2539,
+     "min": 49.4678,
+     "max": 50.957
+    },
+    "xxhash128_per_kb": {
+     "med": 50.7764,
+     "min": 49.3115,
+     "max": 52.7393
+    },
+    "random_nextint64": {
+     "med": 2.4636,
+     "min": 2.3032,
+     "max": 3.7573
+    },
+    "bigint_mul_1000bit": {
+     "med": 688.5703,
+     "min": 678.2188,
+     "max": 725.6016
+    }
+   }
+  }
+ },
+ "runs": {
+  "10_jit": [
+   {
+    "bigmul_loop": 1.2921,
+    "decimal_mul": 8.9504,
+    "decimal_div": 77.1106,
+    "uint128_mul": 1.8355,
+    "int128_mul": 1.8309,
+    "xxhash3_per_kb": 33.4326,
+    "xxhash128_per_kb": 33.1201,
+    "random_nextint64": 2.4736,
+    "bigint_mul_1000bit": 928.2578,
+    "runtime": ".NET 10.0.12",
+    "aot": false,
+    "sink": 49267
+   },
+   {
+    "bigmul_loop": 1.2662,
+    "decimal_mul": 8.7139,
+    "decimal_div": 80.9192,
+    "uint128_mul": 1.8438,
+    "int128_mul": 1.8336,
+    "xxhash3_per_kb": 33.9453,
+    "xxhash128_per_kb": 33.7793,
+    "random_nextint64": 2.3926,
+    "bigint_mul_1000bit": 937.8516,
+    "runtime": ".NET 10.0.12",
+    "aot": false,
+    "sink": 32918
+   },
+   {
+    "bigmul_loop": 1.3033,
+    "decimal_mul": 8.8315,
+    "decimal_div": 75.2515,
+    "uint128_mul": 1.9106,
+    "int128_mul": 1.9142,
+    "xxhash3_per_kb": 33.1982,
+    "xxhash128_per_kb": 33.1738,
+    "random_nextint64": 2.3308,
+    "bigint_mul_1000bit": 916.3359,
+    "runtime": ".NET 10.0.12",
+    "aot": false,
+    "sink": 51941
+   },
+   {
+    "bigmul_loop": 1.3116,
+    "decimal_mul": 9.0085,
+    "decimal_div": 74.7815,
+    "uint128_mul": 1.748,
+    "int128_mul": 1.7904,
+    "xxhash3_per_kb": 33.7402,
+    "xxhash128_per_kb": 33.4375,
+    "random_nextint64": 2.3384,
+    "bigint_mul_1000bit": 926.75,
+    "runtime": ".NET 10.0.12",
+    "aot": false,
+    "sink": 13998
+   },
+   {
+    "bigmul_loop": 1.398,
+    "decimal_mul": 8.8901,
+    "decimal_div": 74.7388,
+    "uint128_mul": 1.8165,
+    "int128_mul": 1.7969,
+    "xxhash3_per_kb": 33.9648,
+    "xxhash128_per_kb": 33.6133,
+    "random_nextint64": 2.3433,
+    "bigint_mul_1000bit": 939.3125,
+    "runtime": ".NET 10.0.12",
+    "aot": false,
+    "sink": 27316
+   }
+  ],
+  "10_aot": [
+   {
+    "bigmul_loop": 4.3145,
+    "decimal_mul": 8.231,
+    "decimal_div": 87.7771,
+    "uint128_mul": 3.061,
+    "int128_mul": 3.0916,
+    "xxhash3_per_kb": 49.7852,
+    "xxhash128_per_kb": 50.2783,
+    "random_nextint64": 4.3936,
+    "bigint_mul_1000bit": 921.0703,
+    "runtime": ".NET 10.0.12",
+    "aot": true,
+    "sink": 7494
+   },
+   {
+    "bigmul_loop": 4.0345,
+    "decimal_mul": 8.0337,
+    "decimal_div": 86.322,
+    "uint128_mul": 3.1554,
+    "int128_mul": 3.1045,
+    "xxhash3_per_kb": 49.3555,
+    "xxhash128_per_kb": 51.2793,
+    "random_nextint64": 4.2295,
+    "bigint_mul_1000bit": 910.7578,
+    "runtime": ".NET 10.0.12",
+    "aot": true,
+    "sink": 51367
+   },
+   {
+    "bigmul_loop": 4.0769,
+    "decimal_mul": 8.2361,
+    "decimal_div": 86.2781,
+    "uint128_mul": 3.0855,
+    "int128_mul": 3.0736,
+    "xxhash3_per_kb": 50.4883,
+    "xxhash128_per_kb": 50.5664,
+    "random_nextint64": 4.3242,
+    "bigint_mul_1000bit": 912.0625,
+    "runtime": ".NET 10.0.12",
+    "aot": true,
+    "sink": 46012
+   },
+   {
+    "bigmul_loop": 4.3092,
+    "decimal_mul": 8.0271,
+    "decimal_div": 86.5552,
+    "uint128_mul": 3.1524,
+    "int128_mul": 3.0655,
+    "xxhash3_per_kb": 50.791,
+    "xxhash128_per_kb": 51.0498,
+    "random_nextint64": 4.2156,
+    "bigint_mul_1000bit": 945.7266,
+    "runtime": ".NET 10.0.12",
+    "aot": true,
+    "sink": 2408
+   },
+   {
+    "bigmul_loop": 3.9648,
+    "decimal_mul": 8.3115,
+    "decimal_div": 86.4197,
+    "uint128_mul": 3.1636,
+    "int128_mul": 3.1331,
+    "xxhash3_per_kb": 50.7422,
+    "xxhash128_per_kb": 51.3428,
+    "random_nextint64": 4.458,
+    "bigint_mul_1000bit": 1141.5938,
+    "runtime": ".NET 10.0.12",
+    "aot": true,
+    "sink": 19854
+   }
+  ],
+  "11_jit": [
+   {
+    "bigmul_loop": 2.2825,
+    "decimal_mul": 11.5256,
+    "decimal_div": 76.9128,
+    "uint128_mul": 1.6296,
+    "int128_mul": 1.6263,
+    "xxhash3_per_kb": 33.4473,
+    "xxhash128_per_kb": 33.5352,
+    "random_nextint64": 1.9719,
+    "bigint_mul_1000bit": 653.1562,
+    "runtime": ".NET 11.0.0",
+    "aot": false,
+    "sink": 56891
+   },
+   {
+    "bigmul_loop": 2.2656,
+    "decimal_mul": 11.9165,
+    "decimal_div": 77.8027,
+    "uint128_mul": 1.6171,
+    "int128_mul": 1.5588,
+    "xxhash3_per_kb": 33.1982,
+    "xxhash128_per_kb": 33.0078,
+    "random_nextint64": 1.9939,
+    "bigint_mul_1000bit": 625.3906,
+    "runtime": ".NET 11.0.0",
+    "aot": false,
+    "sink": 1174
+   },
+   {
+    "bigmul_loop": 2.5355,
+    "decimal_mul": 11.6296,
+    "decimal_div": 78.6011,
+    "uint128_mul": 1.6368,
+    "int128_mul": 1.5922,
+    "xxhash3_per_kb": 33.7695,
+    "xxhash128_per_kb": 34.0088,
+    "random_nextint64": 2.2085,
+    "bigint_mul_1000bit": 625.4375,
+    "runtime": ".NET 11.0.0",
+    "aot": false,
+    "sink": 54821
+   },
+   {
+    "bigmul_loop": 2.4572,
+    "decimal_mul": 11.676,
+    "decimal_div": 80.2795,
+    "uint128_mul": 1.5564,
+    "int128_mul": 1.5911,
+    "xxhash3_per_kb": 34.4824,
+    "xxhash128_per_kb": 34.2285,
+    "random_nextint64": 1.9634,
+    "bigint_mul_1000bit": 655.3594,
+    "runtime": ".NET 11.0.0",
+    "aot": false,
+    "sink": 57983
+   },
+   {
+    "bigmul_loop": 2.5038,
+    "decimal_mul": 13.5835,
+    "decimal_div": 73.8745,
+    "uint128_mul": 1.6053,
+    "int128_mul": 1.5671,
+    "xxhash3_per_kb": 33.623,
+    "xxhash128_per_kb": 33.9941,
+    "random_nextint64": 2.0117,
+    "bigint_mul_1000bit": 629.4844,
+    "runtime": ".NET 11.0.0",
+    "aot": false,
+    "sink": 34744
+   }
+  ],
+  "11_aot": [
+   {
+    "bigmul_loop": 1.4605,
+    "decimal_mul": 6.9368,
+    "decimal_div": 79.5239,
+    "uint128_mul": 1.5951,
+    "int128_mul": 1.593,
+    "xxhash3_per_kb": 50.376,
+    "xxhash128_per_kb": 52.7393,
+    "random_nextint64": 2.4636,
+    "bigint_mul_1000bit": 707.8281,
+    "runtime": ".NET 11.0.0",
+    "aot": true,
+    "sink": 7232
+   },
+   {
+    "bigmul_loop": 1.3957,
+    "decimal_mul": 6.9583,
+    "decimal_div": 79.7437,
+    "uint128_mul": 1.5903,
+    "int128_mul": 1.5577,
+    "xxhash3_per_kb": 50.1172,
+    "xxhash128_per_kb": 51.46,
+    "random_nextint64": 2.5193,
+    "bigint_mul_1000bit": 683.1641,
+    "runtime": ".NET 11.0.0",
+    "aot": true,
+    "sink": 13204
+   },
+   {
+    "bigmul_loop": 1.4259,
+    "decimal_mul": 7.1584,
+    "decimal_div": 80.7153,
+    "uint128_mul": 1.5801,
+    "int128_mul": 1.5841,
+    "xxhash3_per_kb": 49.4678,
+    "xxhash128_per_kb": 49.3115,
+    "random_nextint64": 2.3032,
+    "bigint_mul_1000bit": 725.6016,
+    "runtime": ".NET 11.0.0",
+    "aot": true,
+    "sink": 46314
+   },
+   {
+    "bigmul_loop": 1.3647,
+    "decimal_mul": 6.8862,
+    "decimal_div": 79.0259,
+    "uint128_mul": 1.5662,
+    "int128_mul": 1.6227,
+    "xxhash3_per_kb": 50.957,
+    "xxhash128_per_kb": 50.7764,
+    "random_nextint64": 3.7573,
+    "bigint_mul_1000bit": 678.2188,
+    "runtime": ".NET 11.0.0",
+    "aot": true,
+    "sink": 57912
+   },
+   {
+    "bigmul_loop": 1.5997,
+    "decimal_mul": 6.875,
+    "decimal_div": 78.031,
+    "uint128_mul": 1.579,
+    "int128_mul": 1.5916,
+    "xxhash3_per_kb": 50.2539,
+    "xxhash128_per_kb": 49.8828,
+    "random_nextint64": 2.4392,
+    "bigint_mul_1000bit": 688.5703,
+    "runtime": ".NET 11.0.0",
+    "aot": true,
+    "sink": 35995
+   }
+  ]
+ }
+}

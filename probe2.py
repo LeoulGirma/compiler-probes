@@ -100,7 +100,9 @@ def do_go(a, work):
 
 # ---------------- C# ----------------
 def pick_dotnet(major):
-    key = lambda v: [int(x) if x.isdigit() else 0 for x in re.split(r'[.-]', v)]
+    def key(v):   # final release ranks above its previews and release candidates
+        base, _, pre = v.partition('-')
+        return [int(x) for x in base.split('.')] + [1 if not pre else 0] + [int(x) if x.isdigit() else 0 for x in re.split(r'[.-]', pre)]
     sdks = [l.split()[0] for l in run(['dotnet', '--list-sdks']).stdout.splitlines()]
     rts = [l.split()[1] for l in run(['dotnet', '--list-runtimes']).stdout.splitlines() if l.startswith('Microsoft.NETCore.App ')]
     mine = lambda vs: sorted([v for v in vs if v.split('.')[0] == str(major)], key=key)

@@ -1,0 +1,204 @@
+{
+ "machine": {
+  "cpu": "Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz",
+  "os": "Windows-11-10.0.26300-SP0"
+ },
+ "hashing": "10.0.0",
+ "rounds": 5,
+ "summary": {
+  "10_jit": {
+   "runtime": "10.0.12",
+   "kind": "jit",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 116.589,
+     "min": 91.93,
+     "max": 142.313
+    },
+    "add_only_ms": {
+     "med": 108.816,
+     "min": 90.979,
+     "max": 146.303
+    }
+   }
+  },
+  "10_aot": {
+   "runtime": "10.0.12",
+   "kind": "aot",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 116.712,
+     "min": 108.857,
+     "max": 150.78
+    },
+    "add_only_ms": {
+     "med": 109.35,
+     "min": 105.283,
+     "max": 161.284
+    }
+   }
+  },
+  "11_jit": {
+   "runtime": "11.0.0",
+   "kind": "jit",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 103.846,
+     "min": 91.846,
+     "max": 121.244
+    },
+    "add_only_ms": {
+     "med": 101.436,
+     "min": 90.421,
+     "max": 104.062
+    }
+   }
+  },
+  "11_aot": {
+   "runtime": "11.0.0",
+   "kind": "aot",
+   "ns": {
+    "fees_interest_ms": {
+     "med": 105.158,
+     "min": 100.077,
+     "max": 122.85
+    },
+    "add_only_ms": {
+     "med": 104.42,
+     "min": 100.569,
+     "max": 130.496
+    }
+   }
+  }
+ },
+ "runs": {
+  "10_jit": [
+   {
+    "fees_interest_ms": 116.589,
+    "add_only_ms": 108.816,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 142.313,
+    "add_only_ms": 146.303,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 119.73,
+    "add_only_ms": 117.27,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 91.93,
+    "add_only_ms": 90.979,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 94.089,
+    "add_only_ms": 91.559,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   }
+  ],
+  "10_aot": [
+   {
+    "fees_interest_ms": 116.712,
+    "add_only_ms": 108.556,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 136.398,
+    "add_only_ms": 109.35,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 150.78,
+    "add_only_ms": 161.284,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 114.414,
+    "add_only_ms": 117.171,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 108.857,
+    "add_only_ms": 105.283,
+    "runtime": ".NET 10.0.12",
+    "check": "218979731.05"
+   }
+  ],
+  "11_jit": [
+   {
+    "fees_interest_ms": 103.846,
+    "add_only_ms": 101.662,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 93.791,
+    "add_only_ms": 90.421,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 121.244,
+    "add_only_ms": 101.436,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 108.681,
+    "add_only_ms": 100.682,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 91.846,
+    "add_only_ms": 104.062,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   }
+  ],
+  "11_aot": [
+   {
+    "fees_interest_ms": 105.158,
+    "add_only_ms": 104.42,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 104.708,
+    "add_only_ms": 102.958,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 122.85,
+    "add_only_ms": 130.496,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 118.482,
+    "add_only_ms": 124.613,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   },
+   {
+    "fees_interest_ms": 100.077,
+    "add_only_ms": 100.569,
+    "runtime": ".NET 11.0.0",
+    "check": "218979731.05"
+   }
+  ]
+ }
+}
