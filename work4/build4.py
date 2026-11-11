@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Linux binaries on the Windows host, then the Docker images.  python build4.py [step ...]
+"""Build Linux binaries on the host (Windows or Linux), then the Docker images.  python build4.py [step ...]
 steps: go rust cs images (default: all). Go cross-compiles natively; Rust targets x86_64-unknown-linux-musl linked with
 rust-lld (the crates are pure Rust); C# publishes self-contained for linux-musl-x64 (Alpine)."""
 import json, os, shutil, subprocess, sys
@@ -7,12 +7,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 BIN = HERE / 'bin'; BUILD = HERE / 'build'
-DL = Path(os.environ.get('DOTNET_LOCAL', HERE.parent.parent / 'dotnet-local'))   # side-by-side .NET 10 + 11 RC2 SDKs
-SDK = {'10': '10.0.401', '11': '11.0.100-rc.2.26504.105'}
+DL = Path(os.environ.get('DOTNET_LOCAL', HERE.parent.parent / 'dotnet-local'))   # side-by-side .NET 10 + 11 SDKs
+SDK = {'10': '10.0.401', '11': '11.0.100'}
 
 def env():
     e = dict(os.environ)
-    e.update({'DOTNET_ROOT': str(DL), 'PATH': f"{DL};{Path.home() / '.cargo' / 'bin'};{e['PATH']}", 'DOTNET_MULTILEVEL_LOOKUP': '0',
+    cargo = Path(os.environ.get('CARGO_HOME', Path.home() / '.cargo')) / 'bin'
+    e.update({'DOTNET_ROOT': str(DL), 'PATH': os.pathsep.join([str(DL), str(cargo), e['PATH']]), 'DOTNET_MULTILEVEL_LOOKUP': '0',
               'DOTNET_CLI_TELEMETRY_OPTOUT': '1', 'DOTNET_NOLOGO': '1', 'GOTOOLCHAIN': 'go1.27.2'})
     return e
 
