@@ -76,6 +76,8 @@ def main():
     ap.add_argument('--summary', action='store_true'); ap.add_argument('--no-idle', action='store_true')
     a = ap.parse_args()
     if a.summary: return summary(a.tag)
+    if os.name == 'nt':   # keep the machine from going to sleep while this process runs (ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+        import ctypes; ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)
     meta_f = HERE / f'set1_{a.tag}_meta.json'; meta = []
     for n in range(1, a.rounds + 1):
         for major in (['10', '11'] if n % 2 else ['11', '10']):
