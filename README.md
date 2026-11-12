@@ -80,6 +80,14 @@ python work4/run4.py soak --minutes 8 --tag _c
 Each round runs, per service: a cold start, 500 payments/s for 60 s after a 45 s warm-up, a closed-loop
 throughput test, and a 90 s provider-degradation test (the middle 30 s: median 300 ms, 10% of calls hang).
 After every phase it checks that each captured payment appears exactly once in a merchant balance.
+Every measurement also records the container's CPU-quota throttling (cgroup v2 `cpu.stat`) and, on a Linux
+host, CPU steal, so a round disturbed by something else on the machine can be recognised and set aside.
+`--keep-order` runs the `--only` services in the order given (used to flip the soak order between runs).
+
+Consistency run on a Linux server (.NET 11.0.0): `vps/set4_consistency.sh` builds everything, pauses the host's
+other containers, runs three 250 payments/s rounds of seven services and two soaks with the order flipped, and
+resumes the containers on exit. Set 1 the same way on any machine: `python set1_rounds.py --rounds 3 --tag <name>`
+(alternates .NET 10 and 11, waits for the machine to go idle first, and marks each difference consistent or inconclusive).
 
 The payment provider (`work4/mockpay`) is a mock with injected delays and failures. This is a realistic
 simulation, not a deployed system.

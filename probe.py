@@ -137,14 +137,18 @@ def do_go(a, work):
                 bench=bench, warmup=buckets(warm), asm=asm, features=feats)
 
 # ---------------- C# ----------------
+def vkey(v):   # a final release (11.0.0) ranks above its previews and release candidates (11.0.0-rc.2...)
+    base, _, pre = v.partition('-')
+    return [int(x) for x in base.split('.')] + [1 if not pre else 0] + [int(x) if x.isdigit() else 0 for x in re.split(r'[.-]', pre)]
+
 def do_cs(a, work):
     major = a.dotnet
     sdks = [l.split()[0] for l in run(['dotnet', '--list-sdks']).stdout.splitlines()]
     rts = [l.split()[1] for l in run(['dotnet', '--list-runtimes']).stdout.splitlines() if l.startswith('Microsoft.NETCore.App ')]
-    pick = lambda vs: sorted([v for v in vs if not major or v.split('.')[0] == str(major)], key=lambda v: [int(x) if x.isdigit() else 0 for x in re.split(r'[.-]', v)])[-1]
+    pick = lambda vs: sorted([v for v in vs if not major or v.split('.')[0] == str(major)], key=vkey)[-1]
     if not [v for v in rts if not major or v.split('.')[0] == str(major)]: sys.exit(f'no .NET {major} runtime installed (dotnet --list-runtimes)')
     # a newer SDK's compiler can target an older runtime, so fall back to the newest SDK when that major has none
-    sdk, rt = (pick(sdks) if [v for v in sdks if v.split('.')[0] == str(major)] or not major else sorted(sdks, key=lambda v: [int(x) if x.isdigit() else 0 for x in re.split(r'[.-]', v)])[-1]), pick(rts)
+    sdk, rt = (pick(sdks) if [v for v in sdks if v.split('.')[0] == str(major)] or not major else sorted(sdks, key=vkey)[-1]), pick(rts)
     root = Path(run(['dotnet', '--list-sdks']).stdout.split(sdk)[1].split('[')[1].split(']')[0]).parent
     csc = root / 'sdk' / sdk / 'Roslyn' / 'bincore' / 'csc.dll'
     mj = rt.split('.')[0]

@@ -312,17 +312,20 @@ func main() {
 		var tl []map[string]any
 		for i, b := range buckets {
 			l := make([]int64, 0, len(b))
+			okl := make([]int64, 0, len(b))
 			errs, ok := 0, 0
 			for _, s := range b {
 				l = append(l, s.lat)
 				if s.code == 200 || s.code == 422 {
 					ok++
+					okl = append(okl, s.lat)
 				} else if s.code == 0 || s.code >= 500 {
 					errs++
 				}
 			}
-			p := pcts(l)
-			tl = append(tl, map[string]any{"t": i, "n": len(b), "ok": ok, "errors": errs, "p50_ms": p["p50_ms"], "p99_ms": p["p99_ms"]})
+			p, po := pcts(l), pcts(okl)
+			// ok_*: answered payments only, so the injected provider failures (which all take the full timeout) do not mask the service's own tail
+			tl = append(tl, map[string]any{"t": i, "n": len(b), "ok": ok, "errors": errs, "p50_ms": p["p50_ms"], "p99_ms": p["p99_ms"], "ok_p99_ms": po["p99_ms"], "ok_max_ms": po["max_ms"]})
 		}
 		out["series"] = tl
 	}
