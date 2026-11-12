@@ -152,7 +152,7 @@ def do_cs(a, work):
     root = Path(run(['dotnet', '--list-sdks']).stdout.split(sdk)[1].split('[')[1].split(']')[0]).parent
     csc = root / 'sdk' / sdk / 'Roslyn' / 'bincore' / 'csc.dll'
     mj = rt.split('.')[0]
-    refdir = sorted((root / 'packs' / 'Microsoft.NETCore.App.Ref').glob(f'{mj}.*'))[-1] / 'ref' / f'net{mj}.0'
+    refdir = sorted((root / 'packs' / 'Microsoft.NETCore.App.Ref').glob(f'{mj}.*'), key=lambda p: vkey(p.name))[-1] / 'ref' / f'net{mj}.0'
     refs = [f'-r:{p}' for p in sorted(refdir.glob('*.dll'))]
     dll = work / f'cs{mj}.dll'
     ms = timed(lambda: run(['dotnet', str(csc), '-nologo', '-optimize+', '-nostdlib', f'-out:{dll}'] + refs + [str(HERE / 'cs' / 'Probes.cs')]))
