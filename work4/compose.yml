@@ -66,6 +66,30 @@ services:
       DB_POOL: "32"
       PORT: "8080"
       DOTNET_ThreadPool_UnfairSemaphoreSpinLimit: "0x46"
+  cs11pgo0:
+    <<: *svc
+    container_name: cs11pgo0
+    image: payprod-cs11
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      PROVIDER_URL: http://mockpay:9000/charge
+      PROVIDER_TIMEOUT_MS: "1000"
+      DB_POOL: "32"
+      PORT: "8080"
+      DOTNET_TieredPGO: "0"
+  cs11tc0:
+    <<: *svc
+    container_name: cs11tc0
+    image: payprod-cs11
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      PROVIDER_URL: http://mockpay:9000/charge
+      PROVIDER_TIMEOUT_MS: "1000"
+      DB_POOL: "32"
+      PORT: "8080"
+      DOTNET_TieredCompilation: "0"
   cs11ra:
     <<: *svc
     container_name: cs11ra
