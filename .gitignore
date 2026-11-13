@@ -16,3 +16,9 @@ video/frames/
 *.mp4
 *.wav
 !site/explainer.mp4
+
+# guide pages written by build_guide.py, published from site/
+/start.html
+/concepts.html
+/takeaways.html
+/watch.html
