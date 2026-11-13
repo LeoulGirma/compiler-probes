@@ -252,7 +252,7 @@ html = f'''<title>Payments in Production</title>
 
   <section class="card" aria-labelledby="sh">
     <div class="pad" style="padding-bottom:0"><h2 id="sh">Steady load: {rate} payments a second</h2>
-      <p class="sub">Started right after the cold start: 45 seconds of warm-up, then 60 measured seconds on a fixed schedule. Latency is for answered payments; the 1% the provider drops all take exactly the 1-second timeout and are counted separately. "CPU settled" comes from the eight-minute soaks below.</p></div>
+      <p class="sub">Started right after the cold start: 45 seconds of warm-up, then 60 measured seconds on a fixed schedule. Latency is for answered payments; the 1% the provider drops all take exactly the 1-second timeout and are counted separately. "CPU settled" comes from the eight-minute soaks below. In both laptop soaks .NET 11 ran before .NET 10; the server recheck in the last section flipped the order and the CPU gap held.</p></div>
     <div class="two2">
       <div>{bars(f'CPU used at {rate} payments/s once warm (8-minute soaks, mean of runs, of 1 CPU)', '%', lambda s: scpu(s['id']), lower_better=True, src=SK)}</div>
       <div>{bars('Most payments per second, as fast as it can', '/s', lambda s: s['max']['good_rps'])}</div>
