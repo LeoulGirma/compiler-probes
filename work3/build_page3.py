@@ -203,7 +203,7 @@ html = f'''<title>Payments Under Load</title>
       <div><h3>Limits</h3><p>One Windows laptop over loopback, so no network latency and no Linux: production containers can rank differently, especially for GC and threading. Start-up time is not reported, because Windows waits about half a second before retrying a refused local connection, which hides the differences.</p></div>
     </div>
   </section>
-  <footer>Service, load generator, GC stress and driver: work3/ (cs, go, rust, loadgen, gc, workload3.py). .NET 11 is a release candidate.</footer>
+  <footer>Service, load generator, GC stress and driver: work3/ (cs, go, rust, loadgen, gc, workload3.py). Measured on the .NET 11 release candidate (RC2); this set has not been rerun on 11.0.0.</footer>
 </div>
 '''
 (HERE.parent / 'page' / 'payments-under-load.html').write_text(html)

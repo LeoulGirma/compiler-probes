@@ -136,7 +136,7 @@ const COL = {
   rust: find('rust', () => true),
   go: find('go', () => true),
 };
-const LAB = {cs10: ['C# .NET 10', 'JIT'], cs11: ['C# .NET 11', 'RC2, JIT'], csra: ['C# .NET 11', '+ runtime async'], rust: ['Rust', 'rustc -O3'], go: ['Go', 'gc']};
+const LAB = {cs10: ['C# .NET 10', 'JIT'], cs11: ['C# .NET 11', '11.0.0, JIT'], csra: ['C# .NET 11', '+ runtime async'], rust: ['Rust', 'rustc -O3'], go: ['Go', 'gc']};
 const fmt = (v, d) => v == null ? '—' : v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(d ?? (v < 10 ? 2 : 1));
 
 function bars(spec) {

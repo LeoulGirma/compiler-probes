@@ -252,7 +252,7 @@ CONCEPTS = [
   ('devirt', 'Devirtualisation', 'Replacing an interface or virtual call with a direct, often inlined, call when the type is known.',
    'Abstractions become nearly free when the compiler can see through them.', (2,), None),
   ('async', 'Runtime async', 'In .NET 11 the runtime, not a compiler-generated class, tracks where an async method paused.',
-   'Awaits that finish immediately get 4× cheaper and stop allocating. Off by default in RC2.', (2,), None),
+   'Awaits that finish immediately get 4× cheaper and stop allocating. Off by default in .NET 11.', (2,), None),
   ('regalloc', 'Register spills', 'When values do not fit in CPU registers, the compiler parks them in memory and reloads them.',
    'Fewer instructions can still be slower. Only timing tells.', (2,), None),
  ]),
@@ -308,15 +308,16 @@ GAP = [('01 · Array sum', 'time per element · set 1', 0.763 / 0.104, 's1', 'pr
 gap_rows = ''.join(f"""<a class="grow" href="{h}"><div class="gtop"><b>{n}</b><span class="gx">{(f"{v:.1f}" if v > 5 else f"{v:.2f}")}×</span></div>
       <div class="gbar" role="img" aria-label="{n}: {v:.2f} times apart"><i style="width:{(v - 1) / 7 * 100 + 1.5:.1f}%;background:var(--{c})"></i></div><small>{m}</small></a>""" for n, m, v, c, h in GAP)
 STATS = [('Cold start', f"{ready['cs11aot']:.2f}", 's', 'Native AOT ready', f"Against {ready['cs11']:.2f} s for the JIT build, in a one-CPU container.", 'containers.html#ah', 'See start-up results', 's1'),
-         ('Steady traffic', f"{net11_saving:.0f}", '% less', 'CPU on .NET 11 RC2', f"{cpu['cs10']:.0f}% → {cpu['cs11']:.0f}% of a CPU against .NET 10, same service and traffic. Measured in two paired soaks; individual runs ranged {(1 - soaks[0]['cs11']['stats']['cpu_median_pct'] / soaks[0]['cs10']['stats']['cpu_median_pct']) * 100:.0f}–{(1 - soaks[1]['cs11']['stats']['cpu_median_pct'] / soaks[1]['cs10']['stats']['cpu_median_pct']) * 100:.0f}%.", 'containers.html#sh', 'See CPU measurements', 's3'),
+         ('Steady traffic', f"{net11_saving:.0f}", '% less', 'CPU on .NET 11', f"{cpu['cs10']:.0f}% → {cpu['cs11']:.0f}% of a CPU against .NET 10 on the release candidate, same service and traffic; about 30% less on the 11.0.0 release on a Linux server. Measured in two paired soaks; individual runs ranged {(1 - soaks[0]['cs11']['stats']['cpu_median_pct'] / soaks[0]['cs10']['stats']['cpu_median_pct']) * 100:.0f}–{(1 - soaks[1]['cs11']['stats']['cpu_median_pct'] / soaks[1]['cs10']['stats']['cpu_median_pct']) * 100:.0f}%.", 'containers.html#sh', 'See CPU measurements', 's3'),
          ('Correctness under failure', f"{captured / 1e6:.2f}", 'M', 'payments accounted for', 'Every captured payment appeared exactly once in a merchant balance, in every run, including a provider outage.', 'containers.html#dh', 'See ledger checks', 's2')]
 stats = ''.join(f"""<article class="card stat" style="border-top-color:var(--{c})"><span class="eyebrow">{e}</span><div class="sn">{n}<small>{u}</small></div><b>{t}</b><p>{d}</p><a href="{h}">{l} →</a></article>""" for e, n, u, t, d, h, l, c in STATS)
 EXP = [('probes.html', 'Start with the instructions', 'What did the compiler actually produce?', 'Five small functions, the machine code behind each number, SIMD and bounds checks.', 'Explore machine code'),
-       ('net11.html', "Test the runtime's claims", 'Did .NET 11 deliver its optimisations?', 'Six claims measured: two large wins, one opt-in, one regression, two no-shows.', 'Inspect .NET 11 results'),
+       ('net11.html', "Test the runtime's claims", 'Did .NET 11 deliver its optimisations?', 'Six claims measured on 11.0.0: two large wins, one opt-in, one mixed, two no-shows.', 'Inspect .NET 11 results'),
        ('load.html', 'Add HTTP and JSON', 'What survives when an API gets busy?', 'Throughput, CPU per request, garbage collection, memory and tail latency.', 'Explore load tests'),
        ('containers.html', 'Add the system around it', 'What happens when the payment provider fails?', 'One CPU per container, Postgres, Redis and a simulated provider: timeouts, recovery and ledger consistency.', 'See the payment experiment')]
 SURPRISE = [('One default, not the compiler', '.NET 11 RC2 used about 11% <b>more</b> CPU per request than .NET 10 in the in-memory API. The cause: idle threads now spin up to 1024 times before sleeping instead of 70. Set back to 70, .NET 11 costs the same as .NET 10.', [('See the test', 'load.html#spin'), ('Set 4', 'containers.html#sh')], 's2'),
-            ('Fewer instructions, slower code', '.NET 11 turns Math.BigMul into a single multiply instruction, cutting the loop from 25 to 20 instructions, and the loop runs 31% slower: the running total now spills to the stack.', [('Read the listing', 'net11.html#bigmul')], 's1'),
+            ('Fewer instructions, slower code', '.NET 11 turns Math.BigMul into a single multiply instruction, cutting our loop from 25 to 20 instructions, and that loop runs 34% slower: its running total now spills to the stack. Loops that keep their totals elsewhere got 21–47% faster.', [('Read the listing', 'net11.html#bigmul')], 's1'),
+            ('A rough first minute', 'On the 11.0.0 release in a one-CPU container, the .NET 11 JIT build had a worse tail than .NET 10 for its first minute or two under load, then matched it at about 30% less CPU. Turning dynamic PGO off removed the tail and cost no CPU.', [('See the follow-up', 'containers.html#server')], 's4'),
             ('One run that hung', 'In one of five rounds, .NET 10 Native AOT stopped answering during the provider outage: 14,812 requests timed out at low CPU. Three repeats with extra diagnostics were clean; the cause is still open.', [('See the run', 'containers.html#ah')], 's3')]
 surprises = ''.join(f"""<article class="card sur" style="border-left-color:var(--{c})"><h3>{t}</h3><p>{d}</p><div class="sl">{''.join(f'<a href="{h}">{l} →</a>' for l, h in links)}</div></article>""" for t, d, links, c in SURPRISE)
 exps = ''.join(f"""<a class="card exp" href="{h}"><span class="num">{i + 1:02d}</span><div><span class="eyebrow">{e}</span><h3>{q}</h3><p>{d}</p><span class="go">{l} →</span></div></a>""" for i, (h, e, q, d, l) in enumerate(EXP))
@@ -402,7 +403,7 @@ start_body = START_CSS + f"""  <section class="hero">
     <div>
       <div class="eyebrow">Rust · Go · C# · four sets of tests</div>
       <h1>A <em>{GAP[0][2]:.1f}×</em> gap in a loop. Just <em>{GAP[2][2]:.2f}×</em> with a database.</h1>
-      <p class="q"><b>So when does faster code actually make a faster service?</b> We followed the question from the machine instructions a compiler emits to a payment API in containers, testing Rust, Go, .NET 10, .NET 11 RC2 and Native AOT.</p>
+      <p class="q"><b>So when does faster code actually make a faster service?</b> We followed the question from the machine instructions a compiler emits to a payment API in containers, testing Rust, Go, .NET 10, .NET 11 and Native AOT.</p>
       <p class="note">The two ratios measure different things: time per array element, and median request latency with a database in the path. They show why context matters, not that every language performs the same.</p>
       <div class="ctas"><a class="btn primary" href="probes.html">Explore the experiments →</a><a class="btn" href="watch.html">▶ Watch the explainer</a></div>
     </div>
@@ -439,7 +440,7 @@ DECIDE = [
  ('Scale out often, scale to zero, short jobs', 'NativeAOT', f"Ready in {ready['cs11aot']:.2f} s and full speed from the first request. Check library support; build on Linux."),
  ('Long-lived service at high load', 'JIT (default)', f"Same CPU as AOT once warm and about {aot_tp:.0f}% more peak throughput (consistent across rounds). Hold readiness until warm, or add ReadyToRun."),
  ('Pack many instances per node', 'NativeAOT, or Go', f"Idle: Rust {idle['rust']:.1f} MB, Go {idle['go']:.0f} MB, C# AOT {idle['cs11aot']:.0f} MB, C# JIT {idle['cs11']:.0f} MB."),
- ('Planning the .NET 11 upgrade', 'Test on RC2 now', f"−{net11_saving:.0f}% CPU in the container service. On many cores, check the new thread-pool spin default (DOTNET_ThreadPool_UnfairSemaphoreSpinLimit). Recheck hot numeric loops."),
+ ('Planning the .NET 11 upgrade', 'Upgrade, then measure', f"−{net11_saving:.0f}% CPU in the container service (about 30% on 11.0.0 on a Linux server). In one-CPU containers, watch the first minutes under load: DOTNET_TieredPGO=0 removed a warm-up tail here. On many cores, check the new thread-pool spin default (DOTNET_ThreadPool_UnfairSemaphoreSpinLimit). Recheck hot numeric loops after a long warm-up."),
  ('Latency dominated by a database or another service', 'Keep your stack', f"Every build had a {min(p50.values()):.0f}–{max(p50.values()):.0f} ms median and failed the same way. Tune pools and timeouts instead."),
 ]
 dec = ''.join(f'<tr><td>{a}</td><td class="pick"><span class="p">{b}</span></td><td class="ev">{c}</td></tr>' for a, b, c in DECIDE)

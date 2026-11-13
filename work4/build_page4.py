@@ -81,7 +81,7 @@ all_consistent = all(x[k][f]['consistent'] for x in (A, B) for k in ORDER for f 
 board = [
  ('CPU for the same traffic', f"Settled, at {rate} payments/s: Rust {scpu('rust'):.0f}%, Go {scpu('go'):.0f}%, C# {min(scpu(k) for k in CS):.0f}–{max(scpu(k) for k in CS):.0f}% of one CPU. "
    f"C# needs about 90 seconds under load to get there: between 45 and 105 seconds after a cold start it still runs at about {cs_cpu:.0f}% while the JIT recompiles the hot code. Go and Rust sit at about {native_cpu:.0f}% from the first second."),
- ('.NET 11 against .NET 10', f"Once warm, .NET 11 RC2 used {scpu('cs11'):.0f}% of a CPU and .NET 10 {scpu('cs10'):.0f}% for the same traffic, and the gap held in both soaks. Runtime async ({scpu('cs11ra'):.0f}%) made no further difference here. Peak throughput is the same within 4%."),
+ ('.NET 11 against .NET 10', f"Once warm, .NET 11 RC2 used {scpu('cs11'):.0f}% of a CPU and .NET 10 {scpu('cs10'):.0f}% for the same traffic, and the gap held in both soaks. Runtime async ({scpu('cs11ra'):.0f}%) made no further difference here. Peak throughput is the same within 4%. Rechecked on the 11.0.0 release on a Linux server: about 30% less CPU, and a slower first minute under load that turning dynamic PGO off removes (last section)."),
  ('Most payments per second', f"Go reached {mx('go'):,.0f}/s and C# {min(mx(k) for k in CS):,.0f}–{max(mx(k) for k in CS):,.0f}/s, both at their CPU limit (averages of two rounds). "
    f"Rust stopped at {mx('rust'):,.0f}/s with CPU to spare ({A['rust']['max_stats']['cpu_median_pct']:.0f}%), so something outside it, most likely the database, set its ceiling."),
  ('Typical response', f"Once warm, {min(sk50(k) for k in ORDER):.0f}–{max(sk50(k) for k in ORDER):.0f} ms median for all five. The provider call and the database round trips dominate, as they do in production."),
@@ -167,10 +167,50 @@ foot_rows = ''.join(
     f"<td class='mute'>{fmt(B[k]['startup']['first_pay_ms'] / 1000, 2)} s</td>"
     f"<td>{fmt(A[k]['idle']['mem_last_mb'], 1)} MB</td><td>{fmt(IMAGE_MB[k], 0)} MB</td></tr>" for k in ORDER)
 
+# ---------- checked on .NET 11.0.0 on a Linux server (vps/set4c_summary.json, vps/set4w_summary.json) ----------
+SV = json.loads((HERE.parent / 'vps' / 'set4c_summary.json').read_text())
+SW = json.loads((HERE.parent / 'vps' / 'set4w_summary.json').read_text())
+def rng(rows, k, f=lambda v: v, fmt='{:.0f}'):
+    v = [f(r[k]) for r in rows]
+    return fmt.format(min(v)) if fmt.format(min(v)) == fmt.format(max(v)) else fmt.format(min(v)) + '–' + fmt.format(max(v))
+SRD = lambda i: [r for r in SV['rounds'] if r['id'] == i]
+SSK = lambda i: [r for r in SV['soaks'] if r['id'] == i]
+SWK = lambda i: [r for r in SW['soaks'] if r['id'] == i]
+srv_rows = [
+  ('CPU at 250/s, JIT <small>8-min soaks</small>', rng(SSK('cs10'), 'cpu_pct') + '%', rng(SSK('cs11'), 'cpu_pct') + '%', 'about 30% less'),
+  ('CPU at 250/s, AOT <small>3 rounds</small>', rng(SRD('cs10aot'), 'cpu_pct') + '%', rng(SRD('cs11aot'), 'cpu_pct') + '%', 'about 25% less'),
+  ('Ready, JIT <small>3 rounds</small>', rng(SRD('cs10'), 'ready_ms', lambda v: v / 1000, '{:.2f}') + ' s', rng(SRD('cs11'), 'ready_ms', lambda v: v / 1000, '{:.2f}') + ' s', 'about 14% faster'),
+  ('Median, JIT <small>soaks</small>', rng(SSK('cs10'), 'p50') + ' ms', rng(SSK('cs11'), 'p50') + ' ms', 'same'),
+  ('p99 first minute, JIT <small>3 rounds</small>', rng(SRD('cs10'), 'p99') + ' ms', rng(SRD('cs11'), 'p99') + ' ms', 'worse: see below'),
+  ('Peak, JIT <small>3 rounds</small>', rng(SRD('cs10'), 'max_rps') + '/s', rng(SRD('cs11'), 'max_rps') + '/s', 'inconclusive'),
+  ('Peak, AOT <small>3 rounds</small>', rng(SRD('cs10aot'), 'max_rps') + '/s', rng(SRD('cs11aot'), 'max_rps') + '/s', 'inconclusive'),
+]
+WL = [('cs10', '.NET 10'), ('cs11', '.NET 11'), ('cs11pgo0', '.NET 11, <span class="code-in">DOTNET_TieredPGO=0</span>'), ('cs11tc0', '.NET 11, <span class="code-in">DOTNET_TieredCompilation=0</span>')]
+def both(i, k, unit=''):
+    a = {r['soak']: r for r in SWK(i)}
+    return f"{a['A'][k]:.0f}{unit} · {a['B'][k]:.0f}{unit}"
+warm_rows = ''.join(f"<tr><td><b>{n}</b></td><td>{both(i, 'p99', ' ms')}</td><td>{both(i, 'p999', ' ms')}</td><td>{rng(SWK(i), 'cpu_pct')}%</td>"
+                    f"<td>{' · '.join(str(r['slow_secs_per_min'][0]) for r in sorted(SWK(i), key=lambda r: r['soak']))}</td><td>{rng(SWK(i), 'mem_end_mb')} MB</td></tr>" for i, n in WL)
+first_min = lambda i: ' and '.join(str(r['slow_secs_per_min'][0]) for r in sorted(SSK(i), key=lambda r: r['soak']))
+steal = [r['steal_pct'] for r in SV['rounds'] + SV['soaks']]
+server_section = f"""<section class="card" aria-labelledby="vh" id="server">
+    <div class="pad" style="padding-bottom:6px"><h2 id="vh">Checked on .NET 11.0.0, on a Linux server</h2>
+      <p class="sub">Everything above ran on the .NET 11 release candidate under Docker Desktop on a laptop. After the final release we reran the comparison on a 4-vCPU cloud server (Intel Haswell, Ubuntu, its other workloads paused): .NET 10.0.12 against 11.0.0, the NativeAOT builds, Go and Rust, each capped at 1 CPU as before. Three rounds at 250 payments/s with the order rotated, two eight-minute soaks with the order flipped, and a follow-up on warm-up. A difference is kept only if every run points the same way and the ranges do not overlap.</p></div>
+    <div class="st keep"><table><tr><th>Measure</th><th>.NET 10.0.12</th><th>.NET 11.0.0</th><th>Verdict</th></tr>{''.join(f'<tr><td><b>{a}</b></td><td>{b}</td><td>{c}</td><td>{d}</td></tr>' for a, b, c, d in srv_rows)}</table></div>
+    <div class="pad prose"><p>The CPU saving from the laptop holds on the final release and on a different machine. The peak-throughput gains seen in single runs did not survive repeats, so they are not claimed. NativeAOT latency is the same on both versions and level with Go and Rust.</p>
+    <p><b>A rough first minute, traced to dynamic PGO.</b> Once warm, .NET 11's JIT build answers as fast as .NET 10's. In the first minute or two under load it does not: in the soaks it had {first_min('cs11')} seconds in the first minute with a p99 above 300 ms, against {first_min('cs10')} for .NET 10, and from the third minute on neither had any. A follow-up with two five-minute soaks, the order reversed between them, switched features off one at a time:</p></div>
+    <div class="st keep"><table><tr><th>Build</th><th>p99 <small>soak A · B</small></th><th>p99.9 <small>A · B</small></th><th>CPU</th><th>Slow seconds, minute 1 <small>A · B</small></th><th>Memory at end</th></tr>{warm_rows}</table></div>
+    <div class="pad prose"><p>With dynamic PGO off the tail is gone, CPU is the lowest of the four and memory stays flat. Turning tiered compilation off also removes it, at about ten points more CPU. In this service, PGO's instrumented phase costs latency while it runs on one CPU and buys no CPU back afterwards. That is one workload: code with more hot paths for PGO to specialise may come out differently, so measure before switching it off. The thread-pool spin limit that explained set 3's CPU gap did not change this result.</p>
+    <p>Two caveats. During the main run the server's host took {min(steal):.0f}–{max(steal):.0f}% of CPU time (steal) throughout, spread across every service. And in the provider-outage test both JIT builds, .NET 10 and .NET 11 alike, exited with the runtime's "Out of memory" message at under 100 MB of a 512 MB limit, every round; the ledger stayed consistent. It did not happen on the laptop or with NativeAOT, Go or Rust, and the cause is not yet known.</p></div>
+  </section>
+
+  """
+
 html = f'''<title>Payments in Production</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 {FONTS}
 {STYLE}
+
 <style>
 :root{{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--shade:#eb683414;--grid2:#e1e4de}}
 @media (prefers-color-scheme: dark){{:root:not([data-theme="light"]){{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--shade:#d9592622;--grid2:#262b36}}}}
@@ -202,7 +242,7 @@ html = f'''<title>Payments in Production</title>
     <h1>The same payment service, <em>in containers</em>, with real moving parts</h1>
     <p class="lede">Each service checks a JWT, rate-limits in Redis, validates the payment, records it in Postgres, charges a mock provider that is slow 1% of the time, captures it in a transaction with the merchant balance, logs a JSON line and replies. Each runs alone in a Linux container capped at 1 CPU and 512 MB.</p>
     <div class="flow" aria-label="request path"><span>JWT</span><i>→</i><span>Redis rate limit</span><i>→</i><span>validate</span><i>→</i><span>INSERT pending</span><i>→</i><span>provider call · 1 s timeout</span><i>→</i><span>tx: capture + balance</span><i>→</i><span>JSON log + reply</span></div>
-    <div class="meta"><span class="chip">Docker Desktop · Linux VM, 4 CPUs</span><span class="chip">service: 1 CPU, 512 MB</span><span class="chip">Postgres 17 · Redis 7</span><span class="chip">{rate} payments/s steady</span><span class="chip">.NET 10.0.12 · .NET 11 RC2 · Go 1.27.2 · Rust 1.99</span></div>
+    <div class="meta"><span class="chip">Docker Desktop · Linux VM, 4 CPUs</span><span class="chip">service: 1 CPU, 512 MB</span><span class="chip">Postgres 17 · Redis 7</span><span class="chip">{rate} payments/s steady</span><span class="chip">.NET 10.0.12 · .NET 11 RC2 (11.0.0 in the last section) · Go 1.27.2 · Rust 1.99</span></div>
   </header>
 
   <section class="card board" aria-labelledby="qh">
@@ -255,13 +295,13 @@ html = f'''<title>Payments in Production</title>
     {tuned_p}</div>
   </section>
 
-  <section class="card pad" aria-labelledby="mh">
+  {server_section}  <section class="card pad" aria-labelledby="mh">
     <h2 id="mh">How this was measured, and what it still leaves out</h2>
     <div class="notes" style="margin-top:12px">
       <div><h3>Same work everywhere</h3><p>ASP.NET Core minimal API with JwtBearer, Npgsql, StackExchange.Redis and HttpClient; Go's net/http with pgx, go-redis and golang-jwt; Rust's axum with tokio-postgres, redis, reqwest and jsonwebtoken. Each uses a 32-connection database pool, releases it during the provider call, and returns byte-identical signatures for the same payment.</p></div>
       <div><h3>The load</h3><p>A Go load generator inside the Docker network, with a fresh payment id per request, a JWT per merchant, 2% invalid payments (422) and 1% repeated ids to exercise idempotency. Requests go out on a fixed schedule and are timed from when they were due, so queueing inside a service is counted.</p></div>
       <div><h3>Isolation</h3><p>Docker Desktop's VM has 4 CPUs: the service gets 1, Postgres 1.5, the load generator 1, the provider 0.5 and Redis 0.25. Only one payment service runs at a time, against an emptied database. The C# builds publish self-contained for Alpine with default settings (server GC, tiered PGO).</p></div>
-      <div><h3>Still missing</h3><p>One machine and one laptop CPU underneath Docker, so container CPU is shared with Windows; no real network between services; one replica, no load balancer; and our schema rather than GovPay's. The next step that would matter is running this same harness against a copy of GovPay's real hot endpoint.</p></div>
+      <div><h3>Still missing</h3><p>One machine and one laptop CPU underneath Docker, so container CPU is shared with Windows; no real network between services; one replica, no load balancer; and a deliberately small schema. The next step that would matter is running this harness against a real service's hot endpoint.</p></div>
     </div>
   </section>
   <footer>Source and raw results: work4/ (cs, go, rust, mockpay, loadgen, compose.yml, run4.py, results/). .NET 11 is a release candidate.</footer>

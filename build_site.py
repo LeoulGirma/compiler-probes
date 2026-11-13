@@ -21,9 +21,9 @@ PAGES = [('start.html', None, 'Start here', 'Start'),
 # shown at the top of each result page: the question, what to look at first, and the concepts it leans on
 ANSWER = {
  'probes.html': 'Each compiler wins somewhere. LLVM vectorises loops (Rust sums an array about 7× faster), RyuJIT\'s profile-guided JIT makes interface calls cheapest, and Go keeps builds fast and predictable. The machine code under every number explains why.',
- 'net11.html': 'Of six .NET 11 claims, two delivered large wins (devirtualisation, 6.5× and 6.3× in our probes), runtime async is real but opt-in (awaits about 4× cheaper), Math.BigMul emits fewer instructions yet runs 31% slower, and two showed no change.',
+ 'net11.html': 'Rechecked on the 11.0.0 release. Of six .NET 11 claims, two delivered large wins (devirtualisation, 6.2× and 6.1× in our probes), runtime async is real but opt-in (awaits about 4.7× cheaper), Math.BigMul\'s single instruction makes most loops faster but one common loop shape 34% slower, and two showed no change.',
  'load.html': 'Throughput is close: the slowest build reaches 79% of the fastest. The real differences are CPU per request, memory and tail latency. .NET 11 RC2 used about 11% more CPU per request than .NET 10 here, and a follow-up test traced all of it to one changed thread-pool default: set back to .NET 10\'s value, .NET 11 costs the same.',
- 'containers.html': 'With a database and a provider in the path, medians converge at 28–30 ms. C# needs about 90 s under load to warm up and more CPU per payment; Native AOT removes the warm-up but not the CPU cost. Every build survived a simulated provider outage with its ledger intact.',
+ 'containers.html': 'With a database and a provider in the path, medians converge at 28–30 ms. C# needs about 90 s under load to warm up and more CPU per payment; Native AOT removes the warm-up but not the CPU cost. On the laptop every build survived a simulated provider outage with its ledger intact. Rechecked on .NET 11.0.0 on a Linux server: .NET 11 uses about 30% less CPU than .NET 10, and its slower first minute under load goes away with dynamic PGO off.',
 }
 PRIMER = {
  'probes.html': ('What does each compiler do with the same five small functions?',
@@ -201,8 +201,8 @@ SEO = {  # page: (title, description)
    'Sixteen short primers on the runtime internals behind the benchmarks: JIT tiers, PGO, Native AOT, vectorisation, garbage collection, p99 latency and open-loop load.'),
  'probes.html': ('Rust vs Go vs C# Machine Code: What Each Compiler Emits',
    'Six micro-probes with the real assembly behind each number: LLVM vectorises loops about 7× faster, RyuJIT PGO makes interface calls cheapest, Go builds fastest.'),
- 'net11.html': ('.NET 11 Performance: Which Claims Hold Up (RC2 Benchmarks)',
-   'Six .NET 11 RC2 claims tested against .NET 10: devirtualisation 6.5× faster, runtime async awaits about 4× cheaper, Math.BigMul 31% slower, two with no change.'),
+ 'net11.html': ('.NET 11 Performance: Which Claims Hold Up (11.0.0 Benchmarks)',
+   'Six .NET 11 claims tested on the 11.0.0 release against .NET 10: devirtualisation 6.2× faster, runtime async awaits about 4.7× cheaper, Math.BigMul faster except one loop shape, two with no change.'),
  'load.html': ('Rust vs Go vs C# HTTP API Under Load: Latency and CPU',
    'An in-memory HTTP API under open-loop load: throughput is within 1.26×, so the real differences are CPU per request, memory and p99 tail latency.'),
  'containers.html': ('Native AOT vs JIT in Docker: Payment Service Benchmark',
@@ -248,7 +248,7 @@ def light_default(h):
         i = j + 1
 
 def strip_personal(name, s):
-    s = re.sub(r'<footer>Source and raw results: work4/[^<]*</footer>', '<footer>.NET 11 is a release candidate (RC2); numbers can change by GA.</footer>', s)
+    s = re.sub(r'<footer>Source and raw results: work4/[^<]*</footer>', '<footer>Source and raw results: work4/ and vps/ in the repository. Main results: .NET 11 RC2 on a laptop; the last section: .NET 11.0.0 on a Linux server.</footer>', s)
     s = re.sub(r'<div class="pad prose"><p>Headline numbers are from the second round.*?</p></div>', '', s, flags=re.S)
     s = s.replace('Each runs alone in a Linux container capped at 1 CPU and 512 MB.</p>', 'Each runs alone in a Linux container capped at 1 CPU and 512 MB. The provider is a mock with injected delays and failures: a realistic simulation, not a deployed system.</p>')
     return s

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Bake data2.json + the write-up into page/compiler-probes-net11.html."""
+"""Bake the set 2 results + the write-up into page/compiler-probes-net11.html.
+C# columns: ga/data2_ga.json (.NET 10.0.12 vs .NET 11.0.0, three alternating rounds). Rust and Go: data2.json.
+BigMul loop shapes and library code: work5/shapes_ga.json, work5/impact_ga.json (laptop) and vps/*_warm.json (server, steady state)."""
 import json
 from html import escape as esc
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 data = json.loads((HERE / 'data2.json').read_text())
+GA = json.loads((HERE / 'ga' / 'data2_ga.json').read_text())
+data['runs'] = [r for r in data['runs'] if r['id'] != 'cs'] + GA['runs']
 KEEP = {'gvm', 'dim', 'pairs', 'bigmul_s', 'bigmul_u'}
 for r in data['runs']:
     r['asm'] = {k: v for k, v in r.get('asm', {}).items() if k in KEEP and r['id'] == 'cs' and r['mode'] == 'jit' and not r.get('runtime_async')}
@@ -25,11 +29,16 @@ S = lambda r, k: r['startup'][k]['med']
 x = lambda a, b: f'{a / b:.1f}×'
 N = 4096
 per = lambda r, k: B(r, k) / N
+# BigMul follow-up: loop shapes and library code, laptop (work5) and server at steady state (vps, 4 s time-based warm-up)
+def ld(f): return json.loads((HERE / f).read_text())['summary']
+SH_L, SH_S, IM_L, IM_S = ld('work5/shapes_ga.json'), ld('vps/shapes_vps_warm.json'), ld('work5/impact_ga.json'), ld('vps/impact_vps_warm.json')
+def chg(sm, k): return (sm['11_jit']['ns'][k]['med'] / sm['10_jit']['ns'][k]['med'] - 1) * 100
+def pc(v): return f"{abs(v):.0f}% {'slower' if v > 0 else 'faster'}"
 
 notes = {
- 'lede': (f"Microsoft lists a set of runtime and JIT changes for .NET 11. We wrote a small probe for each one, ran it on .NET 10 and on .NET 11 RC2, "
+ 'lede': (f"Microsoft lists a set of runtime and JIT changes for .NET 11. We wrote a small probe for each one, ran it on .NET 10 and on the .NET 11.0.0 release, "
           f"and put Rust and Go next to them doing the same work. Two changes are large and real, one is real but switched off by default, "
-          f"one makes a loop slower, and two did not show up at all."),
+          f"one makes most loops faster but one common loop shape slower, and two did not show up at all."),
  'feats': [
   dict(id='async', name='Runtime async', verdict='yes', vtext='Real · opt-in',
        claim='The runtime, not the compiler, tracks await points. No state-machine classes, fewer allocations.',
@@ -40,7 +49,7 @@ notes = {
              f"{B(cra,'async_ns_per_await'):.1f} ns and allocates nothing.",
              f"When the leaf really suspends (<span class='code-in'>await Task.Yield()</span>, one trip through the thread pool), a whole operation drops from "
              f"{B(c10,'yield_ns_per_op'):,.0f} ns on .NET 10 to {B(cra,'yield_ns_per_op'):,.0f} ns, and from {B(c10,'yield_bytes_per_op'):,.0f} to {B(cra,'yield_bytes_per_op'):,.0f} bytes.",
-             "It is off by default. Neither a plain compile nor <span class='code-in'>dotnet publish</span> with the RC2 SDK turned it on; the probe checks for the compiler-generated "
+             "It is off by default. Neither a plain compile nor <span class='code-in'>dotnet publish</span> with the 11.0.0 SDK turned it on; the probe checks for the compiler-generated "
              "state machine at run time and reports which mode it got.",
              f"Rust's async functions nest into one inline state machine ({B(rs,'async_ns_per_await'):.1f} ns, no heap). Go needs no async at all: goroutines have growable stacks, "
              f"so the same chain is ordinary calls ({B(go,'async_ns_per_await'):.1f} ns), and a real suspension is a goroutine hand-off ({B(go,'yield_ns_per_op'):,.0f} ns). "
@@ -72,19 +81,28 @@ notes = {
        charts=[dict(key='dim', cols=['cs10', 'cs11', 'rust', 'go'], per=N, unit='ns / call', title='One default-interface-method call, steady state')],
        mc=dict(probe='dim', cols=['cs10', 'cs11', 'rust', 'go'], metrics=[['calls', 'Calls in loop'], ['indirect_calls', 'Indirect calls'], ['instructions', 'Instructions']]),
        asm=dict(probe='dim', a='cs10', b='cs11')),
-  dict(id='bigmul', name='Math.BigMul', verdict='part', vtext='Shorter, slower',
+  dict(id='bigmul', name='Math.BigMul', verdict='part', vtext='Faster, except one loop shape',
        claim='Math.BigMul(long, long, out long) becomes a single MUL instruction on x64.',
-       delta=f"{(B(c11,'bigmul_s')/B(c10,'bigmul_s')-1)*100:.0f}% slower",
+       delta=f"{(B(c11,'bigmul_s')/B(c10,'bigmul_s')-1)*100:.0f}% slower in the probe",
        code=f"{c10['features']['bigmul_s']['instructions']} → {c11['features']['bigmul_s']['instructions']} instructions",
        body=[f"The claim holds for the code: .NET 11 emits one <span class='code-in'>imul rdx:rax</span> where .NET 10 used <span class='code-in'>mulx</span> plus a sign fix-up. "
-             f"The loop still got slower on this CPU: {per(c10,'bigmul_s'):.2f} → {per(c11,'bigmul_s'):.2f} ns per multiply for the signed form, and "
-             f"{per(c10,'bigmul_u'):.2f} → {per(c11,'bigmul_u'):.2f} ns for the unsigned one, which was already a single instruction.",
-             "The cause is visible in the listing: .NET 11 keeps the running total in a stack slot and stores and reloads it on every iteration, "
-             "so each step waits on a store-to-load round trip. That is a register-allocation regression around the new instruction, not the multiply itself.",
+             f"Our probe loop still got slower: {per(c10,'bigmul_s'):.2f} → {per(c11,'bigmul_s'):.2f} ns per multiply for the signed form, and "
+             f"{per(c10,'bigmul_u'):.2f} → {per(c11,'bigmul_u'):.2f} ns for the unsigned one.",
+             "The listing shows why. The one-operand multiply always writes its result to the rax and rdx registers. In the probe, the running total is also the method's "
+             "return value, so it lives in rax too, and .NET 11 stores it to the stack before every multiply and reloads it after. Each step then waits on a store-to-load round trip. "
+             "That is a register-allocation problem around the new instruction, not the multiply itself.",
+             f"So we varied the loop. Where nothing has to stay in rax, the new code is faster than .NET 10: two running totals are {pc(chg(SH_L,'two_acc_signed'))} on the laptop and "
+             f"{pc(chg(SH_S,'two_acc_signed'))} on the server, four are {pc(chg(SH_L,'pressure_signed'))} and {pc(chg(SH_S,'pressure_signed'))}. A loop that keeps only the high half and returns it "
+             f"is the worst case: {pc(chg(SH_L,'high_only_unsigned'))} and {pc(chg(SH_S,'high_only_unsigned'))}. A single accumulator is slower on both machines, by "
+             f"{chg(SH_S,'acc_signed'):.0f}–{chg(SH_S,'acc_unsigned'):.0f}% on the server once fully warmed up.",
+             f"Library code that uses BigMul inside did not get slower. At steady state on the server, <span class='code-in'>Int128</span> multiply is {pc(chg(IM_S,'int128_mul'))}, "
+             f"<span class='code-in'>Random.NextInt64(max)</span> {pc(chg(IM_S,'random_nextint64'))}, <span class='code-in'>BigInteger</span> multiply {pc(chg(IM_S,'bigint_mul_1000bit'))} "
+             f"and <span class='code-in'>decimal</span> multiply {pc(chg(IM_S,'decimal_mul'))}; the laptop agrees on the first three. A batch of a million decimal fee calculations ran "
+             f"no slower on .NET 11. Short benchmarks can exaggerate the loop slowdown: .NET 11 took longer to reach its final code for these loops, so measure after a long warm-up.",
              f"NativeAOT is the opposite story: {B(a10,'bigmul_s')/N:.2f} → {B(a11,'bigmul_s')/N:.2f} ns, about {x(B(a10,'bigmul_s'), B(a11,'bigmul_s'))} faster. "
              f"Rust's <span class='code-in'>i128</span> multiply unrolls the loop ({per(rs,'bigmul_s'):.2f} ns); Go only has the unsigned <span class='code-in'>bits.Mul64</span> ({per(go,'bigmul_u'):.2f} ns)."],
-       charts=[dict(key='bigmul_s', cols=['cs10', 'cs11', 'rust'], per=N, unit='ns / multiply', title='Signed 64×64→128 multiply'),
-               dict(key='bigmul_u', cols=['cs10', 'cs11', 'rust', 'go'], per=N, unit='ns / multiply', title='Unsigned 64×64→128 multiply')],
+       charts=[dict(key='bigmul_s', cols=['cs10', 'cs11', 'rust'], per=N, unit='ns / multiply', title='Signed 64×64→128 multiply, running total returned (the slow shape)'),
+               dict(key='bigmul_u', cols=['cs10', 'cs11', 'rust', 'go'], per=N, unit='ns / multiply', title='Unsigned 64×64→128 multiply, same loop')],
        mc=dict(probe='bigmul_s', cols=['cs10', 'cs11', 'rust'], metrics=[['mul_instr', 'Multiply instructions'], ['instructions', 'Instructions']]),
        asm=dict(probe='bigmul_s', a='cs10', b='cs11')),
   dict(id='bounds', name='Bounds-check removal', verdict='no', vtext='Not seen',
@@ -110,14 +128,15 @@ notes = {
              f".NET 11 does JIT fewer methods overall ({S(c10,'jitted_methods'):.0f} → {S(c11,'jitted_methods'):.0f} in the JIT build). NativeAOT starts in {S(a11,'wall_ms'):.0f} ms on both versions, "
              f"against {S(rs,'wall_ms'):.0f} ms for Rust and {S(go,'wall_ms'):.0f} ms for Go."),
  'method': [
-   ['Machine', f"{data['machine']['cpu']}, {data['machine']['os']}, on AC power with Turbo Boost on. The CPU clock was logged during every run and stayed between 3.3 and 4.4 GHz. Background apps and services were closed."],
-   ['Rounds', "Three rounds, alternating the order of Rust, Go, .NET 10 and .NET 11 so heat and drift hit every column equally. Each number is the median of 15 timed batches, then the median of 3 processes, then the median of the 3 rounds. The thin line on each bar is the range across rounds."],
+   ['Machine', f"{data['machine']['cpu']}, {data['machine']['os']}, on AC power with Turbo Boost on and background apps closed. In the first run the CPU clock was logged and stayed between 3.3 and 4.4 GHz."],
+   ['Versions', ".NET 10.0.12 against .NET 11.0.0 (SDK 11.0.100). The C# columns were rerun on the final release; the Rust and Go columns come from the earlier run on the same laptop. Every .NET 11 result matched the release candidate's within a few percent."],
+   ['Rounds', "Three rounds, alternating the order of .NET 10 and .NET 11 so heat and drift hit every column equally. Each number is the median of 15 timed batches, then the median of 3 processes, then the median of the 3 rounds. The thin line on each bar is the range across rounds."],
    ['Builds', "C# JIT columns are compiled with csc -optimize+ and run on the default runtime settings (tiered compilation and dynamic PGO on). The runtime-async column adds -features:runtime-async=on. ReadyToRun and NativeAOT use dotnet publish. Rust uses rustc -C opt-level=3; Go uses a plain go build."],
    ['Machine code', "C# listings come from DOTNET_JitDisasm after tier-up, so they show the code that actually ran. Rust is read from rustc --emit=asm, Go from -gcflags=-S. Counts are taken from those listings by pattern, per function."],
    ['Same work', "The C# and Rust probes return identical checksums. Go's differs only because it has no signed 128-bit multiply, so that probe is left out for Go."],
    ['Also faster', f"Build time, though no probe targets it: NativeAOT publish went from {a10['compile_ms']['med']/1000:.1f} s to {a11['compile_ms']['med']/1000:.1f} s and ReadyToRun from {r10['compile_ms']['med']/1000:.1f} s to {r11['compile_ms']['med']/1000:.1f} s, mostly from .NET 11 turning the MSBuild server on by default."],
  ],
- 'foot': 'Probes, driver and raw results: probe2.py, cs2/Probes2.cs, rust2/probes2.rs, go2/main.go. .NET 11 is a release candidate; results can change by GA.',
+ 'foot': 'Probes, driver and raw results: probe2.py, cs2/Probes2.cs, rust2/probes2.rs, go2/main.go, ga/ (C# on 11.0.0), work5/ and vps/ (BigMul loop shapes and library code).',
 }
 html = (HERE / 'page' / 'template2.html').read_text()
 html = html.replace('/*DATA*/null', json.dumps(data, separators=(',', ':'))).replace('/*NOTES*/null', json.dumps(notes, ensure_ascii=False))
@@ -135,10 +154,10 @@ ROWS2 = [('Generic virtual methods', 'gvm', False), ('Default interface methods'
 vm = VPS['machine']['cpu'].replace(' Processor', '')
 second = f"""<section class="card" aria-labelledby="vh" id="vps">
     <div class="pad"><h2 id="vh">Checked on a second machine</h2>
-      <p class="sub">The .NET 10 and .NET 11 JIT columns were rerun on a different CPU and OS: a 4-vCPU cloud server (Intel Haswell, Ubuntu Linux), five rounds with alternating order and its other workloads paused. .NET 11 against .NET 10, median of rounds.</p></div>
-    <div class="st keep"><table><tr><th>Claim</th><th>Laptop <small>Comet Lake, Windows</small></th><th>Server <small>Haswell, Linux</small></th></tr>
+      <p class="sub">The .NET 10 and .NET 11 JIT columns were rerun on a different CPU and OS: a 4-vCPU cloud server (Intel Haswell, Ubuntu Linux), five rounds with alternating order and its other workloads paused. .NET 11 against .NET 10, median of rounds. The server rounds used the release candidate (RC2); on the laptop, 11.0.0 matched RC2 within a few percent on every claim.</p></div>
+    <div class="st keep"><table><tr><th>Claim</th><th>Laptop <small>Comet Lake, Windows · 11.0.0</small></th><th>Server <small>Haswell, Linux · RC2</small></th></tr>
     {''.join(f"<tr><td><b>{n}</b></td><td>{fx(ratio(data, p, ra))}</td><td>{fx(ratio(VPS, p, ra))}</td></tr>" for n, p, ra in ROWS2)}</table></div>
-    <div class="pad prose"><p style="margin-top:0">Every result holds. The devirtualisation wins are larger on the older server, runtime async cuts the cost of an await on both, and Math.BigMul is slower on both: the stack round-trip in the loop costs more on Haswell, not less. Absolute times are not comparable between the two machines and are not shown.</p></div>
+    <div class="pad prose"><p style="margin-top:0">Every result holds. The devirtualisation wins are larger on the older server, runtime async cuts the cost of an await on both, and the Math.BigMul probe loop is slower on both: the stack round-trip in that loop costs more on Haswell, not less. Absolute times are not comparable between the two machines and are not shown.</p></div>
   </section>
 
   """
